@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Engineering Research Lab | ChatGPT-4o Empirical Benchmark</title>
+  <meta name="description" content="Plataforma experimental automatizada para la evaluación de técnicas de prompt engineering en la calidad de código generado por ChatGPT-4o.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Header & Navigation -->
+  <header class="app-header">
+    <div class="header-branding">
+      <div class="logo-mark">
+        <span class="logo-icon">⚡</span>
+      </div>
+      <div>
+        <h1 class="app-title">PromptLab <span>Research</span></h1>
+        <p class="app-subtitle">Técnicas de Estructuración de Prompts &bull; ChatGPT-4o (T=0.0)</p>
+      </div>
+    </div>
+
+    <!-- Badges de Estado del Protocolo -->
+    <div class="protocol-badges">
+      <div class="status-pill status-online" title="PostgreSQL 18 conectado">
+        <span class="pulse-dot"></span> PostgreSQL
+      </div>
+      <div class="status-pill status-model" title="Modelo de Inferencia Oficial">
+        <span class="icon">🤖</span> gpt-4o
+      </div>
+      <div class="status-pill status-temp" title="Greedy Decoding Determinista">
+        <span class="icon">🎯</span> T = 0.0
+      </div>
+      <div class="status-pill status-proto" title="Protocolo de Tesis Activo">
+        <span class="icon">📜</span> EXP-2026-GPT4O-01
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button id="tab-btn-ingesta" class="nav-tab-btn active" onclick="switchTab('ingesta')">
+        <span class="tab-icon">📝</span> 1. Ingesta de Problemas
+      </button>
+      <button id="tab-btn-ejecucion" class="nav-tab-btn" onclick="switchTab('ejecucion')">
+        <span class="tab-icon">⚡</span> 2. Ejecución Experimental
+      </button>
+      <button id="tab-btn-resultados" class="nav-tab-btn" onclick="switchTab('resultados')">
+        <span class="tab-icon">📊</span> 3. Matriz Comparativa
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- ===================================================================== -->
+    <!-- INTERFAZ 1: GESTIÓN E INGESTA DE PROBLEMAS (LeetCode)                 -->
+    <!-- ===================================================================== -->
+    <section id="view-ingesta" class="view-panel active">
+      <div class="panel-header-bar">
+        <div>
+          <h2 class="section-title">Gestión e Ingesta de Problemas Algorítmicos</h2>
+          <p class="section-desc">
+            Registro con segregación estricta entre <strong>ejemplos oficiales</strong>, 
+            <strong>demostraciones Few-Shot</strong> y <strong>casos de prueba Pytest</strong>.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <input type="file" id="input-archivo-json" accept=".json" style="display: none;" onchange="handleJsonFileImport(event)">
+          <button id="btn-cargar-json" type="button" class="btn btn-accent" onclick="document.getElementById('input-archivo-json').click()" title="Cargar problema desde archivo JSON">
+            <span>📂</span> Cargar desde JSON
+          </button>
+          <button id="btn-nuevo-problema" type="button" class="btn btn-secondary" onclick="resetProblemForm()">
+            <span>➕</span> Nuevo Problema
+          </button>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- Lista lateral de problemas -->
+        <aside class="sidebar-card">
+          <div class="sidebar-header">
+            <h3>Problemas Registrados (<span id="problemas-count">0</span>)</h3>
+            <input type="text" id="filtro-problemas-busqueda" class="input-search" placeholder="Buscar problema..." oninput="filterProblemList()">
+          </div>
+          <div id="lista-problemas" class="problem-list-container">
+            <!-- Items renderizados dinámicamente -->
+          </div>
+        </aside>
+
+        <!-- Formulario de Ingesta/Edición -->
+        <div class="form-container-card">
+          <form id="form-problema" onsubmit="saveProblem(event)">
+            <input type="hidden" id="form-problema-id" value="">
+
+            <div class="form-row grid-3">
+              <div class="form-group">
+                <label for="form-codigo">Código Único *</label>
+                <input type="text" id="form-codigo" class="form-control" required placeholder="LC-001">
+              </div>
+              <div class="form-group span-2">
+                <label for="form-titulo">Título del Problema *</label>
+                <input type="text" id="form-titulo" class="form-control" required placeholder="Two Sum">
+              </div>
+            </div>
+
+            <div class="form-row grid-3">
+              <div class="form-group">
+                <label for="form-dificultad">Dificultad *</label>
+                <select id="form-dificultad" class="form-control" required>
+                  <option value="Fácil">Fácil</option>
+                  <option value="Media" selected>Media</option>
+                  <option value="Difícil">Difícil</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="form-categoria">Categoría Algorítmica *</label>
+                <input type="text" id="form-categoria" class="form-control" required placeholder="Arreglos y Hash Table">
+              </div>
+              <div class="form-group">
+                <label for="form-plataforma">Plataforma de Origen</label>
+                <select id="form-plataforma" class="form-control">
+                  <option value="LeetCode" selected>LeetCode</option>
+                  <option value="HackerRank">HackerRank</option>
+                  <option value="Propio">Propio</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="form-url">URL de Referencia Oficial</label>
+              <input type="url" id="form-url" class="form-control" placeholder="https://leetcode.com/problems/...">
+            </div>
+
+            <div class="form-group">
+              <label for="form-enunciado">Enunciado Descriptivo Completo *</label>
+              <textarea id="form-enunciado" class="form-control" rows="4" required placeholder="Dado un arreglo nums y un entero target..."></textarea>
+            </div>
+
+            <div class="form-row grid-2">
+              <div class="form-group">
+                <label for="form-restricciones">Restricciones Computacionales</label>
+                <textarea id="form-restricciones" class="form-control" rows="3" placeholder="2 <= nums.length <= 10^4&#10;-10^9 <= nums[i] <= 10^9"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="form-solucion-ref">Solución de Referencia Canónica (Python 3)</label>
+                <textarea id="form-solucion-ref" class="form-control code-font" rows="3" placeholder="class Solution:&#10;    def twoSum(self, nums, target):&#10;        ..."></textarea>
+              </div>
+            </div>
+
+            <!-- BLOQUE A: Ejemplos Oficiales del Enunciado -->
+            <div class="sub-section-box">
+              <div class="sub-section-header">
+                <div>
+                  <h4 class="sub-title">📌 Ejemplos Oficiales del Enunciado (<code>ejemplos_enunciado</code>)</h4>
+                  <p class="sub-desc">Ejemplos estándar que vienen impresos en el problema de LeetCode.</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="addEnunciadoExampleRow()">
+                  + Agregar Ejemplo
+                </button>
+              </div>
+              <div id="enunciado-examples-container" class="dynamic-rows-box">
+                <!-- Filas dinámicas -->
+              </div>
+            </div>
+
+            <!-- SECCIÓN ESPECIAL FEW-SHOT: Demostraciones guiadas -->
+            <div class="sub-section-box few-shot-highlight-box">
+              <div class="sub-section-header">
+                <div>
+                  <div class="badge-tag-special">⭐ SECCIÓN ESPECIAL FEW-SHOT</div>
+                  <h4 class="sub-title">Ejemplos de Demostración Few-Shot (<code>ejemplos_few_shot</code>)</h4>
+                  <p class="sub-desc">
+                    <strong>Regla científica de integridad:</strong> Estos ejemplos se inyectan <em>únicamente</em> 
+                    al evaluar la técnica Few-Shot. Están completamente separados del enunciado y de las pruebas.
+                  </p>
+                </div>
+                <button type="button" id="btn-add-few-shot" class="btn btn-sm btn-accent" onclick="addFewShotExampleRow()">
+                  <span>✨</span> Agregar Demostración Few-Shot
+                </button>
+              </div>
+              <div id="few-shot-examples-container" class="dynamic-rows-box">
+                <!-- Filas dinámicas Few-Shot -->
+              </div>
+            </div>
+
+            <!-- BLOQUE C: Casos de Prueba Pytest -->
+            <div class="sub-section-box">
+              <div class="sub-section-header">
+                <div>
+                  <h4 class="sub-title">🧪 Casos de Prueba Funcionales Pytest (<code>pruebas_funcionales</code>)</h4>
+                  <p class="sub-desc">Aserciones unitarias para verificar la exactitud del código generado por ChatGPT-4o.</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" onclick="addTestCaseRow()">
+                  + Agregar Caso de Prueba
+                </button>
+              </div>
+              <div id="test-cases-container" class="dynamic-rows-box">
+                <!-- Casos dinámicos -->
+              </div>
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="button" class="btn btn-secondary" onclick="resetProblemForm()">Cancelar / Limpiar</button>
+              <button type="submit" id="btn-guardar-problema" class="btn btn-primary">
+                <span>💾</span> Guardar Problema
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- INTERFAZ 2: PANEL DE EJECUCIÓN EXPERIMENTAL Y CONFIGURACIÓN            -->
+    <!-- ===================================================================== -->
+    <section id="view-ejecucion" class="view-panel">
+      <!-- Selector bar -->
+      <div class="execution-controls-card">
+        <div class="control-col">
+          <label for="select-problema-experimento">1. Problema a Evaluar:</label>
+          <select id="select-problema-experimento" class="form-control" onchange="onProblemOrTechniqueChange()">
+            <!-- Opciones cargadas dinámicamente -->
+          </select>
+        </div>
+
+        <div class="control-col">
+          <label>2. Técnica de Prompt Engineering:</label>
+          <div class="technique-pills-group" id="technique-selector-group">
+            <button type="button" class="tech-pill active" data-tech="ZERO_SHOT" onclick="selectTechnique('ZERO_SHOT')">
+              <span class="tech-title">Zero-Shot</span>
+              <span class="tech-sub">Directo</span>
+            </button>
+            <button type="button" class="tech-pill" data-tech="FEW_SHOT" onclick="selectTechnique('FEW_SHOT')">
+              <span class="tech-title">Few-Shot</span>
+              <span class="tech-sub">Demostraciones</span>
+            </button>
+            <button type="button" class="tech-pill" data-tech="CHAIN_OF_THOUGHT" onclick="selectTechnique('CHAIN_OF_THOUGHT')">
+              <span class="tech-title">Chain-of-Thought</span>
+              <span class="tech-sub">Paso a paso</span>
+            </button>
+            <button type="button" class="tech-pill" data-tech="ROLE_PROMPTING" onclick="selectTechnique('ROLE_PROMPTING')">
+              <span class="tech-title">Role Prompting</span>
+              <span class="tech-sub">Ing. Principal</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="control-col rep-col">
+          <label for="input-repeticion">3. Repetición:</label>
+          <input type="number" id="input-repeticion" class="form-control" min="1" max="100" value="1">
+        </div>
+
+        <div class="control-col action-col">
+          <button id="btn-lanzar-experimento" class="btn btn-primary btn-run" onclick="runExperiment()">
+            <span class="btn-icon">🚀</span>
+            <span id="btn-run-text">Ejecutar Experimento</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Tri-Pane Viewer -->
+      <div class="tri-pane-grid">
+        <!-- PANE 1: Prompt Construido -->
+        <div class="viewer-card">
+          <div class="viewer-header">
+            <div class="viewer-title">
+              <span class="icon">💬</span> Prompt Construido (Enviado al LLM)
+            </div>
+            <div class="viewer-actions">
+              <span id="prompt-char-count" class="badge-info">0 caracteres</span>
+              <button class="btn-copy" onclick="copyViewerContent('viewer-prompt-text')" title="Copiar Prompt">📋</button>
+            </div>
+          </div>
+          <div class="viewer-body">
+            <pre id="viewer-prompt-text" class="code-font code-block"></pre>
+          </div>
+        </div>
+
+        <!-- PANE 2: Respuesta Íntegra ChatGPT-4o -->
+        <div class="viewer-card">
+          <div class="viewer-header">
+            <div class="viewer-title">
+              <span class="icon">🤖</span> Respuesta Íntegra de ChatGPT-4o
+            </div>
+            <div class="viewer-actions">
+              <span id="llm-latency-badge" class="badge-info">Latencia: -- ms</span>
+              <button class="btn-copy" onclick="copyViewerContent('viewer-llm-response')" title="Copiar Respuesta">📋</button>
+            </div>
+          </div>
+          <div class="viewer-body">
+            <pre id="viewer-llm-response" class="code-font code-block raw-response"></pre>
+          </div>
+        </div>
+
+        <!-- PANE 3: Código Python Extraído -->
+        <div class="viewer-card">
+          <div class="viewer-header">
+            <div class="viewer-title">
+              <span class="icon">🐍</span> Código Extraído (clean_code_block)
+            </div>
+            <div class="viewer-actions">
+              <span id="sha-hash-badge" class="badge-hash" title="Hash SHA-256 de integridad">SHA-256: --</span>
+              <button class="btn-copy" onclick="copyViewerContent('viewer-clean-code')" title="Copiar Código">📋</button>
+            </div>
+          </div>
+          <div class="viewer-body">
+            <pre id="viewer-clean-code" class="code-font code-block python-code"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen Rápido de Métricas de la Ejecución Actual -->
+      <div id="execution-metrics-banner" class="metrics-banner-container" style="display: none;">
+        <div class="metric-card metric-card-passed">
+          <div class="metric-label">Exactitud Funcional</div>
+          <div class="metric-val" id="metric-cur-passed">--%</div>
+          <div class="metric-sub" id="metric-cur-passed-detail">0 / 0 Pruebas Pytest</div>
+        </div>
+
+        <div class="metric-card metric-card-mi">
+          <div class="metric-label">Maintainability Index</div>
+          <div class="metric-val" id="metric-cur-mi">--</div>
+          <div class="metric-sub">Radon (Escala 0 - 100)</div>
+        </div>
+
+        <div class="metric-card metric-card-cc">
+          <div class="metric-label">Complejidad Ciclomática</div>
+          <div class="metric-val" id="metric-cur-cc">--</div>
+          <div class="metric-sub">Máxima por función (McCabe)</div>
+        </div>
+
+        <div class="metric-card metric-card-time">
+          <div class="metric-label">Tiempo Mediano</div>
+          <div class="metric-val" id="metric-cur-time">-- ms</div>
+          <div class="metric-sub">10 Corridas cronometradas</div>
+        </div>
+
+        <div class="metric-card metric-card-memory">
+          <div class="metric-label">Memoria Pico</div>
+          <div class="metric-val" id="metric-cur-memory">-- KB</div>
+          <div class="metric-sub">Medición con tracemalloc</div>
+        </div>
+      </div>
+
+      <!-- Detalle de Aserciones y Corridas de la Ejecución -->
+      <div id="execution-detailed-results" class="detailed-results-card" style="display: none;">
+        <div class="tabs-sub-nav">
+          <button class="sub-tab-btn active" onclick="switchDetailTab('pytest')">Aserciones Pytest (<span id="count-pytest-tab">0</span>)</button>
+          <button class="sub-tab-btn" onclick="switchDetailTab('radon')">Desglose Radon (<span id="count-radon-tab">0</span>)</button>
+          <button class="sub-tab-btn" onclick="switchDetailTab('benchmark')">Corridas Benchmark (13)</button>
+        </div>
+
+        <div id="detail-tab-pytest" class="detail-tab-content active">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Prueba</th>
+                <th>Estado</th>
+                <th>Duración (ms)</th>
+                <th>Detalle / Error</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-pytest-details"></tbody>
+          </table>
+        </div>
+
+        <div id="detail-tab-radon" class="detail-tab-content">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Función / Método</th>
+                <th>Clase</th>
+                <th>Líneas</th>
+                <th>Complejidad Ciclomática</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-radon-details"></tbody>
+          </table>
+        </div>
+
+        <div id="detail-tab-benchmark" class="detail-tab-content">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Corrida</th>
+                <th>Tipo</th>
+                <th>Conjunto Entrada</th>
+                <th>Tiempo (ms)</th>
+                <th>Memoria Pico (Bytes)</th>
+                <th>Salida</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-benchmark-details"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- INTERFAZ 3: MATRIZ COMPARATIVA Y VISUALIZACIÓN DE RESULTADOS          -->
+    <!-- ===================================================================== -->
+    <section id="view-resultados" class="view-panel">
+      <!-- Tarjetas de Resumen Global por Técnica -->
+      <div class="technique-summary-grid" id="summary-technique-cards">
+        <!-- Renderizado dinámico de tarjetas comparativas por técnica -->
+      </div>
+
+      <!-- Determinism Check Banner -->
+      <div class="determinism-card" id="determinism-banner">
+        <div class="det-title">
+          <span class="icon">🔬</span> Verificación de Determinismo Experimental (T=0.0 / Greedy Decoding)
+        </div>
+        <p id="determinism-summary-text" class="det-desc">
+          Evaluando coincidencia de hashes criptográficos SHA-256 en réplicas con parámetros idénticos.
+        </p>
+      </div>
+
+      <!-- Filtros y Barra de Exportación -->
+      <div class="matrix-filter-bar">
+        <div class="filter-group">
+          <label for="filter-matrix-problema">Problema:</label>
+          <select id="filter-matrix-problema" class="form-control" onchange="loadComparativeMatrix()">
+            <option value="">Todos los problemas</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-matrix-tecnica">Técnica:</label>
+          <select id="filter-matrix-tecnica" class="form-control" onchange="loadComparativeMatrix()">
+            <option value="">Todas las técnicas</option>
+            <option value="ZERO_SHOT">Zero-Shot</option>
+            <option value="FEW_SHOT">Few-Shot</option>
+            <option value="CHAIN_OF_THOUGHT">Chain-of-Thought</option>
+            <option value="ROLE_PROMPTING">Role Prompting</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-matrix-dificultad">Dificultad:</label>
+          <select id="filter-matrix-dificultad" class="form-control" onchange="loadComparativeMatrix()">
+            <option value="">Todas las dificultades</option>
+            <option value="Fácil">Fácil</option>
+            <option value="Media">Media</option>
+            <option value="Difícil">Difícil</option>
+          </select>
+        </div>
+
+        <div class="export-actions">
+          <button id="btn-export-csv" class="btn btn-secondary btn-export" onclick="exportData('csv')">
+            <span>📥</span> Exportar CSV
+          </button>
+          <button id="btn-export-json" class="btn btn-secondary btn-export" onclick="exportData('json')">
+            <span>📥</span> Exportar JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla Interactiva de la Matriz Comparativa -->
+      <div class="table-responsive-card">
+        <table class="data-table matrix-table" id="matrix-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Problema</th>
+              <th>Dificultad</th>
+              <th>Técnica Prompt</th>
+              <th>Rep.</th>
+              <th>% Aprobadas (Pytest)</th>
+              <th>MI (Radon)</th>
+              <th>CC Máx</th>
+              <th>SLOC</th>
+              <th>T. Promedio (ms)</th>
+              <th>T. Mediano (ms)</th>
+              <th>Memoria (KB)</th>
+              <th>Hash SHA-256</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-comparative-matrix">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Inspección de Código y Detalles -->
+  <div id="detail-modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-container" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">Inspección de Corrida Experimental</h3>
+        <button class="btn-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-content">
+        <!-- Contenido dinámico -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

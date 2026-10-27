@@ -1,0 +1,46 @@
+{
+  "$schema_description": "Plantilla JSON para la ingesta de problemas de LeetCode en la plataforma experimental PromptLab",
+  "codigo": "LC-XXX",
+  "titulo": "Título del Problema",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/nombre-del-problema/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Arreglos / Hash Table / Programación Dinámica / Grafos / Ventana Deslizante",
+  "enunciado": "Descripción completa del problema algorítmico extraída del enunciado oficial de LeetCode.",
+  "especificacion_entrada": "nums: List[int], target: int",
+  "especificacion_salida": "List[int] o valor de retorno esperado",
+  "restricciones": "1 <= nums.length <= 10^5\n-10^9 <= nums[i] <= 10^9",
+  "solucion_referencia": "class Solution:\n    def solve(self, nums: list[int]) -> list[int]:\n        # Implementación canónica de referencia en Python 3\n        return nums",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1, 2, 3]",
+      "salida": "[1, 2, 3]",
+      "explicacion": "Explicación contextual oficial del enunciado."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Estrategia o técnica demostrada (ej. Dos Punteros o Hash Map)",
+      "entrada": "nums = [2, 1, 3]",
+      "salida": "[1, 2, 3]",
+      "explicacion": "Razonamiento paso a paso que se inyectará EXCLUSIVAMENTE en el prompt Few-Shot para guiar al LLM.",
+      "codigo_ilustrativo": "def demo_helper(nums):\n    # Código de demostración de estilo\n    return sorted(nums)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_base",
+      "codigo": "assert Solution().solve([1, 2, 3]) == [1, 2, 3]"
+    },
+    {
+      "nombre": "test_caso_borde",
+      "codigo": "assert Solution().solve([]) == []"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "medium",
+    "two-pointers"
+  ]
+}

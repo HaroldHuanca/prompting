@@ -1,0 +1,64 @@
+{
+  "codigo": "LC-015",
+  "titulo": "3Sum",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/3sum/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Arreglos y Dos Punteros",
+  "enunciado": "Dado un arreglo de enteros nums, retorna todas las tripletas [nums[i], nums[j], nums[k]] tales que i != j, i != k, y j != k, y nums[i] + nums[j] + nums[k] == 0.\nTen en cuenta que el conjunto de soluciones no debe contener tripletas duplicadas.",
+  "especificacion_entrada": "nums: List[int]",
+  "especificacion_salida": "List[List[int]] con las tripletas únicas",
+  "restricciones": "3 <= nums.length <= 3000\n-10^5 <= nums[i] <= 10^5",
+  "solucion_referencia": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()\n        res = []\n        n = len(nums)\n        for i in range(n - 2):\n            if i > 0 and nums[i] == nums[i - 1]:\n                continue\n            if nums[i] > 0:\n                break\n            l, r = i + 1, n - 1\n            while l < r:\n                total = nums[i] + nums[l] + nums[r]\n                if total < 0:\n                    l += 1\n                elif total > 0:\n                    r -= 1\n                else:\n                    res.append([nums[i], nums[l], nums[r]])\n                    while l < r and nums[l] == nums[l + 1]:\n                        l += 1\n                    while l < r and nums[r] == nums[r - 1]:\n                        r -= 1\n                    l += 1\n                    r -= 1\n        return res",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [-1,0,1,2,-1,-4]",
+      "salida": "[[-1,-1,2],[-1,0,1]]",
+      "explicacion": "nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.\nnums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.\nnums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.\nLas tripletas distintas son [-1,0,1] y [-1,-1,2]."
+    },
+    {
+      "entrada": "nums = [0,1,1]",
+      "salida": "[]",
+      "explicacion": "La única tripleta posible no suma 0."
+    },
+    {
+      "entrada": "nums = [0,0,0]",
+      "salida": "[[0,0,0]]",
+      "explicacion": "La única tripleta posible suma 0."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Estrategia Two Pointers tras ordenamiento con evasión de duplicados",
+      "entrada": "nums = [-2, 0, 0, 2, 2]",
+      "salida": "[[-2, 0, 2]]",
+      "explicacion": "Primero ordenamos el arreglo O(n log n). Fijamos el primer puntero i y usamos dos punteros l y r para converger en O(n). Saltamos elementos repetidos adyacentes para garantizar la unicidad de las tripletas.",
+      "codigo_ilustrativo": "def findTriplets(arr):\n    arr.sort()\n    # Evasión de duplicados tras matching\n    return []"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_general",
+      "codigo": "sol = Solution().threeSum([-1, 0, 1, 2, -1, -4]); s = {tuple(sorted(x)) for x in sol}; assert s == {(-1, -1, 2), (-1, 0, 1)}"
+    },
+    {
+      "nombre": "test_sin_solucion",
+      "codigo": "assert Solution().threeSum([0, 1, 1]) == []"
+    },
+    {
+      "nombre": "test_ceros_consecutivos",
+      "codigo": "assert Solution().threeSum([0, 0, 0]) == [[0, 0, 0]]"
+    },
+    {
+      "nombre": "test_muchos_duplicados",
+      "codigo": "sol = Solution().threeSum([-2, 0, 1, 1, 2]); s = {tuple(sorted(x)) for x in sol}; assert s == {(-2, 0, 2), (-2, 1, 1)}"
+    }
+  ],
+  "etiquetas": [
+    "array",
+    "two-pointers",
+    "sorting",
+    "leetcode-medium"
+  ]
+}

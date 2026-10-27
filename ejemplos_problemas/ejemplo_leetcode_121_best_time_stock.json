@@ -1,0 +1,58 @@
+{
+  "codigo": "LC-121",
+  "titulo": "Best Time to Buy and Sell Stock",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Arreglos y Programación Dinámica",
+  "enunciado": "Se te da un arreglo prices donde prices[i] es el precio de una acción dada en el i-ésimo día.\nQuieres maximizar tu ganancia eligiendo un solo día para comprar una acción y eligiendo un día diferente en el futuro para vender esa acción.\nRetorna la máxima ganancia que puedes lograr de esta transacción. Si no puedes lograr ninguna ganancia, retorna 0.",
+  "especificacion_entrada": "prices: List[int]",
+  "especificacion_salida": "int indicando ganancia máxima",
+  "restricciones": "1 <= prices.length <= 10^5\n0 <= prices[i] <= 10^4",
+  "solucion_referencia": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        min_price = float('inf')\n        max_profit = 0\n        for price in prices:\n            if price < min_price:\n                min_price = price\n            elif price - min_price > max_profit:\n                max_profit = price - min_price\n        return max_profit",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "prices = [7,1,5,3,6,4]",
+      "salida": "5",
+      "explicacion": "Comprar en el día 2 (precio = 1) y vender en el día 5 (precio = 6), ganancia = 6 - 1 = 5.\nNota que comprar en el día 2 y vender en el día 1 no está permitido porque debes comprar antes de vender."
+    },
+    {
+      "entrada": "prices = [7,6,4,3,1]",
+      "salida": "0",
+      "explicacion": "En este caso, no se realiza ninguna transacción y la ganancia máxima es 0."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Demostración de tracking de mínimo acumulado en una sola pasada O(n)",
+      "entrada": "prices = [2, 4, 1]",
+      "salida": "2",
+      "explicacion": "Mantenemos el precio mínimo visto hasta el momento y comparamos la ganancia potencial en cada paso con un único pase lineal O(n) y memoria auxiliar O(1).",
+      "codigo_ilustrativo": "def maxProfitDemo(prices):\n    min_p, max_p = prices[0], 0\n    return max_p"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_clasico",
+      "codigo": "assert Solution().maxProfit([7, 1, 5, 3, 6, 4]) == 5"
+    },
+    {
+      "nombre": "test_precios_descendentes",
+      "codigo": "assert Solution().maxProfit([7, 6, 4, 3, 1]) == 0"
+    },
+    {
+      "nombre": "test_un_solo_dia",
+      "codigo": "assert Solution().maxProfit([5]) == 0"
+    },
+    {
+      "nombre": "test_ganancia_final",
+      "codigo": "assert Solution().maxProfit([2, 1, 2, 0, 1]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "array",
+    "dynamic-programming",
+    "leetcode-easy"
+  ]
+}
