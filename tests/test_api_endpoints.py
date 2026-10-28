@@ -4,6 +4,7 @@ Pruebas de integración asíncronas para los API Endpoints de FastAPI y verifica
 import pytest
 from httpx import AsyncClient, ASGITransport
 from backend.main import app
+from backend.database import execute_dml
 
 @pytest.fixture
 async def client():
@@ -63,20 +64,49 @@ async def test_api_prompts_preview(client):
     assert data["tecnica_codigo"] == "FEW_SHOT"
 
 @pytest.mark.asyncio
-async def test_api_ejecutar_and_determinism(client):
+async def test_api_execution_pipeline_and_duplicate_protection(client, monkeypatch):
     """
-    Verifica la ejecución experimental completa y el determinismo T=0.0:
-    Ejecuta 2 réplicas consecutivas para el mismo problema y técnica.
-    El hash SHA-256 debe ser idéntico.
+    Verifica el pipeline sin invocar el proveedor ni sobrescribir datos experimentales.
     """
-    probs_res = await client.get("/api/problemas")
-    probs = probs_res.json()
-    prob_id = probs[0]["problema_id"]
+    import uuid
 
-    # Corrida 1
+    solution = "class Solution:\n    def addOne(self, value):\n        return value + 1\n"
+
+    async def fake_generate_solution(prompt, problema, tecnica_codigo):
+        return {
+            "modo": "test",
+            "modelo": "gpt-4o-test",
+            "duracion_ms": 1.0,
+            "respuesta_completa": solution,
+            "motivo_finalizacion": "stop",
+            "parametros": {"model": "gpt-4o-test", "temperature": 0.0},
+            "uso_tokens": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+        }
+
+    monkeypatch.setattr(
+        "backend.routers.ejecuciones.openai_service.generate_solution",
+        fake_generate_solution,
+    )
+    imported = await client.post("/api/problemas/importar-json", json={
+        "codigo": f"TEST-EXEC-{uuid.uuid4().hex}",
+        "titulo": "API execution test",
+        "plataforma_origen": "LeetCode",
+        "dificultad": "Fácil",
+        "categoria_algoritmica": "Testing",
+        "enunciado": "Return one more than the input.",
+        "solucion_referencia": solution,
+        "ejemplos_enunciado": [{"entrada": "1", "salida": "2"}],
+        "ejemplos_few_shot": [],
+        "pruebas_funcionales": [
+            {"nombre": "add_one", "codigo": "assert Solution().addOne(1) == 2"}
+        ],
+    })
+    assert imported.status_code == 200
+    prob_id = imported.json()[0]["problema_id"]
+
     res1 = await client.post("/api/ejecutar", json={
         "problema_id": prob_id,
-        "tecnica_codigo": "CHAIN_OF_THOUGHT",
+        "tecnica_codigo": "ZERO_SHOT",
         "numero_repeticion": 1
     })
     assert res1.status_code == 200
@@ -91,18 +121,28 @@ async def test_api_ejecutar_and_determinism(client):
     hash1 = data1["hash_codigo_sha256"]
     assert len(hash1) == 64
 
-    # Corrida 2 (Réplica determinista)
     res2 = await client.post("/api/ejecutar", json={
         "problema_id": prob_id,
-        "tecnica_codigo": "CHAIN_OF_THOUGHT",
+        "tecnica_codigo": "ZERO_SHOT",
         "numero_repeticion": 2
     })
     assert res2.status_code == 200
     data2 = res2.json()
     hash2 = data2["hash_codigo_sha256"]
 
-    # Comprobar determinismo: bajo T=0.0 los hashes deben ser exactamente iguales
-    assert hash1 == hash2, "Fallo en determinismo: los hashes SHA-256 no coinciden entre corridas con T=0.0"
+    assert hash1 == hash2
+
+    duplicate = await client.post("/api/ejecutar", json={
+        "problema_id": prob_id,
+        "tecnica_codigo": "ZERO_SHOT",
+        "numero_repeticion": 1
+    })
+    assert duplicate.status_code == 409
+    await execute_dml(
+        "DELETE FROM ejecucion_experimental WHERE problema_id = :id",
+        {"id": prob_id},
+    )
+    await execute_dml("DELETE FROM problema WHERE problema_id = :id", {"id": prob_id})
 
 @pytest.mark.asyncio
 async def test_api_metricas_matriz(client):
@@ -130,6 +170,8 @@ async def test_api_export_csv(client):
     assert res.status_code == 200
     assert "text/csv" in res.headers["content-type"]
     assert "ejecucion_id" in res.text
+    assert "version_plantilla_prompt" in res.text
+    assert "hash_prompt" in res.text
 
 @pytest.mark.asyncio
 async def test_api_export_json(client):
@@ -139,11 +181,17 @@ async def test_api_export_json(client):
     data = res.json()
     assert "metadata" in data
     assert "registros" in data
+    if data["registros"]:
+        assert "version_plantilla_prompt" in data["registros"][0]
+        assert "hash_prompt" in data["registros"][0]
 
 @pytest.mark.asyncio
 async def test_api_importar_json(client):
+    import uuid
+
+    problem_code = f"LC-999-TEST-{uuid.uuid4().hex}"
     problem_payload = {
-        "codigo": "LC-999-TEST",
+        "codigo": problem_code,
         "titulo": "Test Problem for JSON Import",
         "plataforma_origen": "LeetCode",
         "dificultad": "Fácil",
@@ -157,6 +205,9 @@ async def test_api_importar_json(client):
     assert res.status_code == 200
     results = res.json()
     assert len(results) == 1
-    assert results[0]["codigo"] == "LC-999-TEST"
+    assert results[0]["codigo"] == problem_code
     assert results[0]["cantidad_ejemplos_few_shot"] == 1
-
+    await execute_dml(
+        "DELETE FROM problema WHERE codigo = :codigo",
+        {"codigo": problem_code},
+    )

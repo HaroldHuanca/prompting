@@ -39,6 +39,7 @@ async def get_comparative_matrix(
     query = f"""
         SELECT 
             e.ejecucion_id,
+            pr.codigo AS protocolo_codigo,
             e.problema_id,
             p.codigo AS problema_codigo,
             p.titulo AS problema_titulo,
@@ -50,6 +51,11 @@ async def get_comparative_matrix(
             e.numero_repeticion,
             e.duracion_generacion_ms,
             e.hash_codigo_sha256,
+            e.identificador_modelo,
+            e.parametros_modelo->>'temperature' AS temperatura,
+            e.parametros_modelo->>'max_completion_tokens' AS max_completion_tokens,
+            e.metadatos->>'version_plantilla_prompt' AS version_plantilla_prompt,
+            e.metadatos->>'hash_prompt' AS hash_prompt,
             e.creado_en AS fecha_creacion,
             
             -- Desde vista vw_resumen_pruebas
@@ -76,6 +82,7 @@ async def get_comparative_matrix(
             END AS memoria_mediana_kb
 
         FROM ejecucion_experimental e
+        JOIN protocolo_experimental pr ON pr.protocolo_id = e.protocolo_id
         JOIN problema p ON p.problema_id = e.problema_id
         JOIN tecnica_prompt t ON t.tecnica_id = e.tecnica_id
         LEFT JOIN vw_resumen_pruebas vp ON vp.ejecucion_id = e.ejecucion_id

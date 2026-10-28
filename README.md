@@ -26,9 +26,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # 3. Inicializar Base de Datos en PostgreSQL
-createdb -U postgres investigacion
-psql -U postgres -d investigacion -f database/schema.sql
-psql -U postgres -d investigacion -f database/seed_problems.sql
+createdb -U postgres investigacionv2
+psql -U postgres -d investigacionv2 -f database/schema.sql
+psql -U postgres -d investigacionv2 -f database/seed_problems.sql
 
 # 4. Configurar variables de entorno
 cp .env.example .env

@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4073",
+  "titulo": "Count Good Strings",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-good-strings/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Programación Dinámica / Combinatoria",
+  "enunciado": "You are given an integer n.\n\nA string is considered good if it consists only of the characters 'a' and 'b', and one of the following holds:\n\n\nIt contains exactly one distinct character, and its length is odd.\n\nIt can be written as s = s1 + s2, where s1 and s2 are non-empty good strings, and the last character of s1 is different from the first character of s2.\n\nReturn the number of good strings of length n, modulo 109 + 7.\n\nHere, + denotes string concatenation.\n\n \n\nExample 1:\n\nInput: n = 4\n\nOutput: 6\n\nExplanation:\n\n\nThe good strings are \"aaab\", \"abbb\", \"baaa\", \"bbba\", \"abab\", and \"baba\".\n\nFor example, \"aaab\" = \"aaa\" + \"b\". Both parts are good because each contains one distinct character and has odd length, and their characters at the boundary are different.\n\nAlso, \"ab\" = \"a\" + \"b\" is good, so \"abab\" = \"ab\" + \"ab\" is good because the boundary characters are different.\n\nThus, the answer is 6.\n\nExample 2:\n\nInput: n = 3\n\nOutput: 4\n\nExplanation:\n\nThe good strings are \"aaa\", \"bbb\", \"aba\", and \"bab\". Thus, the answer is 4.\n\nExample 3:\n\nInput: n = 2\n\nOutput: 2\n\nExplanation:\n\nThe good strings are \"ab\" and \"ba\". Thus, the answer is 2.\n\nConstraints:\n1 <= n <= 1015",
+  "especificacion_entrada": "n: long",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= n <= 1015",
+  "solucion_referencia": "class Solution:\n    def countGoodStrings(self, n: int) -> int:\n        mod = 10**9 + 7\n        def fib_pair(x):\n            if x == 0: return (0, 1)\n            a, b = fib_pair(x // 2); c = a * (2 * b - a) % mod; d = (a * a + b * b) % mod\n            return (d, (c + d) % mod) if x & 1 else (c, d)\n        return 2 * fib_pair(n)[0] % mod",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 4",
+      "salida": "6",
+      "explicacion": "The good strings are \"aaab\", \"abbb\", \"baaa\", \"bbba\", \"abab\", and \"baba\". For example, \"aaab\" = \"aaa\" + \"b\". Both parts are good because each contains one distinct character and has odd length, and their characters at the boundary are different. Also, \"ab\" = \"a\" + \"b\" is good, so \"abab\" = \"ab\" + \"ab\" is good because the boundary characters are different. Thus, the answer is 6."
+    },
+    {
+      "entrada": "n = 3",
+      "salida": "4",
+      "explicacion": "The good strings are \"aaa\", \"bbb\", \"aba\", and \"bab\". Thus, the answer is 4."
+    },
+    {
+      "entrada": "n = 2",
+      "salida": "2",
+      "explicacion": "The good strings are \"ab\" and \"ba\". Thus, the answer is 2."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Contar cadenas mediante una recurrencia tipo Fibonacci",
+      "entrada": "n = 5",
+      "salida": "5",
+      "explicacion": "La recurrencia se calcula manteniendo dos estados anteriores.",
+      "codigo_ilustrativo": "def fib(n):\n    a,b=0,1\n    for _ in range(n): a,b=b,a+b\n    return a"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().countGoodStrings(4) == 6"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().countGoodStrings(3) == 4"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().countGoodStrings(2) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-4073",
+    "seleccion-reciente-2026-10"
+  ]
+}

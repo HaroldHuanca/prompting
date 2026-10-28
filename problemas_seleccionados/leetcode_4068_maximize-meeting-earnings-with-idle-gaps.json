@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4068",
+  "titulo": "Maximize Meeting Earnings with Idle Gaps",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-meeting-earnings-with-idle-gaps/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Programación Dinámica / Ordenamiento / Búsqueda Binaria",
+  "enunciado": "You are given a 2D integer array meetings, where meetings[i] = [starti, endi, revenuei] represents a meeting starting at time starti, ending at time endi, with revenue revenuei.\n\nAll meetings use half-open intervals [start, end), so meetings that only touch at endpoints do not overlap.\n\nYou may select any non-empty subset of meetings such that no two selected meetings overlap. You earn the revenue of each selected meeting.\n\nArrange the selected meetings in increasing order of their start times. For each pair of adjacent meetings in this order, you also earn 1 unit of revenue per unit of idle time between them. This idle time equals the later meeting's start time minus the earlier meeting's end time.\n\nNo idle revenue is earned before the earliest selected meeting starts or after the latest selected meeting ends. If only one meeting is selected, no idle revenue is earned.\n\nReturn the maximum total earnings achievable.\n\n \n\nExample 1:\n\nInput: meetings = [[2,5,4],[6,8,3]]\n\nOutput: 8\n\nExplanation:\n\n\nSelect both meetings. They do not overlap and earn 4 + 3 = 7 units of meeting revenue.\n\nThe first meeting ends at time 5, and the second starts at time 6. This idle gap earns 6 - 5 = 1 additional unit.\n\nThe maximum total earnings are 7 + 1 = 8.\n\nExample 2:\n\nInput: meetings = [[3,5,4],[4,7,8],[8,10,3]]\n\nOutput: 12\n\nExplanation:\n\n\nSelect the meetings at indices 1 and 2. They do not overlap and earn 8 + 3 = 11 units of meeting revenue.\n\nIn chronological order, these meetings run from time 4 to 7 and from time 8 to 10. The idle gap earns 8 - 7 = 1 additional unit.\n\nThe maximum total earnings are 11 + 1 = 12.\n\nExample 3:\n\nInput: meetings = [[1,2,2],[4,5,2],[7,9,3]]\n\nOutput: 11\n\nExplanation:\n\n\nSelect all three meetings. They do not overlap and earn 2 + 2 + 3 = 7 units of meeting revenue.\n\nThe idle gap from time 2 to 4 earns 4 - 2 = 2 additional units.\n\nThe idle gap from time 5 to 7 earns 7 - 5 = 2 additional units.\n\nThe maximum total earnings are 7 + 2 + 2 = 11.\n\n \nConstraints\n\n\n1 <= meetings.length <= 105\n\nmeetings[i] = [starti, endi, revenuei]\n\n0 <= starti < endi <= 109\n\n1 <= revenuei <= 109",
+  "especificacion_entrada": "meetings: integer[][]",
+  "especificacion_salida": "long",
+  "restricciones": "Consultar el enunciado oficial de LeetCode.",
+  "solucion_referencia": "import heapq\nclass Solution:\n    def maxEarnings(self, meetings: list[list[int]]) -> int:\n        meetings.sort(); heap = []; best = None; answer = 0\n        for start, end, revenue in meetings:\n            while heap and heap[0][0] <= start:\n                finish, value = heapq.heappop(heap); best = value - finish if best is None else max(best, value - finish)\n            value = revenue + (max(0, best + start) if best is not None else 0)\n            answer = max(answer, value); heapq.heappush(heap, (end, value))\n        return answer",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "meetings = [[2,5,4],[6,8,3]]",
+      "salida": "8",
+      "explicacion": "Select both meetings. They do not overlap and earn 4 + 3 = 7 units of meeting revenue. The first meeting ends at time 5, and the second starts at time 6. This idle gap earns 6 - 5 = 1 additional unit. The maximum total earnings are 7 + 1 = 8."
+    },
+    {
+      "entrada": "meetings = [[3,5,4],[4,7,8],[8,10,3]]",
+      "salida": "12",
+      "explicacion": "Select the meetings at indices 1 and 2. They do not overlap and earn 8 + 3 = 11 units of meeting revenue. In chronological order, these meetings run from time 4 to 7 and from time 8 to 10. The idle gap earns 8 - 7 = 1 additional unit. The maximum total earnings are 11 + 1 = 12."
+    },
+    {
+      "entrada": "meetings = [[1,2,2],[4,5,2],[7,9,3]]",
+      "salida": "11",
+      "explicacion": "Select all three meetings. They do not overlap and earn 2 + 2 + 3 = 7 units of meeting revenue. The idle gap from time 2 to 4 earns 4 - 2 = 2 additional units. The idle gap from time 5 to 7 earns 7 - 5 = 2 additional units. The maximum total earnings are 7 + 2 + 2 = 11."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Comprobar compatibilidad entre reuniones ordenadas",
+      "entrada": "meetings = [[1, 2], [3, 4]]",
+      "salida": "True",
+      "explicacion": "Dos reuniones no se superponen si la segunda empieza cuando la primera terminó o después.",
+      "codigo_ilustrativo": "def compatibles(a, b):\n    return a[1] <= b[0]"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxEarnings([[2,5,4],[6,8,3]]) == 8"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxEarnings([[3,5,4],[4,7,8],[8,10,3]]) == 12"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxEarnings([[1,2,2],[4,5,2],[7,9,3]]) == 11"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-4068",
+    "seleccion-reciente-2026-10"
+  ]
+}

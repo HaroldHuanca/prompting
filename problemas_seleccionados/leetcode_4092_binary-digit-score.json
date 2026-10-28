@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4092",
+  "titulo": "Binary Digit Score",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/binary-digit-score/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Bit Manipulation / Matemáticas",
+  "enunciado": "You are given two integers a and b.\n\nLet s1 and s2 be the number of set bits in the binary representations of a and b, respectively.\n\nThe score of these integers is defined as follows:\n\n\nIf s1 >= s2, the score is s1 * s2.\n\nOtherwise, the score is s2 / s1 using integer division.\n\nReturn an integer representing the score of a and b.\n\nA set bit refers to a bit in the binary representation of a number that has a value of 1.\n\n \n\nExample 1:\n\nInput: a = 14, b = 6\n\nOutput: 6\n\nExplanation:\n\n\nThe binary representation of a = 14 is \"1110\", so s1 = 3.\n\nThe binary representation of b = 6 is \"110\", so s2 = 2.\n\nSince s1 > s2, the score of a and b is s1 * s2 = 3 * 2 = 6.\n\nExample 2:\n\nInput: a = 5, b = 15\n\nOutput: 2\n\nExplanation:\n\n\nThe binary representation of a = 5 is \"101\", so s1 = 2.\n\nThe binary representation of b = 15 is \"1111\", so s2 = 4.\n\nSince s1 < s2, the score of a and b is s2 / s1 = 4 / 2 = 2.\n\nExample 3:\n\nInput: a = 10, b = 12\n\nOutput: 4\n\nExplanation:\n\n\nThe binary representation of a = 10 is \"1010\", so s1 = 2.\n\nThe binary representation of b = 12 is \"1100\", so s2 = 2.\n\nSince s1 == s2, the score of a and b is s1 * s2 = 2 * 2 = 4.\n\nConstraints:\n1 <= a, b <= 100",
+  "especificacion_entrada": "a: integer, b: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= a, b <= 100",
+  "solucion_referencia": "class Solution:\n    def calculateScore(self, a: int, b: int) -> int:\n        s1, s2 = a.bit_count(), b.bit_count()\n        return s1 * s2 if s1 >= s2 else s2 // s1",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "a = 14, b = 6",
+      "salida": "6",
+      "explicacion": "The binary representation of a = 14 is \"1110\", so s1 = 3. The binary representation of b = 6 is \"110\", so s2 = 2. Since s1 > s2, the score of a and b is s1 * s2 = 3 * 2 = 6."
+    },
+    {
+      "entrada": "a = 5, b = 15",
+      "salida": "2",
+      "explicacion": "The binary representation of a = 5 is \"101\", so s1 = 2. The binary representation of b = 15 is \"1111\", so s2 = 4. Since s1 < s2, the score of a and b is s2 / s1 = 4 / 2 = 2."
+    },
+    {
+      "entrada": "a = 10, b = 12",
+      "salida": "4",
+      "explicacion": "The binary representation of a = 10 is \"1010\", so s1 = 2. The binary representation of b = 12 is \"1100\", so s2 = 2. Since s1 == s2, the score of a and b is s1 * s2 = 2 * 2 = 4."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Contar bits activos antes de aplicar una regla numérica",
+      "entrada": "n = 14",
+      "salida": "3",
+      "explicacion": "La cantidad de bits en 1 se obtiene con bit_count().",
+      "codigo_ilustrativo": "def contar_bits(n):\n    return n.bit_count()"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().calculateScore(14, 6) == 6"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().calculateScore(5, 15) == 2"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().calculateScore(10, 12) == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4092",
+    "seleccion-reciente-2026-10"
+  ]
+}

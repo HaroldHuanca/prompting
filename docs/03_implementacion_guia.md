@@ -62,8 +62,8 @@ ENVIRONMENT=development
 LOG_LEVEL=INFO
 
 # Conexión a Base de Datos PostgreSQL
-DATABASE_URL=postgresql+asyncpg://postgres@localhost:5432/investigacion
-DATABASE_SYNC_URL=postgresql://postgres@localhost:5432/investigacion
+DATABASE_URL=postgresql+asyncpg://postgres@localhost:5432/investigacionv2
+DATABASE_SYNC_URL=postgresql://postgres@localhost:5432/investigacionv2
 
 # OpenAI API Configuration
 OPENAI_API_KEY=tu_clave_de_openai_aqui
@@ -71,7 +71,7 @@ TARGET_MODEL=gpt-4o
 TEMPERATURE=0.0
 
 # Parámetros del Protocolo de Evaluación Experimental
-CODIGO_PROTOCOLO=EXP-2026-GPT4O-01
+CODIGO_PROTOCOLO=EXP-2026-GPT4O-02
 BENCHMARK_WARMUP_RUNS=3
 BENCHMARK_MEASURE_RUNS=10
 EXECUTION_TIMEOUT_SECONDS=5.0
@@ -135,8 +135,8 @@ EXECUTION_TIMEOUT_SECONDS=5.0
 
 2. **Inicialización de la Base de Datos:**
    ```bash
-   psql -U postgres -d investigacion -f database/schema.sql
-   psql -U postgres -d investigacion -f database/seed_problems.sql
+   psql -U postgres -d investigacionv2 -f database/schema.sql
+   psql -U postgres -d investigacionv2 -f database/seed_problems.sql
    ```
 
 3. **Ejecución del Servidor de la Plataforma:**

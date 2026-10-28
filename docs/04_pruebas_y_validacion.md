@@ -60,3 +60,53 @@ pytest tests/ -v
 ```
 
 Los resultados detallados de cada corrida experimental quedan auditados con marcas temporales UTC en la tabla `registro_evento` de la base de datos PostgreSQL.
+
+## 5. Salvaguardas de integridad para corridas con el modelo
+
+- Una falla de autenticación, cuota, red o respuesta incompleta de OpenAI no se reemplaza por la solución de referencia. Se registra como ejecución fallida y no se incorpora como resultado del modelo.
+- Las solicitudes usan `temperature=0.0`, un límite explícito de tokens de salida y no reintentan automáticamente. Se persisten el modelo reportado, los parámetros, los tokens, el motivo de finalización, la versión de plantilla y el hash del prompt; la matriz CSV/JSON exporta los campos de auditoría.
+- El contenido común de las cuatro técnicas (enunciado, interfaz, restricciones, ejemplos oficiales e instrucciones de salida) es idéntico. Few-shot agrega demostraciones; Chain-of-Thought solicita analizar paso a paso, pero mantener el análisis fuera de la respuesta final; Role Prompting asigna un rol especializado. La interfaz de clase/método se extrae de la solución de referencia y se incluye como especificación, no como código de respuesta.
+- El código generado se ejecuta en un proceso `bubblewrap` sin acceso a la red ni al espacio de archivos del proyecto, con límites de recursos. Si el aislamiento no está disponible, la evaluación falla explícitamente en vez de ejecutar el código en el proceso del backend.
+- Cada combinación protocolo/problema/técnica/número de repetición es inmutable: una repetición duplicada se rechaza con HTTP 409 y no reemplaza el registro anterior. Para reintentar o ampliar la muestra debe utilizarse un número de repetición nuevo, conservando el fallo original.
+
+### Limitaciones de interpretación
+
+Una corrida por combinación problema/técnica permite formar la matriz, pero no estimar variabilidad ni probar diferencias estadísticamente. Además, el perfil de tiempo/memoria usa el primer caso funcional, que puede ser pequeño y no representativo del tamaño máximo permitido. Por tanto, esos valores son mediciones de ese caso específico, no evidencia suficiente de complejidad asintótica ni de una ventaja de rendimiento entre técnicas. Para inferencia estadística se requieren réplicas; para estudiar rendimiento se requieren casos de benchmark grandes y equivalentes por problema.
+
+## 6. Línea base de los 30 problemas LeetCode
+
+Se ejecutó una corrida por cada combinación de 30 problemas y 4 técnicas: 120 inferencias reales con el modelo reportado `gpt-4o-2024-08-06`, temperatura 0.0 y sin reintentos. Las 120 ejecuciones están guardadas; cada una tiene un hash de prompt y una versión de modelo auditables. El costo estimado a partir del uso de tokens fue USD 0.5392; es una estimación con tarifas públicas, no un cargo confirmado por el proveedor.
+
+| Técnica | Aserciones aprobadas / 77 | Aprobación de aserciones | Ejecuciones que aprobaron todas las pruebas |
+| :--- | ---: | ---: | ---: |
+| Zero-Shot | 55 | 71.4% | 16/30 (53.3%) |
+| Few-Shot | 58 | 75.3% | 20/30 (66.7%) |
+| Chain-of-Thought | 58 | 75.3% | 18/30 (60.0%) |
+| Role Prompting | 56 | 72.7% | 17/30 (56.7%) |
+| **Total** | **227/308** | **73.7%** | **71/120 (59.2%)** |
+
+Por dificultad, aprobaron todas las pruebas 33/40 ejecuciones fáciles, 20/40 medias y 18/40 difíciles. Los intervalos Wilson del 95% para aprobación completa por técnica se solapan ampliamente: Zero-Shot 36.1–69.8%, Few-Shot 48.8–80.8%, Chain-of-Thought 42.3–75.4% y Role Prompting 39.2–72.6%. Por tanto, la ventaja descriptiva de Few-Shot no demuestra que esa técnica sea superior.
+
+El benchmark registró 1,200 mediciones (10 por ejecución) sobre el primer caso funcional. De ellas, 840 aprobaron la aserción de ese caso y 360 no; 84/120 ejecuciones tuvieron al menos una medición válida y 36 no tuvieron ninguna. Se guardaron además 360 corridas de calentamiento. Estos datos no evalúan tamaños de entrada grandes ni complejidad asintótica, así que los tiempos y memoria de esta corrida no deben usarse para afirmar una ventaja de rendimiento. La batería funcional contiene 77 aserciones por técnica, principalmente ejemplos pequeños, y requiere casos borde/ocultos más amplios para estimar generalización.
+
+**Importante sobre la versión del tratamiento:** la corrida ya completada utilizó la plantilla versión 1 y la instrucción CoT anterior, que pedía un resumen del análisis pese a la regla común de responder solo con código. La plantilla actual es versión 2 y elimina esa contradicción. La versión y el hash del prompt están incluidos en los metadatos y en las exportaciones; no se deben agregar ambas versiones en un mismo análisis sin estratificarlas. Para una comparación de tesis, se recomienda definir una nueva versión de protocolo y repetir todas las técnicas con varias réplicas y una batería funcional/benchmark ampliada, preservando esta línea base sin sobrescribirla.
+
+## 7. Corrida v2 en `investigacionv2`
+
+La repetición de la matriz se guardó en una base separada con el protocolo `EXP-2026-GPT4O-02`: 30 problemas × 4 técnicas = **120/120 ejecuciones completadas**, una repetición por combinación, modelo reportado `gpt-4o-2024-08-06`, temperatura 0.0 y plantilla v2. Los 120 hashes de prompt son distintos y cada registro conserva modelo, parámetros y tokens. El uso total fue 123,261 tokens de entrada y 22,480 de salida; el costo estimado con tarifas públicas fue **USD 0.5330**, dentro del tope aprobado de USD 5. No es una factura del proveedor.
+
+| Técnica | Aserciones aprobadas / 77 | Aprobación de aserciones | Ejecuciones que aprobaron todas las pruebas |
+| :--- | ---: | ---: | ---: |
+| Zero-Shot | 56 | 72.7% | 17/30 (56.7%) |
+| Few-Shot | 58 | 75.3% | 20/30 (66.7%) |
+| Chain-of-Thought v2 | 57 | 74.0% | 18/30 (60.0%) |
+| Role Prompting | 57 | 74.0% | 18/30 (60.0%) |
+| **Total** | **228/308** | **74.0%** | **73/120 (60.8%)** |
+
+Por dificultad, aprobaron todas las pruebas 34/40 ejecuciones fáciles, 23/40 medias y 16/40 difíciles. Los resultados aún son descriptivos y no demuestran superioridad de Few-Shot ni mejoras causadas por la plantilla v2. Comparada con v1, la aprobación completa pasó de 71/120 (59.2%) a 73/120 (60.8%); la diferencia de dos ejecuciones, con una sola repetición y solicitudes en momentos distintos, no permite atribuir causalidad.
+
+El benchmark v2 produjo 1,200 mediciones sobre el primer caso funcional: 830 válidas y 370 fallidas; 83/120 ejecuciones tuvieron al menos una medición válida y 37 no tuvieron ninguna. El promedio de los promedios por ejecución válidos fue 0.1922 ms y la mediana de tiempos medianos fue 0.1733 ms. Como en v1, no representa entradas grandes ni complejidad asintótica.
+
+En siete problemas (LC-4055, LC-4076, LC-4077, LC-4086, LC-4090, LC-4091 y LC-4095) ninguna de las cuatro técnicas aprobó todos los casos funcionales registrados. Esto identifica casos que conviene inspeccionar manualmente y reforzar con pruebas independientes; por sí solo no permite distinguir entre una limitación del modelo, errores en los casos de prueba o ambigüedad en la especificación.
+
+**Separación de datos:** la base `investigacion` conserva la línea base v1. La aplicación local ahora apunta a `investigacionv2` y al protocolo `EXP-2026-GPT4O-02`; las exportaciones incluyen el protocolo, versión de plantilla y hash de prompt para prevenir mezclas accidentales.

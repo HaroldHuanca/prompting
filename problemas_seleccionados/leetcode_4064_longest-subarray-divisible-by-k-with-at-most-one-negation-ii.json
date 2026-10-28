@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4064",
+  "titulo": "Longest Subarray Divisible by K with At Most One Negation II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-subarray-divisible-by-k-with-at-most-one-negation-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Arreglos / Sumas de Prefijos / Aritmética Modular",
+  "enunciado": "You are given an integer array nums and an integer k.\n\nA subarray is valid if its sum is divisible by k, or can become divisible by k by negating one element within that subarray.\n\nNegating an element means replacing its value x with -x.\n\nReturn the length of the longest valid subarray. If no valid subarray exists, return 0.\n\n \n\nExample 1:\n\nInput: nums = [4,1,2], k = 3\n\nOutput: 3\n\nExplanation:\n\n\nThe sum of the entire array is 7, and 7 % 3 = 1, so it is not divisible by k = 3.\n\nNegating nums[2] = 2 changes the sum to 4 + 1 − 2 = 3, which is divisible by k.\n\nTherefore, the entire array is a valid subarray, giving a length of 3.\n\nExample 2:\n\nInput: nums = [5,3,4], k = 7\n\nOutput: 2\n\nExplanation:\n\n\nThe sum of the entire array is 12, and negating any one of its elements does not make its sum divisible by 7.\n\nHowever, the subarray [3, 4] has a sum of 7, which is divisible by k = 7 without any negation.\n\nTherefore, the longest valid subarray has a length of 2.\n\nExample 3:\n\nInput: nums = [2,2,5], k = 6\n\nOutput: 2\n\nExplanation:\n\n\nThe sum of the entire array is 9, and negating any one of its elements does not make its sum divisible by 6.\n\nThe subarray [2, 2] has a sum of 4. Negating either element changes it to [-2, 2] or [2, -2], both of which have a sum of 0.\n\nTherefore, the longest valid subarray has a length of 2.\n\nConstraints:\n1 <= nums.length <= 105​​​​​​​\n\n-105 <= nums[i] <= 105\n\n1 <= k <= 3000​​​​​​​",
+  "especificacion_entrada": "nums: integer[], k: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= nums.length <= 105​​​​​​​\n\n-105 <= nums[i] <= 105\n\n1 <= k <= 3000​​​​​​​",
+  "solucion_referencia": "class Solution:\n    def longestSubarray(self, nums: list[int], k: int) -> int:\n        best = 0\n        for left in range(len(nums)):\n            total = 0; negatable = set()\n            for right in range(left, len(nums)):\n                total += nums[right]\n                negatable.add((2 * nums[right]) % k)\n                if total % k == 0 or total % k in negatable:\n                    best = max(best, right - left + 1)\n        return best",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [4,1,2], k = 3",
+      "salida": "3",
+      "explicacion": "The sum of the entire array is 7, and 7 % 3 = 1, so it is not divisible by k = 3. Negating nums[2] = 2 changes the sum to 4 + 1 − 2 = 3, which is divisible by k. Therefore, the entire array is a valid subarray, giving a length of 3."
+    },
+    {
+      "entrada": "nums = [5,3,4], k = 7",
+      "salida": "2",
+      "explicacion": "The sum of the entire array is 12, and negating any one of its elements does not make its sum divisible by 7. However, the subarray [3, 4] has a sum of 7, which is divisible by k = 7 without any negation. Therefore, the longest valid subarray has a length of 2."
+    },
+    {
+      "entrada": "nums = [2,2,5], k = 6",
+      "salida": "2",
+      "explicacion": "The sum of the entire array is 9, and negating any one of its elements does not make its sum divisible by 6. The subarray [2, 2] has a sum of 4. Negating either element changes it to [-2, 2] or [2, -2], both of which have a sum of 0. Therefore, the longest valid subarray has a length of 2."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Verificar si un residuo puede corregirse negando un elemento",
+      "entrada": "total = 7, x = 2, k = 3",
+      "salida": "True",
+      "explicacion": "Cambiar x por -x resta 2x a la suma; basta comprobar el residuo resultante.",
+      "codigo_ilustrativo": "def se_corrige(total, x, k):\n    return (total-2*x)%k==0"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().longestSubarray([4,1,2], 3) == 3"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().longestSubarray([5,3,4], 7) == 2"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().longestSubarray([2,2,5], 6) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-4064",
+    "seleccion-reciente-2026-10"
+  ]
+}

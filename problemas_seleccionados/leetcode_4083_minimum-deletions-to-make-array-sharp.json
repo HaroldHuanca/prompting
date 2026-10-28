@@ -1,0 +1,51 @@
+{
+  "codigo": "LC-4083",
+  "titulo": "Minimum Deletions to Make Array Sharp",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-deletions-to-make-array-sharp/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Arreglos / Greedy",
+  "enunciado": "You are given an integer array nums.\n\nYou may delete any number of elements from nums. The remaining elements keep their original order.\n\nThe resulting array a is sharp if the bitwise XOR of every pair of adjacent elements is non-zero. That is, a[i] XOR a[i + 1] != 0 for every index i such that 0 <= i < a.length - 1. An array with at most one element is sharp.\n\nReturn the minimum number of deletions needed to make nums sharp.\n\nBitwise XOR compares the corresponding bits of two integers. A bit in the result is 1 if the corresponding bits differ, and 0 otherwise.\n\n \n\nExample 1:\n\nInput: nums = [1,1,2,2,2,3]\n\nOutput: 3\n\nExplanation:\n\n\nThe pairs at indices (0, 1), (2, 3), and (3, 4) each have an XOR of 0.\n\nDeleting one 1 and two 2s leaves [1, 2, 3], where 1 XOR 2 == 3 and 2 XOR 3 == 1 are both non-zero. Therefore, the answer is 3.\n\nExample 2:\n\nInput: nums = [4,4,9,4]\n\nOutput: 1\n\nExplanation:\n\n\nThe pair at indices (0, 1) has an XOR of 0.\n\nDeleting either of these two 4s leaves [4, 9, 4], where 4 XOR 9 == 13 and 9 XOR 4 == 13 are both non-zero.\n\nConstraints:\n2 <= nums.length <= 100\n\n1 <= nums[i] <= 100",
+  "especificacion_entrada": "nums: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "2 <= nums.length <= 100\n\n1 <= nums[i] <= 100",
+  "solucion_referencia": "class Solution:\n    def minDeletions(self, nums: list[int]) -> int:\n        return sum(nums[i] == nums[i - 1] for i in range(1, len(nums)))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,1,2,2,2,3]",
+      "salida": "3",
+      "explicacion": "The pairs at indices (0, 1), (2, 3), and (3, 4) each have an XOR of 0. Deleting one 1 and two 2s leaves [1, 2, 3], where 1 XOR 2 == 3 and 2 XOR 3 == 1 are both non-zero. Therefore, the answer is 3."
+    },
+    {
+      "entrada": "nums = [4,4,9,4]",
+      "salida": "1",
+      "explicacion": "The pair at indices (0, 1) has an XOR of 0. Deleting either of these two 4s leaves [4, 9, 4], where 4 XOR 9 == 13 and 9 XOR 4 == 13 are both non-zero."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Eliminar repeticiones adyacentes manteniendo el orden",
+      "entrada": "nums = [2, 2, 3, 3]",
+      "salida": "2",
+      "explicacion": "En cada bloque consecutivo de valores iguales se conserva uno.",
+      "codigo_ilustrativo": "def contar_borrados(nums):\n    return sum(nums[i] == nums[i-1] for i in range(1, len(nums)))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().minDeletions([1,1,2,2,2,3]) == 3"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().minDeletions([4,4,9,4]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4083",
+    "seleccion-reciente-2026-10"
+  ]
+}

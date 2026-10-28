@@ -1,0 +1,51 @@
+{
+  "codigo": "LC-4093",
+  "titulo": "Maximize Sum After At Most K Digit Rearrangements",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-sum-after-at-most-k-digit-rearrangements/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Ordenamiento / Manipulación de Dígitos",
+  "enunciado": "You are given an integer array nums of length n and an integer k.\n\nIn one operation, you may choose any element of nums and rearrange its decimal digits in any order to form a new integer.\n\nReturn the maximum possible sum of the array after performing at most k operations.\n\n \n\nExample 1:\n\nInput: nums = [123,45], k = 1\n\nOutput: 366\n\nExplanation:\n\n\nWe choose nums[0] = 123 and rearrange its digits to form 321.\n\nThe array becomes [321, 45]. Thus, the total sum is 321 + 45 = 366.\n\nExample 2:\n\nInput: nums = [102,90,14], k = 2\n\nOutput: 341\n\nExplanation:\n\n\nWe choose nums[0] = 102 and rearrange its digits to form 210.\n\nWe choose nums[2] = 14 and rearrange its digits to form 41.\n\nThe array becomes [210, 90, 41]. Thus, the total sum is 210 + 90 + 41 = 341.\n\nConstraints:\n1 <= n == nums.length <= 105\n\n1 <= nums[i] <= 109\n\n1 <= k <= n",
+  "especificacion_entrada": "nums: integer[], k: integer",
+  "especificacion_salida": "long",
+  "restricciones": "1 <= n == nums.length <= 105\n\n1 <= nums[i] <= 109\n\n1 <= k <= n",
+  "solucion_referencia": "class Solution:\n    def maximizeSum(self, nums: list[int], k: int) -> int:\n        gains = []\n        for value in nums:\n            rearranged = int(''.join(sorted(str(value), reverse=True)))\n            gains.append(rearranged - value)\n        return sum(nums) + sum(sorted(gains, reverse=True)[:k])",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [123,45], k = 1",
+      "salida": "366",
+      "explicacion": "We choose nums[0] = 123 and rearrange its digits to form 321. The array becomes [321, 45]. Thus, the total sum is 321 + 45 = 366."
+    },
+    {
+      "entrada": "nums = [102,90,14], k = 2",
+      "salida": "341",
+      "explicacion": "We choose nums[0] = 102 and rearrange its digits to form 210. We choose nums[2] = 14 and rearrange its digits to form 41. The array becomes [210, 90, 41]. Thus, the total sum is 210 + 90 + 41 = 341."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Reordenar dígitos en orden descendente para maximizar un entero",
+      "entrada": "n = 123",
+      "salida": "321",
+      "explicacion": "Con los mismos dígitos, colocar primero los mayores produce el entero máximo.",
+      "codigo_ilustrativo": "def maximo_reordenado(n):\n    return int(\"\".join(sorted(str(n), reverse=True)))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maximizeSum([123,45], 1) == 366"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maximizeSum([102,90,14], 2) == 341"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-4093",
+    "seleccion-reciente-2026-10"
+  ]
+}

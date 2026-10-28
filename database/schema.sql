@@ -46,7 +46,7 @@ INSERT INTO tecnica_prompt (codigo, nombre, descripcion, requiere_ejemplos)
 VALUES
  ('ZERO_SHOT', 'Zero-shot', 'Instrucción directa sin ejemplos de demostración de código en el prompt.', FALSE),
  ('FEW_SHOT', 'Few-shot', 'Instrucción que incorpora demostraciones explícitas de entrada/salida y código.', TRUE),
- ('CHAIN_OF_THOUGHT', 'Chain-of-Thought', 'Instrucción que solicita razonamiento paso a paso antes de producir el bloque final.', FALSE),
+ ('CHAIN_OF_THOUGHT', 'Chain-of-Thought', 'Instrucción para analizar paso a paso sin exponer el análisis y devolver solo el código.', FALSE),
  ('ROLE_PROMPTING', 'Role prompting', 'Instrucción que asigna un perfil de Ingeniero de Software Principal experto al modelo.', FALSE)
 ON CONFLICT (codigo) DO NOTHING;
 
@@ -327,8 +327,8 @@ GROUP BY ejecucion_id, conjunto_entrada;
 -- ----------------------------------------------------------------------------
 INSERT INTO protocolo_experimental (codigo, titulo, objetivo, modelo_objetivo, lenguaje, version_python, sistema_operativo, entorno_evaluacion, descripcion_diseno, configuracion_global)
 VALUES (
-    'EXP-2026-GPT4O-01',
-    'Protocolo de Evaluación Empírica de Técnicas de Prompting en ChatGPT-4o',
+    'EXP-2026-GPT4O-02',
+    'Protocolo v2 de Evaluación Empírica de Técnicas de Prompting en ChatGPT-4o',
     'Evaluar el impacto de Zero-Shot, Few-Shot, CoT y Role Prompting en la exactitud funcional, mantenibilidad y eficiencia de algoritmos generados por ChatGPT-4o.',
     'ChatGPT-4o',
     'Python',
@@ -336,7 +336,7 @@ VALUES (
     'Arch Linux x86_64',
     'Arch Linux (Kernel 6.x, Python 3.14, Pytest, Radon, timeit, tracemalloc)',
     'Diseño experimental factorial con réplicas controladas bajo Greedy Decoding (temperature=0.0).',
-    '{"temperatura": 0.0, "semilla_determinismo": 42, "repeticiones_benchmark": 10, "calentamiento_benchmark": 3}'::jsonb
+    '{"version_plantilla_prompt": 2, "temperatura": 0.0, "repeticiones_benchmark": 10, "calentamiento_benchmark": 3}'::jsonb
 )
 ON CONFLICT (codigo) DO NOTHING;
 
@@ -346,90 +346,35 @@ SELECT
     p.protocolo_id,
     t.tecnica_id,
     'Plantilla Estándar ' || t.nombre,
-    1,
-    CASE t.codigo
-        WHEN 'ZERO_SHOT' THEN 
-'Escribe una solución en Python 3 para el siguiente problema algorítmico:
-
-Título: {titulo}
-Dificultad: {dificultad}
-Categoría: {categoria}
-
-Enunciado:
-{enunciado}
-
-Restricciones:
-{restricciones}
-
-Ejemplos oficiales del enunciado:
-{ejemplos_enunciado}
-
-Instrucciones de formato:
-1. Proporciona una solución limpia, correcta y eficiente en Python 3.
-2. Encapsula la solución en la clase o función solicitada.
-3. Responde únicamente con el bloque de código Python entre comillas triples ```python ... ``` sin texto adicional.'
-
+    2,
+    (CASE t.codigo
         WHEN 'FEW_SHOT' THEN
-'A continuación se presentan ejemplos resueltos de referencia para ilustrar el estilo de implementación esperado:
+'Tratamiento Few-Shot: usa las siguientes demostraciones como ejemplos de entrada, salida y estilo de solución. No copies su implementación si el problema actual requiere otro algoritmo.
 
-{ejemplos_few_shot_bloque}
+{ejemplos_few_shot}
 
-Ahora, resuelve el siguiente problema en Python 3:
-
-Título: {titulo}
-Dificultad: {dificultad}
-Categoría: {categoria}
-
-Enunciado:
-{enunciado}
-
-Restricciones:
-{restricciones}
-
-Ejemplos oficiales del enunciado:
-{ejemplos_enunciado}
-
-Instrucciones de formato:
-1. Proporciona una solución limpia, modular y eficiente en Python 3.
-2. Encapsula la solución según la estructura esperada.
-3. Responde únicamente con el bloque de código Python entre comillas triples ```python ... ``` sin texto explicativo posterior.'
-
+'
         WHEN 'CHAIN_OF_THOUGHT' THEN
-'Analiza y resuelve paso a paso el siguiente problema algorítmico en Python 3:
+'Tratamiento Chain-of-Thought: analiza paso a paso el algoritmo, los casos borde y su complejidad antes de responder. Mantén ese análisis fuera de la respuesta final, que debe contener únicamente el código solicitado.
 
-Título: {titulo}
-Dificultad: {dificultad}
-Categoría: {categoria}
-
-Enunciado:
-{enunciado}
-
-Restricciones:
-{restricciones}
-
-Ejemplos oficiales:
-{ejemplos_enunciado}
-
-Estructura de razonamiento requerida:
-Paso 1: Comprensión del problema y casos borde (edge cases).
-Paso 2: Análisis de complejidad temporal y espacial requerida.
-Paso 3: Diseño algorítmico y estructura de datos elegida.
-Paso 4: Implementación del código final optimizado.
-
-Al final, entrega la implementación definitiva encerrada en un bloque de código Markdown ```python ... ```.'
-
+'
         WHEN 'ROLE_PROMPTING' THEN
-'Eres un Ingeniero de Software Principal y especialista en algoritmos avanzados de estructuras de datos y optimización de código en Python. Tu código se caracteriza por:
-- Máxima claridad y legibilidad (alta mantenibilidad y bajo acoplamiento).
-- Baja complejidad ciclomática por función.
-- Eficiencia óptima en tiempo de ejecución O(n) o minimalista y uso restringido de memoria.
-- Riguroso manejo de precondiciones y restricciones.
+'Tratamiento Role Prompting: adopta el rol de una persona ingeniera de software experta en algoritmos y Python 3.
 
-Resuelve el siguiente problema con los más altos estándares de calidad:
+'
+        ELSE ''
+    END) ||
+'Resuelve el siguiente problema en Python 3.
 
 Título: {titulo}
 Dificultad: {dificultad}
 Categoría: {categoria}
+
+Interfaz requerida:
+{interfaz}
+
+Especificación de entrada: {especificacion_entrada}
+Especificación de salida: {especificacion_salida}
 
 Enunciado:
 {enunciado}
@@ -440,12 +385,15 @@ Restricciones:
 Ejemplos oficiales:
 {ejemplos_enunciado}
 
-Entrega el código Python definitivo encapsulado en un bloque ```python ... ```.'
-    END,
-    '{"requiere_bloque_markdown": true, "temperatura": 0.0}'::jsonb
+Instrucciones comunes:
+1. Implementa exactamente la interfaz indicada y resuelve los casos borde.
+2. Usa una solución correcta y eficiente conforme a las restricciones.
+3. Devuelve únicamente código Python ejecutable en un bloque ```python ... ```.
+4. No incluyas texto, comentarios ni explicaciones fuera del código.',
+    '{"version_plantilla_prompt": 2, "requiere_bloque_markdown": true, "temperatura": 0.0}'::jsonb
 FROM protocolo_experimental p
 CROSS JOIN tecnica_prompt t
-WHERE p.codigo = 'EXP-2026-GPT4O-01'
+WHERE p.codigo = 'EXP-2026-GPT4O-02'
 ON CONFLICT (protocolo_id, tecnica_id, nombre, version_plantilla) DO NOTHING;
 
 COMMIT;

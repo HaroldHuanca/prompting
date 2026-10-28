@@ -66,23 +66,23 @@ pip install -r requirements.txt
 ## 4. Configuración de la Base de Datos (PostgreSQL)
 
 ### Paso 4.1: Crear la Base de Datos
-Acceda a PostgreSQL y cree la base de datos `investigacion`:
+Acceda a PostgreSQL y cree la base de datos `investigacionv2` para mantener separada la línea base v1:
 ```bash
 # Opción directa desde terminal:
-createdb -U postgres investigacion
+createdb -U postgres investigacionv2
 
 # O mediante psql:
-psql -U postgres -c "CREATE DATABASE investigacion;"
+psql -U postgres -c "CREATE DATABASE investigacionv2;"
 ```
 
 ### Paso 4.2: Ejecutar el Esquema Relacional y Datos Iniciales
 Ejecute la migración del esquema relacional y la semilla inicial de problemas:
 ```bash
 # 1. Crear tablas, vistas e índices del esquema "experimento"
-psql -U postgres -d investigacion -f database/schema.sql
+psql -U postgres -d investigacionv2 -f database/schema.sql
 
 # 2. Cargar problemas semilla canónicos de LeetCode (Two Sum, Valid Parentheses, etc.)
-psql -U postgres -d investigacion -f database/seed_problems.sql
+psql -U postgres -d investigacionv2 -f database/seed_problems.sql
 ```
 
 ---
@@ -100,8 +100,8 @@ ENVIRONMENT=development
 LOG_LEVEL=INFO
 
 # Conexión a PostgreSQL (ajuste usuario y contraseña si aplica)
-DATABASE_URL=postgresql+asyncpg://postgres@localhost:5432/investigacion
-DATABASE_SYNC_URL=postgresql://postgres@localhost:5432/investigacion
+DATABASE_URL=postgresql+asyncpg://postgres@localhost:5432/investigacionv2
+DATABASE_SYNC_URL=postgresql://postgres@localhost:5432/investigacionv2
 
 # OpenAI API (Ingrese su clave de OpenAI)
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -109,7 +109,7 @@ TARGET_MODEL=gpt-4o
 TEMPERATURE=0.0
 
 # Parámetros del Protocolo Experimental
-CODIGO_PROTOCOLO=EXP-2026-GPT4O-01
+CODIGO_PROTOCOLO=EXP-2026-GPT4O-02
 BENCHMARK_WARMUP_RUNS=3
 BENCHMARK_MEASURE_RUNS=10
 EXECUTION_TIMEOUT_SECONDS=5.0
@@ -239,7 +239,7 @@ Se deben ejecutar y aprobar **24 pruebas unitarias y de integración**, garantiz
      sudo systemctl start postgresql
      ```
 2. **Error: `role "HaroldUser" does not exist`**
-   - Ejecute `psql` especificando el usuario administrador: `psql -U postgres -d investigacion`.
+   - Ejecute `psql` especificando el usuario administrador: `psql -U postgres -d investigacionv2`.
 3. **¿Cómo agregar un nuevo problema masivamente vía terminal?**
    - Puede usar el endpoint de importación por API:
      ```bash

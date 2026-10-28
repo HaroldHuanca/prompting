@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from backend.routers import problemas, ejecuciones, metricas, export
+from backend.config import CODIGO_PROTOCOLO, TARGET_MODEL, TEMPERATURE
 
 app = FastAPI(
     title="Prompt Engineering Research Lab API",
@@ -36,9 +37,9 @@ async def health_check():
     """Endpoint de estado del backend y servicios."""
     return {
         "status": "online",
-        "protocolo": "EXP-2026-GPT4O-01",
-        "modelo_objetivo": "gpt-4o",
-        "temperatura": 0.0,
+        "protocolo": CODIGO_PROTOCOLO,
+        "modelo_objetivo": TARGET_MODEL,
+        "temperatura": TEMPERATURE,
         "entorno": "Arch Linux x86_64 / Python 3.14"
     }
 

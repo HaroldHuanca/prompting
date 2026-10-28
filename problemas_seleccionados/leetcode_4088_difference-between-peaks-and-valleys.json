@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4088",
+  "titulo": "Difference Between Peaks and Valleys",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/difference-between-peaks-and-valleys/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Arreglos / Búsqueda Lineal",
+  "enunciado": "You are given an integer array nums of length n.\n\nAn index i is called a peak if all of the following conditions hold:\n\n\n0 < i < n - 1\n\nnums[i] > nums[i - 1]\n\nnums[i] > nums[i + 1]\n\nAn index i is called a valley if all of the following conditions hold:\n\n\n0 < i < n - 1\n\nnums[i] < nums[i - 1]\n\nnums[i] < nums[i + 1]\n\nReturn an integer denoting the difference between the sum of all peak values and the sum of all valley values.\n\n \n\nExample 1:\n\nInput: nums = [1,5,2,4,1,3,0]\n\nOutput: 9\n\nExplanation:\n\n\nThe peak values are nums[1] = 5, nums[3] = 4, and nums[5] = 3.\n\nThe valley values are nums[2] = 2 and nums[4] = 1.\n\nThe difference between the sum of the peak values and the sum of the valley values is (5 + 4 + 3) - (2 + 1) = 9. Hence, the answer is 9.\n\nExample 2:\n\nInput: nums = [-5,-6,-1,-2,5,3,2]\n\nOutput: 12\n\nExplanation:\n\n\nThe peak values are nums[2] = -1 and nums[4] = 5.\n\nThe valley values are nums[1] = -6 and nums[3] = -2.\n\nThe difference between the sum of the peak values and the sum of the valley values is (-1 + 5) - (-6 + (-2)) = 12. Hence, the answer is 12.\n\nExample 3:\n\nInput: nums = [6,5,2,5,5,3,6]\n\nOutput: -5\n\nExplanation:\n\n\nThere are no peak values in the array.\n\nThe valley values are nums[2] = 2 and nums[5] = 3.\n\nThe difference between the sum of the peak values and the sum of the valley values is (0) - (2 + 3) = -5. Hence, the answer is -5.\n\nConstraints:\n3 <= n == nums.length <= 100\n\n-100 <= nums[i] <= 100",
+  "especificacion_entrada": "nums: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "3 <= n == nums.length <= 100\n\n-100 <= nums[i] <= 100",
+  "solucion_referencia": "class Solution:\n    def peakValleyDifference(self, nums: list[int]) -> int:\n        peaks = valleys = 0\n        for i in range(1, len(nums) - 1):\n            if nums[i] > nums[i - 1] and nums[i] > nums[i + 1]: peaks += nums[i]\n            if nums[i] < nums[i - 1] and nums[i] < nums[i + 1]: valleys += nums[i]\n        return peaks - valleys",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,5,2,4,1,3,0]",
+      "salida": "9",
+      "explicacion": "The peak values are nums[1] = 5, nums[3] = 4, and nums[5] = 3. The valley values are nums[2] = 2 and nums[4] = 1. The difference between the sum of the peak values and the sum of the valley values is (5 + 4 + 3) - (2 + 1) = 9. Hence, the answer is 9."
+    },
+    {
+      "entrada": "nums = [-5,-6,-1,-2,5,3,2]",
+      "salida": "12",
+      "explicacion": "The peak values are nums[2] = -1 and nums[4] = 5. The valley values are nums[1] = -6 and nums[3] = -2. The difference between the sum of the peak values and the sum of the valley values is (-1 + 5) - (-6 + (-2)) = 12. Hence, the answer is 12."
+    },
+    {
+      "entrada": "nums = [6,5,2,5,5,3,6]",
+      "salida": "-5",
+      "explicacion": "There are no peak values in the array. The valley values are nums[2] = 2 and nums[5] = 3. The difference between the sum of the peak values and the sum of the valley values is (0) - (2 + 3) = -5. Hence, the answer is -5."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Detectar extremos locales en un arreglo",
+      "entrada": "nums = [1, 4, 2]",
+      "salida": "4",
+      "explicacion": "Se compara cada elemento interior con sus dos vecinos.",
+      "codigo_ilustrativo": "def sumar_picos(nums):\n    return sum(nums[i] for i in range(1, len(nums)-1) if nums[i] > nums[i-1] and nums[i] > nums[i+1])"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().peakValleyDifference([1,5,2,4,1,3,0]) == 9"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().peakValleyDifference([-5,-6,-1,-2,5,3,2]) == 12"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().peakValleyDifference([6,5,2,5,5,3,6]) == -5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4088",
+    "seleccion-reciente-2026-10"
+  ]
+}

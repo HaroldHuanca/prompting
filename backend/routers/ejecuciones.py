@@ -9,6 +9,7 @@ Coordina:
 6. Perfilamiento de Rendimiento (timeit + tracemalloc)
 7. Persistencia Desagregada en PostgreSQL
 """
+import hashlib
 import json
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query
@@ -97,11 +98,7 @@ async def execute_experiment(req: ExecutionRequest):
             'en_proceso', now(), NULL, 'ChatGPT-4o', :prompt_enviado
         )
         ON CONFLICT (protocolo_id, problema_id, tecnica_id, numero_repeticion)
-        DO UPDATE SET
-            estado_ejecucion = 'en_proceso',
-            fecha_inicio = now(),
-            fecha_fin = NULL,
-            prompt_enviado = EXCLUDED.prompt_enviado
+        DO NOTHING
         RETURNING ejecucion_id;
     """
     exec_row = await fetch_one(insert_exec_sql, {
@@ -111,10 +108,68 @@ async def execute_experiment(req: ExecutionRequest):
         "numero_repeticion": req.numero_repeticion,
         "prompt_enviado": prompt_text,
     })
+    if not exec_row:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Esta repetición ya existe para el problema, técnica y protocolo "
+                "seleccionados. Usa un número de repetición nuevo para conservar "
+                "el registro original."
+            ),
+        )
     ejecucion_id = exec_row["ejecucion_id"]
 
     # 5. Inferencia con ChatGPT-4o (temperature=0.0)
-    llm_result = await openai_service.generate_solution(prompt_text, prob, tec["codigo"])
+    llm_result = None
+    try:
+        llm_result = await openai_service.generate_solution(prompt_text, prob, tec["codigo"])
+        if llm_result["motivo_finalizacion"] != "stop":
+            raise RuntimeError(
+                f"Respuesta de OpenAI incompleta o no finalizada: "
+                f"{llm_result['motivo_finalizacion']}"
+            )
+    except RuntimeError as exc:
+        error_message = str(exc)
+        failure_metadata = {
+            "error": error_message,
+            "hash_prompt": hashlib.sha256(prompt_text.encode("utf-8")).hexdigest(),
+            "version_plantilla_prompt": prompt_obj["version"],
+        }
+        failure_params = {}
+        failure_model = None
+        if llm_result is not None:
+            failure_metadata.update({
+                "modelo": llm_result["modelo"],
+                "parametros": llm_result["parametros"],
+                "uso_tokens": llm_result["uso_tokens"],
+                "motivo_finalizacion": llm_result["motivo_finalizacion"],
+            })
+            failure_params = llm_result["parametros"]
+            failure_model = llm_result["modelo"]
+        await execute_dml("""
+            UPDATE ejecucion_experimental
+            SET estado_ejecucion = 'fallida', estado_validacion = 'error_entorno',
+                fecha_fin = now(), generacion_exitosa = FALSE, observaciones = :error,
+                modelo_reportado = COALESCE(:modelo, modelo_reportado),
+                identificador_modelo = :modelo,
+                parametros_modelo = COALESCE(CAST(:parametros AS jsonb), parametros_modelo),
+                metadatos = CAST(:meta AS jsonb)
+            WHERE ejecucion_id = :id
+        """, {
+            "id": ejecucion_id,
+            "error": error_message,
+            "modelo": failure_model,
+            "parametros": json.dumps(failure_params) if failure_params else None,
+            "meta": json.dumps(failure_metadata),
+        })
+        await execute_dml("""
+            INSERT INTO registro_evento (
+                ejecucion_id, nivel, componente, evento, mensaje, detalle_error
+            ) VALUES (
+                :id, 'ERROR', 'OpenAIService', 'INFERENCIA_FALLIDA', :mensaje, :error
+            )
+        """, {"id": ejecucion_id, "mensaje": error_message, "error": error_message})
+        raise HTTPException(status_code=502, detail=error_message) from exc
     respuesta_completa = llm_result["respuesta_completa"]
     duracion_ms = llm_result["duracion_ms"]
 
@@ -291,7 +346,10 @@ async def execute_experiment(req: ExecutionRequest):
             hash_codigo_sha256 = :sha,
             codigo_parseable = :parseable,
             generacion_exitosa = TRUE,
-            estado_validacion = 'valido',
+            estado_validacion = :estado_validacion,
+            modelo_reportado = :modelo,
+            identificador_modelo = :modelo,
+            parametros_modelo = CAST(:parametros AS jsonb),
             metadatos = CAST(:meta AS jsonb)
         WHERE ejecucion_id = :id;
     """
@@ -302,7 +360,22 @@ async def execute_experiment(req: ExecutionRequest):
         "cod": codigo_limpio,
         "sha": hash_sha256,
         "parseable": es_parseable,
-        "meta": json.dumps({"modo_inferencia": llm_result.get("modo", "oficial"), "modelo": llm_result.get("modelo")})
+        "modelo": llm_result["modelo"],
+        "parametros": json.dumps(llm_result["parametros"]),
+        "estado_validacion": (
+            "valido"
+            if es_parseable and pytest_res["porcentaje_aprobadas"] == 100.0
+            else "invalido"
+        ),
+        "meta": json.dumps({
+            "modo_inferencia": llm_result["modo"],
+            "modelo": llm_result["modelo"],
+            "parametros": llm_result["parametros"],
+            "uso_tokens": llm_result["uso_tokens"],
+            "motivo_finalizacion": llm_result["motivo_finalizacion"],
+            "hash_prompt": hashlib.sha256(prompt_text.encode("utf-8")).hexdigest(),
+            "version_plantilla_prompt": prompt_obj["version"],
+        })
     })
 
     # 11. Auditoría en registro_evento
@@ -319,7 +392,10 @@ async def execute_experiment(req: ExecutionRequest):
         "datos": json.dumps({
             "sha256": hash_sha256,
             "porcentaje_pruebas": pytest_res["porcentaje_aprobadas"],
-            "mi": radon_res["maintainability_index"]
+            "mi": radon_res["maintainability_index"],
+            "modelo": llm_result["modelo"],
+            "uso_tokens": llm_result["uso_tokens"],
+            "hash_prompt": hashlib.sha256(prompt_text.encode("utf-8")).hexdigest(),
         })
     })
 
@@ -332,7 +408,11 @@ async def execute_experiment(req: ExecutionRequest):
         tecnica_nombre=tec["nombre"],
         numero_repeticion=req.numero_repeticion,
         estado_ejecucion="completada",
-        estado_validacion="valido",
+        estado_validacion=(
+            "valido"
+            if es_parseable and pytest_res["porcentaje_aprobadas"] == 100.0
+            else "invalido"
+        ),
         duracion_generacion_ms=duracion_ms,
         hash_codigo_sha256=hash_sha256,
         codigo_parseable=es_parseable,

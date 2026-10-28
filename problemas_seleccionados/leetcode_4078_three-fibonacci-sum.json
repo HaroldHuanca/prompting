@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4078",
+  "titulo": "Three Fibonacci Sum",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/three-fibonacci-sum/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Matemáticas / Fibonacci",
+  "enunciado": "You are given an integer n.\n\nThe Fibonacci sequence starts with 0 and 1, and each subsequent number is the sum of the previous two numbers. Its first few terms are 0, 1, 1, 2, 3, 5, 8, 13, ....\n\nReturn true if n can be expressed as the sum of three consecutive terms in the Fibonacci sequence, and false otherwise.\n\n \n\nExample 1:\n\nInput: n = 16\n\nOutput: true\n\nExplanation:\n\nThe three consecutive terms 3, 5, and 8 have a sum of 3 + 5 + 8 = 16.\n\nExample 2:\n\nInput: n = 8\n\nOutput: false\n\nExplanation:\n\nAlthough 1 + 2 + 5 = 8, these terms are not consecutive in the Fibonacci sequence. No three consecutive terms have a sum of 8.\n\nExample 3:\n\nInput: n = 2\n\nOutput: true\n\nExplanation:\n\nThe first three terms have a sum of 0 + 1 + 1 = 2.\n\nConstraints:\n1 <= n <= 109",
+  "especificacion_entrada": "n: integer",
+  "especificacion_salida": "boolean",
+  "restricciones": "1 <= n <= 109",
+  "solucion_referencia": "class Solution:\n    def threeFibonacciSum(self, n: int) -> bool:\n        a, b = 0, 1\n        while a + b + (a + b) <= n:\n            c = a + b\n            if a + b + c == n: return True\n            a, b = b, c\n        return False",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 16",
+      "salida": "true",
+      "explicacion": "The three consecutive terms 3, 5, and 8 have a sum of 3 + 5 + 8 = 16."
+    },
+    {
+      "entrada": "n = 8",
+      "salida": "false",
+      "explicacion": "Although 1 + 2 + 5 = 8, these terms are not consecutive in the Fibonacci sequence. No three consecutive terms have a sum of 8."
+    },
+    {
+      "entrada": "n = 2",
+      "salida": "true",
+      "explicacion": "The first three terms have a sum of 0 + 1 + 1 = 2."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Generar términos consecutivos de Fibonacci",
+      "entrada": "limite = 8",
+      "salida": "[0, 1, 1, 2, 3, 5, 8]",
+      "explicacion": "Se avanza con dos variables y se conserva el orden de los términos.",
+      "codigo_ilustrativo": "def fibonacci_hasta(limite):\n    a, b, res = 0, 1, []\n    while a <= limite:\n        res.append(a); a, b = b, a+b\n    return res"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().threeFibonacciSum(16) is True"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().threeFibonacciSum(8) is False"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().threeFibonacciSum(2) is True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4078",
+    "seleccion-reciente-2026-10"
+  ]
+}

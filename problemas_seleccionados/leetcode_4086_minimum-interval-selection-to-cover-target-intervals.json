@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4086",
+  "titulo": "Minimum Interval Selection to Cover Target Intervals",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-interval-selection-to-cover-target-intervals/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Greedy / Ordenamiento / Intervalos",
+  "enunciado": "You are given two 2D integer arrays, availableIntervals and targetIntervals, each representing a list of closed intervals.\n\nSelect a subset of intervals from availableIntervals so that every real point contained in any interval in targetIntervals belongs to at least one selected interval.\n\nPoints outside the target intervals do not need to be covered. Selected intervals may overlap or extend beyond the target intervals.\n\nReturn the minimum number of intervals you need to select. If it is impossible to cover all the target intervals, return -1.\n\n \n\nExample 1:\n\nInput: availableIntervals = [[1,4],[1,7],[3,9],[5,10],[10,15]], targetIntervals = [[1,3],[2,5],[7,8],[10,13],[11,15],[12,13]]\n\nOutput: 3\n\nExplanation:\n\nThe target intervals cover the ranges [1, 5], [7, 8], and [10, 15]. By selecting [1, 4], [3, 9], and [10, 15] from availableIntervals, all target intervals can be fully covered with three intervals.\n\nExample 2:\n\nInput: availableIntervals = [[4,6],[1,4],[2,5]], targetIntervals = [[3,4],[2,5],[6,7]]\n\nOutput: -1\n\nExplanation:\n\nIt is impossible to select intervals from availableIntervals to cover all the intervals in targetIntervals.\n\nExample 3:\n\nInput: availableIntervals = [[1,2],[3,4]], targetIntervals = [[1,4]]\n\nOutput: -1\n\nExplanation:\n\nSelecting both available intervals leaves every real point strictly between 2 and 3 uncovered. For example, 2.5 belongs to the target interval but to neither available interval.\n\nConstraints:\n1 <= availableIntervals.length, targetIntervals.length <= 5 * 104\n\navailableIntervals[i].length == targetIntervals[j].length == 2\n\n1 <= availableIntervals[i][0] <= availableIntervals[i][1] <= 105\n\n1 <= targetIntervals[j][0] <= targetIntervals[j][1] <= 105",
+  "especificacion_entrada": "availableIntervals: integer[][], targetIntervals: integer[][]",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= availableIntervals.length, targetIntervals.length <= 5 * 104\n\navailableIntervals[i].length == targetIntervals[j].length == 2\n\n1 <= availableIntervals[i][0] <= availableIntervals[i][1] <= 105\n\n1 <= targetIntervals[j][0] <= targetIntervals[j][1] <= 105",
+  "solucion_referencia": "import heapq\nclass Solution:\n    def minSelection(self, availableIntervals: list[list[int]], targetIntervals: list[list[int]]) -> int:\n        targets = sorted(targetIntervals); merged = []\n        for start, end in targets:\n            if merged and start <= merged[-1][1]: merged[-1][1] = max(merged[-1][1], end)\n            else: merged.append([start, end])\n        available = sorted(availableIntervals); i = count = 0; reach = -1; heap = []\n        for start, end in merged:\n            if reach < start: reach = start - 1\n            while reach < end:\n                point = start if reach < start else reach\n                while i < len(available) and available[i][0] <= point:\n                    heapq.heappush(heap, -available[i][1]); i += 1\n                while heap and -heap[0] < point: heapq.heappop(heap)\n                if not heap: return -1\n                next_reach = -heapq.heappop(heap)\n                if next_reach == point and point < end: return -1\n                reach = next_reach; count += 1\n        return count",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "availableIntervals = [[1,4],[1,7],[3,9],[5,10],[10,15]], targetIntervals = [[1,3],[2,5],[7,8],[10,13],[11,15],[12,13]]",
+      "salida": "3",
+      "explicacion": "The target intervals cover the ranges [1, 5], [7, 8], and [10, 15]. By selecting [1, 4], [3, 9], and [10, 15] from availableIntervals, all target intervals can be fully covered with three intervals."
+    },
+    {
+      "entrada": "availableIntervals = [[4,6],[1,4],[2,5]], targetIntervals = [[3,4],[2,5],[6,7]]",
+      "salida": "-1",
+      "explicacion": "It is impossible to select intervals from availableIntervals to cover all the intervals in targetIntervals."
+    },
+    {
+      "entrada": "availableIntervals = [[1,2],[3,4]], targetIntervals = [[1,4]]",
+      "salida": "-1",
+      "explicacion": "Selecting both available intervals leaves every real point strictly between 2 and 3 uncovered. For example, 2.5 belongs to the target interval but to neither available interval."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Cubrir el punto más a la izquierda usando el intervalo que más se extiende",
+      "entrada": "intervals = [[1, 4], [2, 7], [6, 9]]",
+      "salida": "3",
+      "explicacion": "Para cubrir el segmento continuo [1, 9], se avanza desde el primer punto cubierto y se toma el intervalo alcanzable más largo.",
+      "codigo_ilustrativo": "def cantidad(intervals):\n    intervals.sort(); i=ans=0; x=intervals[0][0]\n    while i<len(intervals):\n        far=x\n        while i<len(intervals) and intervals[i][0]<=x: far=max(far,intervals[i][1]); i+=1\n        if far==x: return -1\n        ans+=1; x=far\n    return ans"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().minSelection([[1,4],[1,7],[3,9],[5,10],[10,15]], [[1,3],[2,5],[7,8],[10,13],[11,15],[12,13]]) == 3"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().minSelection([[4,6],[1,4],[2,5]], [[3,4],[2,5],[6,7]]) == -1"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().minSelection([[1,2],[3,4]], [[1,4]]) == -1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-4086",
+    "seleccion-reciente-2026-10"
+  ]
+}

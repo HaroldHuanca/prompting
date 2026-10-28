@@ -1,0 +1,51 @@
+{
+  "codigo": "LC-4052",
+  "titulo": "Cyclically Shift Rows and Columns",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/cyclically-shift-rows-and-columns/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Matrices / Simulación",
+  "enunciado": "You are given an integer n, a 2D integer array grid of size n x n, and two integer arrays rowShift and colShift, each of length n, where:\n\n\nrowShift[i] represents the number of positions to cyclically shift the ith row of grid to the left.\n\ncolShift[j] represents the number of positions to cyclically shift the jth column of grid upward.\n\nFirst, cyclically shift each row according to rowShift, then cyclically shift each column of the resulting grid according to colShift.\n\nReturn the resulting grid after performing all the shifts.\n\nA cyclic left shift of a row by k positions moves the element at column j to column (j - k + n) % n. All other rows remain unchanged.\n\nA cyclic upward shift of a column by k positions moves the element at row i to row (i - k + n) % n. All other columns remain unchanged.\n\n \n\nExample 1:\n\nInput: n = 2, grid = [[1,2],[3,4]], rowShift = [1,0], colShift = [0,1]\n\nOutput: [[2,4],[3,1]]\n\nExplanation:\n\nThe grid changes as follows:\n\nExample 2:\n\nInput: n = 3, grid = [[1,2,3],[4,5,6],[7,8,9]], rowShift = [1,2,0], colShift = [2,2,1]\n\nOutput: [[7,8,5],[2,3,9],[6,4,1]]\n\nExplanation:\n\nThe grid changes as follows:\n\nConstraints:\n1 <= n == grid.length == grid[i].length <= 10\n\n1 <= grid[i][j] <= 100\n\nrowShift.length == colShift.length == n\n\n0 <= rowShift[i], colShift[i] < n",
+  "especificacion_entrada": "n: integer, grid: integer[][], rowShift: integer[], colShift: integer[]",
+  "especificacion_salida": "integer[][]",
+  "restricciones": "1 <= n == grid.length == grid[i].length <= 10\n\n1 <= grid[i][j] <= 100\n\nrowShift.length == colShift.length == n\n\n0 <= rowShift[i], colShift[i] < n",
+  "solucion_referencia": "class Solution:\n    def cyclicShift(self, n: int, grid: list[list[int]], rowShift: list[int], colShift: list[int]) -> list[list[int]]:\n        shifted = [[row[(j + rowShift[i]) % n] for j in range(n)] for i, row in enumerate(grid)]\n        return [[shifted[(i + colShift[j]) % n][j] for j in range(n)] for i in range(n)]",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 2, grid = [[1,2],[3,4]], rowShift = [1,0], colShift = [0,1]",
+      "salida": "[[2,4],[3,1]]",
+      "explicacion": "The grid changes as follows:"
+    },
+    {
+      "entrada": "n = 3, grid = [[1,2,3],[4,5,6],[7,8,9]], rowShift = [1,2,0], colShift = [2,2,1]",
+      "salida": "[[7,8,5],[2,3,9],[6,4,1]]",
+      "explicacion": "The grid changes as follows:"
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Aplicar un desplazamiento cíclico a una fila",
+      "entrada": "row = [1, 2, 3], k = 1",
+      "salida": "[2, 3, 1]",
+      "explicacion": "El índice de origen se calcula módulo la longitud de la fila.",
+      "codigo_ilustrativo": "def desplazar_izquierda(row, k):\n    n=len(row); k%=n\n    return row[k:]+row[:k]"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().cyclicShift(2, [[1,2],[3,4]], [1,0], [0,1]) == [[2,4],[3,1]]"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().cyclicShift(3, [[1,2,3],[4,5,6],[7,8,9]], [1,2,0], [2,2,1]) == [[7,8,5],[2,3,9],[6,4,1]]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4052",
+    "seleccion-reciente-2026-10"
+  ]
+}

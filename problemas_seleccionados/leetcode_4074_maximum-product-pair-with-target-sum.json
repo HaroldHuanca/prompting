@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4074",
+  "titulo": "Maximum Product Pair With Target Sum",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-product-pair-with-target-sum/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Arreglos / Enumeración",
+  "enunciado": "You are given an integer array nums and an integer target.\n\nA pair of distinct indices (i, j) is valid if:\n\n\nnums[i] + nums[j] == target\n\nnums[i] > nums[j]\n\nReturn a valid pair [i, j] whose product nums[i] * nums[j] is maximum among all valid pairs. If no valid pair exists, return [-1, -1].\n\nIf multiple valid pairs achieve the maximum product, you may return any of them.\n\n \n\nExample 1:\n\nInput: nums = [1,2,3,4], target = 5\n\nOutput: [2,1]\n\nExplanation:\n\nThere are 2 valid pairs:\n\n\n\n\nNo.\n(i, j)\nnums[i]\nnums[j]\nSum\nProduct\n\n\n\n\n\n1\n(3, 0)\n4\n1\n5\n4\n\n\n\n2\n(2, 1)\n3\n2\n5\n6\n\n\n\nBoth pairs sum to 5 and satisfy nums[i] > nums[j]. The second pair has the larger product, 3 * 2 = 6, so the answer is [2, 1].\n\nExample 2:\n\nInput: nums = [-3,-1,4,2], target = 1\n\nOutput: [3,1]\n\nExplanation:\n\nThere are 2 valid pairs:\n\n\n\n\nNo.\n(i, j)\nnums[i]\nnums[j]\nSum\nProduct\n\n\n\n\n\n1\n(2, 0)\n4\n-3\n1\n-12\n\n\n\n2\n(3, 1)\n2\n-1\n1\n-2\n\n\n\nSince -2 > -12, the pair at indices (3, 1) is chosen and the answer is [3, 1].\n\nExample 3:\n\nInput: nums = [3,3,5], target = 6\n\nOutput: [-1,-1]\n\nExplanation:\n\n​​​​​​​No valid pair exists, since nums[0] and nums[1] sum to 6 but are equal.\n\nConstraints:\n2 <= nums.length <= 100\n\n-100 <= nums[i], target <= 100​​​​​​​",
+  "especificacion_entrada": "nums: integer[], target: integer",
+  "especificacion_salida": "integer[]",
+  "restricciones": "2 <= nums.length <= 100\n\n-100 <= nums[i], target <= 100​​​​​​​",
+  "solucion_referencia": "class Solution:\n    def maxProductPair(self, nums: list[int], target: int) -> list[int]:\n        best, answer = None, [-1, -1]\n        for i in range(len(nums)):\n            for j in range(len(nums)):\n                if i != j and nums[i] > nums[j] and nums[i] + nums[j] == target:\n                    product = nums[i] * nums[j]\n                    if best is None or product > best: best, answer = product, [i, j]\n        return answer",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,3,4], target = 5",
+      "salida": "[2,1]",
+      "explicacion": "There are 2 valid pairs: No. (i, j) nums[i] nums[j] Sum Product 1 (3, 0) 4 1 5 4 2 (2, 1) 3 2 5 6 Both pairs sum to 5 and satisfy nums[i] > nums[j]. The second pair has the larger product, 3 * 2 = 6, so the answer is [2, 1]."
+    },
+    {
+      "entrada": "nums = [-3,-1,4,2], target = 1",
+      "salida": "[3,1]",
+      "explicacion": "There are 2 valid pairs: No. (i, j) nums[i] nums[j] Sum Product 1 (2, 0) 4 -3 1 -12 2 (3, 1) 2 -1 1 -2 Since -2 > -12, the pair at indices (3, 1) is chosen and the answer is [3, 1]."
+    },
+    {
+      "entrada": "nums = [3,3,5], target = 6",
+      "salida": "[-1,-1]",
+      "explicacion": "​​​​​​​No valid pair exists, since nums[0] and nums[1] sum to 6 but are equal."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Buscar pares de índices que suman un objetivo",
+      "entrada": "nums = [1, 4, 2], target = 5",
+      "salida": "[(0, 1), (1, 0)]",
+      "explicacion": "Se exploran pares de índices distintos y se comprueba la suma.",
+      "codigo_ilustrativo": "def pares(nums, target):\n    return [(i,j) for i in range(len(nums)) for j in range(len(nums)) if i != j and nums[i]+nums[j] == target]"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxProductPair([1,2,3,4], 5) == [2,1]"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxProductPair([-3,-1,4,2], 1) == [3,1]"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxProductPair([3,3,5], 6) == [-1,-1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-4074",
+    "seleccion-reciente-2026-10"
+  ]
+}

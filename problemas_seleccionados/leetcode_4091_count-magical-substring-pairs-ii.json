@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4091",
+  "titulo": "Count Magical Substring Pairs II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-magical-substring-pairs-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Cadenas / Hash Table / Conteo de Subcadenas",
+  "enunciado": "You are given a string s of length n consisting of lowercase English letters.\n\nFor every triplet of indices (i, j, k) satisfying 0 <= i <= j < k < n, define:\n\n\ns1 = s[i..j]\n\ns2 = s[j + 1..k]\n\nA pair of substrings (s1, s2) is called magical if the number of distinct characters in s1 is equal to the number of distinct characters in s2.\n\nReturn the number of triplets (i, j, k) for which (s1, s2) is a magical pair.\n\nA substring is a contiguous non-empty sequence of characters within a string.\n\n \n\nExample 1:\n\nInput: s = \"aba\"\n\nOutput: 2\n\nExplanation:\n\nThere are 2 valid triplets:\n\n\n\n\nNo.\n(i, j, k)\ns1\ns2\ndistinct(s1)\ndistinct(s2)\n\n\n\n\n\n1\n(0, 0, 1)\n\"a\"\n\"b\"\n1\n1\n\n\n\n2\n(1, 1, 2)\n\"b\"\n\"a\"\n1\n1\n\n\n\nExample 2:\n\nInput: s = \"kkk\"\n\nOutput: 4\n\nExplanation:\n\nThere are 4 valid triplets:\n\n\n\n\nNo.\n(i, j, k)\ns1\ns2\ndistinct(s1)\ndistinct(s2)\n\n\n\n\n\n1\n(0, 0, 1)\n\"k\"\n\"k\"\n1\n1\n\n\n\n2\n(0, 0, 2)\n\"k\"\n\"kk\"\n1\n1\n\n\n\n3\n(0, 1, 2)\n\"kk\"\n\"k\"\n1\n1\n\n\n\n4\n(1, 1, 2)\n\"k\"\n\"k\"\n1\n1\n\n\n\nExample 3:\n\nInput: s = \"abcac\"\n\nOutput: 7\n\nExplanation:\n\nThere are 7 valid triplets:\n\n\n\n\nNo.\n(i, j, k)\ns1\ns2\ndistinct(s1)\ndistinct(s2)\n\n\n\n\n\n1\n(0, 0, 1)\n\"a\"\n\"b\"\n1\n1\n\n\n\n2\n(1, 1, 2)\n\"b\"\n\"c\"\n1\n1\n\n\n\n3\n(2, 2, 3)\n\"c\"\n\"a\"\n1\n1\n\n\n\n4\n(3, 3, 4)\n\"a\"\n\"c\"\n1\n1\n\n\n\n5\n(0, 1, 3)\n\"ab\"\n\"ca\"\n2\n2\n\n\n\n6\n(0, 1, 4)\n\"ab\"\n\"cac\"\n2\n2\n\n\n\n7\n(1, 2, 4)\n\"bc\"\n\"ac\"\n2\n2\n\nConstraints:\n2 <= s.length <= 105\n\ns consists of lowercase English letters.",
+  "especificacion_entrada": "s: string",
+  "especificacion_salida": "long",
+  "restricciones": "2 <= s.length <= 105\n\ns consists of lowercase English letters.",
+  "solucion_referencia": "from array import array\nclass Solution:\n    def countMagicalPairs(self, s: str) -> int:\n        n = len(s)\n        def counts_ending(text):\n            table = [array(\"I\", [0]) * n for _ in range(27)]\n            last = [-1] * 26\n            for end, ch in enumerate(text):\n                last[ord(ch) - 97] = end\n                positions = sorted((p for p in last if p >= 0), reverse=True)\n                for i, position in enumerate(positions):\n                    following = positions[i + 1] if i + 1 < len(positions) else -1\n                    table[i + 1][end] = position - following\n            return table\n        left = counts_ending(s)\n        right = counts_ending(s[::-1])\n        return sum(sum(left[d][split] * right[d][n - split - 2] for d in range(1, 27)) for split in range(n - 1))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"aba\"",
+      "salida": "2",
+      "explicacion": "There are 2 valid triplets: No. (i, j, k) s1 s2 distinct(s1) distinct(s2) 1 (0, 0, 1) \"a\" \"b\" 1 1 2 (1, 1, 2) \"b\" \"a\" 1 1"
+    },
+    {
+      "entrada": "s = \"kkk\"",
+      "salida": "4",
+      "explicacion": "There are 4 valid triplets: No. (i, j, k) s1 s2 distinct(s1) distinct(s2) 1 (0, 0, 1) \"k\" \"k\" 1 1 2 (0, 0, 2) \"k\" \"kk\" 1 1 3 (0, 1, 2) \"kk\" \"k\" 1 1 4 (1, 1, 2) \"k\" \"k\" 1 1"
+    },
+    {
+      "entrada": "s = \"abcac\"",
+      "salida": "7",
+      "explicacion": "There are 7 valid triplets: No. (i, j, k) s1 s2 distinct(s1) distinct(s2) 1 (0, 0, 1) \"a\" \"b\" 1 1 2 (1, 1, 2) \"b\" \"c\" 1 1 3 (2, 2, 3) \"c\" \"a\" 1 1 4 (3, 3, 4) \"a\" \"c\" 1 1 5 (0, 1, 3) \"ab\" \"ca\" 2 2 6 (0, 1, 4) \"ab\" \"cac\" 2 2 7 (1, 2, 4) \"bc\" \"ac\" 2 2"
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Comparar cantidades de caracteres distintos sin construir otras cadenas",
+      "entrada": "s1 = \"ab\", s2 = \"cac\"",
+      "salida": "True",
+      "explicacion": "Se comparan cardinalidades de conjuntos de caracteres en tiempo lineal respecto a las cadenas.",
+      "codigo_ilustrativo": "def misma_cantidad(s1, s2):\n    return len(set(s1)) == len(set(s2))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().countMagicalPairs(\"aba\") == 2"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().countMagicalPairs(\"kkk\") == 4"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().countMagicalPairs(\"abcac\") == 7"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-4091",
+    "seleccion-reciente-2026-10"
+  ]
+}

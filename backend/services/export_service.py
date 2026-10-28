@@ -7,50 +7,55 @@ import io
 import json
 from typing import List, Dict, Any
 
+_CSV_HEADERS = [
+    "ejecucion_id",
+    "protocolo_codigo",
+    "problema_codigo",
+    "problema_titulo",
+    "dificultad",
+    "categoria_algoritmica",
+    "tecnica_codigo",
+    "tecnica_nombre",
+    "numero_repeticion",
+    "version_plantilla_prompt",
+    "hash_prompt",
+    "identificador_modelo",
+    "temperatura",
+    "max_completion_tokens",
+    "porcentaje_pruebas_aprobadas",
+    "pruebas_registradas",
+    "pruebas_aprobadas",
+    "pruebas_fallidas",
+    "maintainability_index",
+    "complejidad_ciclomatica_max",
+    "sloc",
+    "tiempo_promedio_ms",
+    "tiempo_mediano_ms",
+    "tiempo_minimo_ms",
+    "tiempo_maximo_ms",
+    "memoria_mediana_kb",
+    "duracion_generacion_ms",
+    "hash_codigo_sha256",
+    "fecha_creacion"
+]
+
+
 def export_matrix_to_csv(data_rows: List[Dict[str, Any]]) -> str:
-    """
-    Convierte la matriz de resultados consolidados en una cadena CSV compatible con UTF-8.
-    """
+    """Convierte la matriz consolidada en CSV compatible con UTF-8."""
     if not data_rows:
-        return "ejecucion_id,problema_codigo,titulo,dificultad,categoria,tecnica_codigo,numero_repeticion,porcentaje_pruebas_aprobadas,maintainability_index,complejidad_max,tiempo_promedio_ms,tiempo_mediano_ms,memoria_mediana_kb,duracion_generacion_ms,hash_sha256\n"
+        return ",".join(_CSV_HEADERS) + "\n"
 
     output = io.StringIO()
     # Escribir BOM para soporte nativo en Excel
     output.write('\ufeff')
 
-    headers = [
-        "ejecucion_id",
-        "problema_codigo",
-        "problema_titulo",
-        "dificultad",
-        "categoria_algoritmica",
-        "tecnica_codigo",
-        "tecnica_nombre",
-        "numero_repeticion",
-        "porcentaje_pruebas_aprobadas",
-        "pruebas_registradas",
-        "pruebas_aprobadas",
-        "pruebas_fallidas",
-        "maintainability_index",
-        "complejidad_ciclomatica_max",
-        "sloc",
-        "tiempo_promedio_ms",
-        "tiempo_mediano_ms",
-        "tiempo_minimo_ms",
-        "tiempo_maximo_ms",
-        "memoria_mediana_kb",
-        "duracion_generacion_ms",
-        "hash_codigo_sha256",
-        "fecha_creacion"
-    ]
-
-    writer = csv.DictWriter(output, fieldnames=headers, extrasaction="ignore")
+    writer = csv.DictWriter(output, fieldnames=_CSV_HEADERS, extrasaction="ignore")
     writer.writeheader()
 
     for row in data_rows:
         # Formatear valores numéricos o NULL (vacío)
         cleaned_row = {}
-        for h in headers:
+        for h in _CSV_HEADERS:
             val = row.get(h)
             if val is None:
                 cleaned_row[h] = ""

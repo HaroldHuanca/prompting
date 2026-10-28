@@ -1,0 +1,60 @@
+{
+  "codigo": "LC-4075",
+  "titulo": "Longest Resilient Subarray I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-resilient-subarray-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Arreglos / Aritmética Modular",
+  "enunciado": "You are given an integer array nums and an integer k.\n\nA subarray is resilient if, for every position in it, deleting the element at that position leaves the remaining elements with a sum divisible by k.\n\nFor a subarray of length 1, the remaining sum is 0, which is divisible by k.\n\nReturn the length of the longest resilient subarray.\n\n \n\nExample 1:\n\nInput: nums = [2,4,6,3], k = 2\n\nOutput: 3\n\nExplanation:\n\nThe subarray [2, 4, 6] sums to 12. Deleting 2, 4, or 6 leaves a sum of 10, 8, or 6, respectively, each of which is divisible by 2. Therefore, the answer is 3.\n\nExample 2:\n\nInput: nums = [1,4,7,1], k = 3\n\nOutput: 4\n\nExplanation:\n\nThe subarray [1, 4, 7, 1] sums to 13. Deleting the first 1, the 4, the 7, or the last 1 leaves a sum of 12, 9, 6, or 12, respectively, each of which is divisible by 3. Therefore, the answer is 4.\n\nExample 3:\n\nInput: nums = [5,5,4,8], k = 4\n\nOutput: 2\n\nExplanation:\n\nThe subarray [5, 5] is not resilient, since deleting either 5 leaves a sum of 5, which is not divisible by 4.\n\nThe subarray [4, 8] sums to 12. Deleting 4 or 8 leaves a sum of 8 or 4, respectively, each of which is divisible by 4. Therefore, the answer is 2.\n\nConstraints:\n1 <= nums.length <= 2500\n\n1 <= nums[i] <= 105\n\n1 <= k <= 105",
+  "especificacion_entrada": "nums: integer[], k: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= nums.length <= 2500\n\n1 <= nums[i] <= 105\n\n1 <= k <= 105",
+  "solucion_referencia": "from math import gcd\nclass Solution:\n    def resilientSubarray(self, nums: list[int], k: int) -> int:\n        best = run = 0; residue = None\n        for value in nums:\n            r = value % k\n            if r != residue: residue, run = r, 1\n            else: run += 1\n            step = k // gcd(r, k)\n            length = run if r == 0 else 1 + ((run - 1) // step) * step\n            best = max(best, length)\n        return best",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,4,6,3], k = 2",
+      "salida": "3",
+      "explicacion": "The subarray [2, 4, 6] sums to 12. Deleting 2, 4, or 6 leaves a sum of 10, 8, or 6, respectively, each of which is divisible by 2. Therefore, the answer is 3."
+    },
+    {
+      "entrada": "nums = [1,4,7,1], k = 3",
+      "salida": "4",
+      "explicacion": "The subarray [1, 4, 7, 1] sums to 13. Deleting the first 1, the 4, the 7, or the last 1 leaves a sum of 12, 9, 6, or 12, respectively, each of which is divisible by 3. Therefore, the answer is 4."
+    },
+    {
+      "entrada": "nums = [5,5,4,8], k = 4",
+      "salida": "2",
+      "explicacion": "The subarray [5, 5] is not resilient, since deleting either 5 leaves a sum of 5, which is not divisible by 4. The subarray [4, 8] sums to 12. Deleting 4 or 8 leaves a sum of 8 or 4, respectively, each of which is divisible by 4. Therefore, the answer is 2."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Usar residuos módulo k para caracterizar un subarreglo",
+      "entrada": "nums = [1, 4, 7, 1], k = 3",
+      "salida": "True",
+      "explicacion": "La suma es 13; al quitar cualquiera de los elementos el resultado es divisible por 3.",
+      "codigo_ilustrativo": "def resiliente(nums, k):\n    return all((sum(nums)-x)%k==0 for x in nums)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().resilientSubarray([2,4,6,3], 2) == 3"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().resilientSubarray([1,4,7,1], 3) == 4"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().resilientSubarray([5,5,4,8], 4) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-4075",
+    "seleccion-reciente-2026-10"
+  ]
+}

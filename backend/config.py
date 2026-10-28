@@ -15,11 +15,11 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 # URLs de Base de Datos PostgreSQL
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql+asyncpg://postgres@localhost:5432/investigacion"
+    "postgresql+asyncpg://postgres@localhost:5432/investigacionv2"
 )
 DATABASE_SYNC_URL = os.getenv(
     "DATABASE_SYNC_URL", 
-    "postgresql://postgres@localhost:5432/investigacion"
+    "postgresql://postgres@localhost:5432/investigacionv2"
 )
 
 # Configuración de OpenAI
@@ -27,9 +27,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 TARGET_MODEL = os.getenv("TARGET_MODEL", "gpt-4o")
 # Mandatorio según el protocolo: T=0.0 para Greedy Decoding determinista
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.0"))
+MAX_COMPLETION_TOKENS = int(os.getenv("MAX_COMPLETION_TOKENS", "2048"))
 
 # Parámetros del Protocolo Experimental
-CODIGO_PROTOCOLO = os.getenv("CODIGO_PROTOCOLO", "EXP-2026-GPT4O-01")
+CODIGO_PROTOCOLO = os.getenv("CODIGO_PROTOCOLO", "EXP-2026-GPT4O-02")
 BENCHMARK_WARMUP_RUNS = int(os.getenv("BENCHMARK_WARMUP_RUNS", "3"))
 BENCHMARK_MEASURE_RUNS = int(os.getenv("BENCHMARK_MEASURE_RUNS", "10"))
 EXECUTION_TIMEOUT_SECONDS = float(os.getenv("EXECUTION_TIMEOUT_SECONDS", "5.0"))
