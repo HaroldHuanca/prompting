@@ -1,0 +1,96 @@
+{
+  "codigo": "LC-3253",
+  "titulo": "Construct String with Minimum Cost (Easy)",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/construct-string-with-minimum-cost-easy/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "",
+  "enunciado": "You are given a string target, an array of strings words, and an integer array costs, both arrays of the same length.\nImagine an empty string s.\nYou can perform the following operation any number of times (including zero):\n\nChoose an index i in the range [0, words.length - 1].\nAppend words[i] to s.\nThe cost of operation is costs[i].\n\nReturn the minimum cost to make s equal to target. If it's not possible, return -1.\n \nExample 1:\n\nInput: target = \"abcdef\", words = [\"abdef\",\"abc\",\"d\",\"def\",\"ef\"], costs = [100,1,1,10,5]\nOutput: 7\nExplanation:\nThe minimum cost can be achieved by performing the following operations:\n\nSelect index 1 and append \"abc\" to s at a cost of 1, resulting in s = \"abc\".\nSelect index 2 and append \"d\" to s at a cost of 1, resulting in s = \"abcd\".\nSelect index 4 and append \"ef\" to s at a cost of 5, resulting in s = \"abcdef\".\n\n\nExample 2:\n\nInput: target = \"aaaa\", words = [\"z\",\"zz\",\"zzz\"], costs = [1,10,100]\nOutput: -1\nExplanation:\nIt is impossible to make s equal to target, so we return -1.\n\n \nConstraints:\n\n1 <= target.length <= 2000\n1 <= words.length == costs.length <= 50\n1 <= words[i].length <= target.length\ntarget and words[i] consist only of lowercase English letters.\n1 <= costs[i] <= 105\n\n",
+  "especificacion_entrada": "target: str, words: list[str], costs: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minimumCost(self, target: str, words: list[str], costs: list[int]) -> int:\n    n = len(target)\n    # dp[i] := the minimum cost to construct target[0:i]\n    dp = [0] + [math.inf] * n\n\n    for i in range(1, n + 1):\n      for j, (word, cost) in enumerate(zip(words, costs)):\n        if (i >= len(word) and\n            target[i - len(word):i] == word and\n                dp[i - len(word)] != math.inf):\n          dp[i] = min(dp[i], dp[i - len(word)] + cost)\n\n    return dp[n] if dp[n] != math.inf else -1\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "target = \"abc\", words = [\"abc\"], costs = [1]",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "target = \"abc\", words = [\"abc\"], costs = [10]",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "target = \"abcd\", words = [\"ab\", \"cd\"], costs = [1, 1]",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3253: LC-3291 - Minimum Number of Valid Strings to Form Target I. Ambos construyen una cadena objetivo con segmentos válidos y usan programación dinámica para minimizar o contar el costo de formar prefijos.",
+      "entrada": "words = ['abc'], target = 'abcabc'",
+      "salida": "2",
+      "explicacion": "Relación con LC-3253: Ambos construyen una cadena objetivo con segmentos válidos y usan programación dinámica para minimizar o contar el costo de formar prefijos.",
+      "codigo_ilustrativo": "class Solution:\n  def minValidStrings(self, words: list[str], target: str) -> int:\n    ans = 0\n    unmatchedPrefix = len(target)\n    lpsList = [self._getLPS(word + '#' + target) for word in words]\n\n    while unmatchedPrefix > 0:\n      # Greedily choose the word that has the longest suffix match with the\n      # remaining unmatched prefix.\n      maxMatchSuffix = 0\n      for lps, word in zip(lpsList, words):\n        maxMatchSuffix = max(maxMatchSuffix, lps[len(word) + unmatchedPrefix])\n      if maxMatchSuffix == 0:\n        return -1\n      ans += 1\n      unmatchedPrefix -= maxMatchSuffix\n\n    return ans\n\n  def _getLPS(self, pattern: str) -> list[int]:\n    \"\"\"\n    Returns the lps array, where lps[i] is the length of the longest prefix of\n    pattern[0..i] which is also a suffix of this substring.\n    \"\"\"\n    lps = [0] * len(pattern)\n    j = 0\n    for i in range(1, len(pattern)):\n      while j > 0 and pattern[j] != pattern[i]:\n        j = lps[j - 1]\n      if pattern[i] == pattern[j]:\n        lps[i] = j + 1\n        j += 1\n    return lps\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minimumCost('abc', ['abc'], [1]) == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minimumCost('abc', ['abc'], [10]) == 10"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minimumCost('abcd', ['ab', 'cd'], [1, 1]) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minimumCost('abc', ['a', 'b', 'c'], [1, 1, 1]) == 3"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minimumCost('hello', ['he', 'll', 'o'], [5, 7, 2]) == 14"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minimumCost('abab', ['a', 'b', 'ab'], [2, 3, 1]) == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minimumCost('abcabc', ['abc', 'bc', 'c'], [3, 1, 4]) == 6"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minimumCost('xyz', ['x', 'y', 'z'], [2, 2, 2]) == 6"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minimumCost('hello', ['he', 'll', 'o'], [1, 2, 3]) == 6"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minimumCost('abcabc', ['abc', 'abcabc'], [10, 5]) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minimumCost('abcdef', ['abdef', 'abc', 'd', 'def', 'ef'], [100, 1, 1, 10, 5]) == 7"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minimumCost('abcabc', ['abc', 'bc'], [3, 4]) == 6"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3253",
+    "fecha-estimada-2024-08-11"
+  ]
+}

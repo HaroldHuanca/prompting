@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3326",
+  "titulo": "Minimum Division Operations to Make Array Non Decreasing",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-division-operations-to-make-array-non-decreasing/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Math / Number Theory",
+  "enunciado": "You are given an integer array nums.\nAny positive divisor of a natural number x that is strictly less than x is called a proper divisor of x. For example, 2 is a proper divisor of 4, while 6 is not a proper divisor of 6.\nYou are allowed to perform an operation any number of times on nums, where in each operation you select any one element from nums and divide it by its greatest proper divisor.\nReturn the minimum number of operations required to make the array non-decreasing.\nIf it is not possible to make the array non-decreasing using any number of operations, return -1.\n \nExample 1:\n\nInput: nums = [25,7]\nOutput: 1\nExplanation:\nUsing a single operation, 25 gets divided by 5 and nums becomes [5, 7].\n\nExample 2:\n\nInput: nums = [7,7,6]\nOutput: -1\n\nExample 3:\n\nInput: nums = [1,1,1,1]\nOutput: 0\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 106\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minOperations(self, nums: list[int]) -> int:\n    ans = 0\n\n    for i in range(len(nums) - 2, -1, -1):\n      if nums[i] > nums[i + 1]:\n        minDivisor = self._getMinDivisor(nums[i])\n        if minDivisor > nums[i + 1]:\n          return -1\n        nums[i] = minDivisor\n        ans += 1\n\n    return ans\n\n  def _getMinDivisor(self, num: int) -> int:\n    for divisor in range(2, math.isqrt(num) + 1):\n      if num % divisor == 0:\n        return divisor\n    return num\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,3,4,6,9]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [9,3,1]",
+      "salida": "-1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1,1]",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3326: LC-3334 - Find the Maximum Factor Score of Array. Ambos problemas comparten las técnicas de number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [10, 20, 30]",
+      "salida": "600",
+      "explicacion": "Relación con LC-3326: Ambos problemas comparten las técnicas de number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxScore(self, nums: list[int]) -> int:\n    n = len(nums)\n    # prefixGcd[i] := GCD of nums[0..i]\n    # prefixLcm[i] := LCM of nums[0..i]\n    prefixGcd, prefixLcm = self._getPrefix(nums)\n    # suffixGcd[i] := GCD of nums[i..n - 1]\n    # suffixLcm[i] := LCM of nums[i..n - 1]\n    suffixGcd, suffixLcm = self._getSuffix(nums)\n    ans = suffixGcd[0] * suffixLcm[0]\n\n    for i in range(n):\n      gcd1 = prefixGcd[i - 1] if i > 0 else 0\n      gcd2 = suffixGcd[i + 1] if i + 1 < n else 0\n      lcm1 = prefixLcm[i - 1] if i > 0 else 1\n      lcm2 = suffixLcm[i + 1] if i + 1 < n else 1\n      score = math.gcd(gcd1, gcd2) * math.lcm(lcm1, lcm2)\n      ans = max(ans, score)\n\n    return ans\n\n  def _getPrefix(self, nums: list[int]) -> tuple[list[int], list[int]]:\n    \"\"\"Returns the prefix GCD and LCM arrays.\"\"\"\n    prefixGcd = []\n    prefixLcm = []\n    currGcd = 0\n    currLcm = 1\n    for num in nums:\n      currGcd = math.gcd(currGcd, num)\n      currLcm = math.lcm(currLcm, num)\n      prefixGcd.append(currGcd)\n      prefixLcm.append(currLcm)\n    return prefixGcd, prefixLcm\n\n  def _getSuffix(self, nums: list[int]) -> tuple[list[int], list[int]]:\n    \"\"\"Returns the suffix GCD and LCM arrays.\"\"\"\n    suffixGcd = []\n    suffixLcm = []\n    currGcd = 0\n    currLcm = 1\n    for num in reversed(nums):\n      currGcd = math.gcd(currGcd, num)\n      currLcm = math.lcm(currLcm, num)\n      suffixGcd.append(currGcd)\n      suffixLcm.append(currLcm)\n    return list(reversed(suffixGcd)), list(reversed(suffixLcm))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minOperations([2, 3, 4, 6, 9]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minOperations([9, 3, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minOperations([1, 1, 1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minOperations([10, 5, 3]) == -1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minOperations([3, 9, 27]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minOperations([8, 4, 2, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minOperations([5, 15, 45, 135]) == 0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minOperations([100, 25, 5]) == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minOperations([4, 4, 8, 2]) == 3"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minOperations([4, 2, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minOperations([100, 10, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minOperations([10, 5, 15]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3326",
+    "fecha-estimada-2024-10-20",
+    "Greedy",
+    "Array",
+    "Math",
+    "Number Theory"
+  ]
+}

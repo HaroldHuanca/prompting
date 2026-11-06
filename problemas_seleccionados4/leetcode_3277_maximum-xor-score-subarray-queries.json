@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3277",
+  "titulo": "Maximum XOR Score Subarray Queries",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-xor-score-subarray-queries/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "You are given an array nums of n integers, and a 2D integer array queries of size q, where queries[i] = [li, ri].\nFor each query, you must find the maximum XOR score of any subarray of nums[li..ri].\nThe XOR score of an array a is found by repeatedly applying the following operations on a so that only one element remains, that is the score:\n\nSimultaneously replace a[i] with a[i] XOR a[i + 1] for all indices i except the last one.\nRemove the last element of a.\n\nReturn an array answer of size q where answer[i] is the answer to query i.\n \nExample 1:\n\nInput: nums = [2,8,4,32,16,1], queries = [[0,2],[1,4],[0,5]]\nOutput: [12,60,60]\nExplanation:\nIn the first query, nums[0..2] has 6 subarrays [2], [8], [4], [2, 8], [8, 4], and [2, 8, 4] each with a respective XOR score of 2, 8, 4, 10, 12, and 6. The answer for the query is 12, the largest of all XOR scores.\nIn the second query, the subarray of nums[1..4] with the largest XOR score is nums[1..4] with a score of 60.\nIn the third query, the subarray of nums[0..5] with the largest XOR score is nums[1..4] with a score of 60.\n\nExample 2:\n\nInput: nums = [0,7,3,2,8,5,1], queries = [[0,3],[1,5],[2,4],[2,6],[5,6]]\nOutput: [7,14,11,14,5]\nExplanation:\n\n\n\nIndex\nnums[li..ri]\nMaximum XOR Score Subarray\nMaximum Subarray XOR Score\n\n\n\n\n0\n[0, 7, 3, 2]\n[7]\n7\n\n\n1\n[7, 3, 2, 8, 5]\n[7, 3, 2, 8]\n14\n\n\n2\n[3, 2, 8]\n[3, 2, 8]\n11\n\n\n3\n[3, 2, 8, 5, 1]\n[2, 8, 5, 1]\n14\n\n\n4\n[5, 1]\n[5]\n5\n\n\n\n\n \nConstraints:\n\n1 <= n == nums.length <= 2000\n0 <= nums[i] <= 231 - 1\n1 <= q == queries.length <= 105\nqueries[i].length == 2 \nqueries[i] = [li, ri]\n0 <= li <= ri <= n - 1\n\n",
+  "especificacion_entrada": "nums: list[int], queries: list[list[int]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maximumSubarrayXor(\n      self,\n      nums: list[int],\n      queries: list[list[int]]\n  ) -> list[int]:\n    n = len(nums)\n    # xors[i][j] := the XOR score of nums[i..j]\n    xors = [[0] * n for _ in range(n)]\n    # dp[i][j] := the maximum XOR score of nums[i..j]\n    dp = [[0] * n for _ in range(n)]\n\n    for i, num in enumerate(nums):\n      xors[i][i] = num\n      dp[i][i] = num\n\n    for d in range(1, n):\n      for i in range(n - d):\n        j = i + d\n        xors[i][j] = xors[i][j - 1] ^ xors[i + 1][j]\n        dp[i][j] = max(xors[i][j], dp[i][j - 1], dp[i + 1][j])\n\n    return [dp[l][r] for l, r in queries]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [0,7,3,2,8,5,1], queries = [[0,3],[1,5],[2,4],[2,6],[5,6]]",
+      "salida": "[7, 14, 11, 14, 5]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,8,4,32,16,1], queries = [[0,2],[1,4],[0,5]]",
+      "salida": "[12, 60, 60]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [100,200,300,400,500,600,700,800,900,1000], queries = [[0,9],[1,8],[2,7],[3,6],[4,5],[0,0],[9,9]]",
+      "salida": "[1000, 968, 968, 968, 940, 100, 1000]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3277: LC-3269 - Constructing Two Increasing Arrays. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums1 = [0, 0, 0, 0], nums2 = [1, 1, 1, 1]",
+      "salida": "8",
+      "explicacion": "Relación con LC-3277: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def minLargest(self, nums1: list[int], nums2: list[int]) -> int:\n    m = len(nums1)\n    n = len(nums2)\n    # dp[i][j] := the minimum largest number for the first i nums1 and the\n    # first j nums2\n    dp = [[math.inf] * (n + 1) for _ in range(m + 1)]\n    dp[0][0] = 0\n\n    def f(prev: int, num: int) -> int:\n      \"\"\"\n      Returns the next number to fill in the array based on the previous number\n      and the current number.\n      \"\"\"\n      return prev + (2 if prev % 2 == num else 1)\n\n    for i in range(m + 1):\n      for j in range(n + 1):\n        if i > 0:\n          dp[i][j] = min(dp[i][j], f(dp[i - 1][j], nums1[i - 1]))\n        if j > 0:\n          dp[i][j] = min(dp[i][j], f(dp[i][j - 1], nums2[j - 1]))\n\n    return dp[m][n]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maximumSubarrayXor([0, 7, 3, 2, 8, 5, 1], [[0, 3], [1, 5], [2, 4], [2, 6], [5, 6]]) == [7, 14, 11, 14, 5]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maximumSubarrayXor([2, 8, 4, 32, 16, 1], [[0, 2], [1, 4], [0, 5]]) == [12, 60, 60]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maximumSubarrayXor([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], [[0, 9], [1, 8], [2, 7], [3, 6], [4, 5], [0, 0], [9, 9]]) == [1000, 968, 968, 968, 940, 100, 1000]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maximumSubarrayXor([15, 3, 11, 29, 5, 7, 22], [[0, 6], [1, 4], [2, 5], [3, 6], [0, 3], [4, 6]]) == [30, 30, 29, 29, 30, 22]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maximumSubarrayXor([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536], [[0, 16], [1, 15], [2, 14], [3, 13], [4, 12], [5, 11], [6, 10], [7, 9], [8, 8]]) == [131070, 65280, 32640, 16320, 8160, 3840, 1920, 768, 256]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maximumSubarrayXor([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024], [[0, 10], [1, 9], [2, 8], [3, 7], [4, 6], [5, 5], [0, 0], [10, 10]]) == [2040, 1020, 480, 240, 96, 32, 1, 1024]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maximumSubarrayXor([10, 15, 20, 25, 30, 35, 40, 45, 50], [[0, 8], [1, 7], [2, 6], [3, 5], [4, 4], [0, 0], [8, 8]]) == [61, 61, 61, 61, 30, 10, 50]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maximumSubarrayXor([31, 29, 27, 25, 23, 21, 19, 17, 15, 13, 11, 9, 7, 5, 3, 1], [[0, 15], [4, 11], [7, 12], [1, 10], [3, 8]]) == [31, 30, 30, 30, 30]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maximumSubarrayXor([123, 456, 789, 234, 567, 890, 123, 456, 789, 234, 567, 890, 123, 456, 789, 234], [[0, 4], [5, 9], [10, 14], [0, 15], [3, 7], [1, 13], [6, 11], [8, 12], [0, 6]]) == [1023, 1023, 890, 1023, 912, 1023, 1023, 1023, 1023]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maximumSubarrayXor([1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1], [[0, 5], [2, 10], [5, 15], [10, 19], [0, 19]]) == [1966080, 522240, 65280, 2040, 2097120]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maximumSubarrayXor([31, 15, 7, 3, 1, 0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047], [[0, 16], [1, 15], [2, 14], [3, 13], [4, 12], [5, 11], [6, 10], [7, 9]]) == [2047, 1023, 511, 255, 127, 63, 31, 15]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maximumSubarrayXor([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31], [[0, 15], [1, 10], [3, 8], [5, 12], [7, 14]]) == [31, 30, 30, 30, 30]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3277",
+    "fecha-estimada-2024-09-01",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3362",
+  "titulo": "Zero Array Transformation III",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/zero-array-transformation-iii/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Prefix Sum / Sorting / Heap (Priority Queue)",
+  "enunciado": "You are given an integer array nums of length n and a 2D array queries where queries[i] = [li, ri].\nEach queries[i] represents the following action on nums:\n\nDecrement the value at each index in the range [li, ri] in nums by at most 1.\nThe amount by which the value is decremented can be chosen independently for each index.\n\nA Zero Array is an array with all its elements equal to 0.\nReturn the maximum number of elements that can be removed from queries, such that nums can still be converted to a zero array using the remaining queries. If it is not possible to convert nums to a zero array, return -1.\n \nExample 1:\n\nInput: nums = [2,0,2], queries = [[0,2],[0,2],[1,1]]\nOutput: 1\nExplanation:\nAfter removing queries[2], nums can still be converted to a zero array.\n\nUsing queries[0], decrement nums[0] and nums[2] by 1 and nums[1] by 0.\nUsing queries[1], decrement nums[0] and nums[2] by 1 and nums[1] by 0.\n\n\nExample 2:\n\nInput: nums = [1,1,1,1], queries = [[1,3],[0,2],[1,3],[1,2]]\nOutput: 2\nExplanation:\nWe can remove queries[2] and queries[3].\n\nExample 3:\n\nInput: nums = [1,2,3,4], queries = [[0,3]]\nOutput: -1\nExplanation:\nnums cannot be converted to a zero array even after using all the queries.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n0 <= nums[i] <= 105\n1 <= queries.length <= 105\nqueries[i].length == 2\n0 <= li <= ri < nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], queries: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "from sortedcontainers import SortedList\n\n\nclass Solution:\n  def maxRemoval(self, nums: list[int], queries: list[list[int]]) -> int:\n    q = collections.deque(sorted(queries))\n    available = SortedList()  # available `r`s\n    running = SortedList()  # running `r`s\n\n    for i, num in enumerate(nums):\n      while q and q[0][0] <= i:\n        available.add(q.popleft()[1])\n      while running and running[0] < i:\n        running.pop(0)\n      while num > len(running):\n        if not available or available[-1] < i:\n          return -1\n        running.add(available.pop())\n\n    return len(available)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,4,3,2,1], queries = [[0,4],[1,3],[0,2],[2,4]]",
+      "salida": "-1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1,1], queries = [[1,3],[0,2],[1,3],[1,2]]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30], queries = [[0,0],[1,1],[2,2]]",
+      "salida": "-1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3362: LC-3355 - Zero Array Transformation I. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [0, 0, 0, 0], queries = [[0, 3], [1, 2], [2, 2]]",
+      "salida": "True",
+      "explicacion": "Relación con LC-3362: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def isZeroArray(self, nums: list[int], queries: list[list[int]]) -> bool:\n    line = [0] * (len(nums) + 1)\n    decrement = 0\n\n    for l, r in queries:\n      line[l] += 1\n      line[r + 1] -= 1\n\n    for i, num in enumerate(nums):\n      decrement += line[i]\n      if decrement < num:\n        return False\n\n    return True\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxRemoval([5, 4, 3, 2, 1], [[0, 4], [1, 3], [0, 2], [2, 4]]) == -1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxRemoval([1, 1, 1, 1], [[1, 3], [0, 2], [1, 3], [1, 2]]) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxRemoval([10, 20, 30], [[0, 0], [1, 1], [2, 2]]) == -1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxRemoval([3, 2, 1], [[0, 0], [1, 1], [2, 2], [0, 2]]) == -1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxRemoval([3, 2, 1], [[0, 2], [1, 1], [0, 1]]) == -1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxRemoval([5, 4, 3, 2, 1], [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]) == -1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxRemoval([5, 4, 3, 2, 1], [[0, 4], [0, 3], [1, 4], [2, 2]]) == -1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxRemoval([3, 3, 3], [[0, 0], [1, 1], [2, 2], [0, 2]]) == -1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxRemoval([1, 0, 1], [[0, 2]]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxRemoval([2, 0, 2], [[0, 2], [0, 2], [1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxRemoval([0, 0, 0], [[0, 2], [1, 1]]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxRemoval([0, 0, 0, 0], [[0, 3], [1, 2], [2, 3]]) == 3"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3362",
+    "fecha-estimada-2024-11-17",
+    "Greedy",
+    "Array",
+    "Prefix Sum",
+    "Sorting",
+    "Heap (Priority Queue)"
+  ]
+}

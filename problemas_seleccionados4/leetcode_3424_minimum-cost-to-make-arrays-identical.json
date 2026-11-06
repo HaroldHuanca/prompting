@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3424",
+  "titulo": "Minimum Cost to Make Arrays Identical",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-cost-to-make-arrays-identical/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Sorting",
+  "enunciado": "You are given two integer arrays arr and brr of length n, and an integer k. You can perform the following operations on arr any number of times:\n\nSplit arr into any number of contiguous subarrays and rearrange these subarrays in any order. This operation has a fixed cost of k.\n\nChoose any element in arr and add or subtract a positive integer x to it. The cost of this operation is x.\n\n\nReturn the minimum total cost to make arr equal to brr.\n \nExample 1:\n\nInput: arr = [-7,9,5], brr = [7,-2,-5], k = 2\nOutput: 13\nExplanation:\n\nSplit arr into two contiguous subarrays: [-7] and [9, 5] and rearrange them as [9, 5, -7], with a cost of 2.\nSubtract 2 from element arr[0]. The array becomes [7, 5, -7]. The cost of this operation is 2.\nSubtract 7 from element arr[1]. The array becomes [7, -2, -7]. The cost of this operation is 7.\nAdd 2 to element arr[2]. The array becomes [7, -2, -5]. The cost of this operation is 2.\n\nThe total cost to make the arrays equal is 2 + 2 + 7 + 2 = 13.\n\nExample 2:\n\nInput: arr = [2,1], brr = [2,1], k = 0\nOutput: 0\nExplanation:\nSince the arrays are already equal, no operations are needed, and the total cost is 0.\n\n \nConstraints:\n\n1 <= arr.length == brr.length <= 105\n0 <= k <= 2 * 1010\n-105 <= arr[i] <= 105\n-105 <= brr[i] <= 105\n\n",
+  "especificacion_entrada": "arr: list[int], brr: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minCost(self, arr: list[int], brr: list[int], k: int) -> int:\n    def cost(arr: list[int], brr: list[int]) -> int:\n      return sum(abs(a - b) for a, b in zip(arr, brr))\n    return min(cost(arr, brr), cost(sorted(arr), sorted(brr)) + k)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "arr = [0,0,0], brr = [0,0,0], k = 10",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "arr = [2,1], brr = [2,1], k = 0",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "arr = [0,0,0], brr = [0,0,0], k = 100",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3424: LC-3397 - Maximum Number of Distinct Elements After Operations. Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 1000000000, 1, 1000000000], k = 1000000000",
+      "salida": "4",
+      "explicacion": "Relación con LC-3424: Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxDistinctElements(self, nums: list[int], k: int) -> int:\n    ans = 0\n    occupied = -math.inf\n\n    for num in sorted(nums):\n      if occupied < num + k:\n        occupied = max(occupied + 1, num - k)\n        ans += 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minCost([0, 0, 0], [0, 0, 0], 10) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minCost([2, 1], [2, 1], 0) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minCost([0, 0, 0], [0, 0, 0], 100) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minCost([1, 2, 3], [3, 2, 1], 10) == 4"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minCost([0, 0, 0], [1, 1, 1], 1) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minCost([100000, -100000, 50000], [50000, -100000, 100000], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minCost([10, 20, 30], [30, 20, 10], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minCost([100000, -100000], [-100000, 100000], 200000) == 200000"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minCost([-7, 9, 5], [7, -2, -5], 2) == 13"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minCost([1, 2, 3], [3, 2, 1], 5) == 4"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minCost([100000, -100000, 50000], [50000, 100000, -100000], 1000) == 1000"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minCost([1, 1, 1, 1, 1], [1, 1, 1, 1, 1], 1000000000) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3424",
+    "fecha-estimada-2025-01-12",
+    "Greedy",
+    "Array",
+    "Sorting"
+  ]
+}

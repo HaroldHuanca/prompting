@@ -1,0 +1,104 @@
+{
+  "codigo": "LC-3312",
+  "titulo": "Sorted GCD Pair Queries",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sorted-gcd-pair-queries/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Hash Table / Math / Binary Search / Combinatorics / Counting / Number Theory / Prefix Sum",
+  "enunciado": "You are given an integer array nums of length n and an integer array queries.\nLet gcdPairs denote an array obtained by calculating the GCD of all possible pairs (nums[i], nums[j]), where 0 <= i < j < n, and then sorting these values in ascending order.\nFor each query queries[i], you need to find the element at index queries[i] in gcdPairs.\nReturn an integer array answer, where answer[i] is the value at gcdPairs[queries[i]] for each query.\nThe term gcd(a, b) denotes the greatest common divisor of a and b.\n \nExample 1:\n\nInput: nums = [2,3,4], queries = [0,2,2]\nOutput: [1,2,2]\nExplanation:\ngcdPairs = [gcd(nums[0], nums[1]), gcd(nums[0], nums[2]), gcd(nums[1], nums[2])] = [1, 2, 1].\nAfter sorting in ascending order, gcdPairs = [1, 1, 2].\nSo, the answer is [gcdPairs[queries[0]], gcdPairs[queries[1]], gcdPairs[queries[2]]] = [1, 2, 2].\n\nExample 2:\n\nInput: nums = [4,4,2,1], queries = [5,3,1,0]\nOutput: [4,2,1,1]\nExplanation:\ngcdPairs sorted in ascending order is [1, 1, 1, 2, 2, 4].\n\nExample 3:\n\nInput: nums = [2,2], queries = [0,0]\nOutput: [2,2]\nExplanation:\ngcdPairs = [2].\n\n \nConstraints:\n\n2 <= n == nums.length <= 105\n1 <= nums[i] <= 5 * 104\n1 <= queries.length <= 105\n0 <= queries[i] < n * (n - 1) / 2\n\n",
+  "especificacion_entrada": "nums: list[int], queries: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def gcdValues(self, nums: list[int], queries: list[int]) -> list[int]:\n    maxNum = max(nums)\n    # countDivisor[d] := the number of `nums` having `num % d == 0`\n    countDivisor = [0] * (maxNum + 1)\n    # countGcdPair[g] := the number of pairs having gcd == g\n    countGcdPair = [0] * (maxNum + 1)\n\n    for num in nums:\n      for i in range(1, math.isqrt(num) + 1):\n        if num % i == 0:\n          countDivisor[i] += 1\n          if i != num // i:\n            countDivisor[num // i] += 1\n\n    for gcd in range(maxNum, 0, -1):\n      # There are C(countDivisor[gcd], 2) pairs that have a common divisor\n      # that's a multiple of `gcd` (including the one that equals to `gcd`).\n      # So, substract the multiples of `gcd` to have the number of pairs with a\n      # gcd that's exactly `gcd`.\n      countGcdPair[gcd] = countDivisor[gcd] * (countDivisor[gcd] - 1) // 2\n      for largerGcd in range(2 * gcd, maxNum + 1, gcd):\n        countGcdPair[gcd] -= countGcdPair[largerGcd]\n\n    # prefixCountGcdPair[g] := the number of pairs having gcd <= g\n    prefixCountGcdPair = list(itertools.accumulate(countGcdPair))\n    return [bisect.bisect_left(prefixCountGcdPair, query + 1)\n            for query in queries]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,10,15,20], queries = [0,1,2,3,4,5,6,8]",
+      "salida": "[5, 5, 5, 5, 5, 10, 21, 21]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [7,14,28,35], queries = [0,3,5,10]",
+      "salida": "[7, 7, 14, 36]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [7,14,21,28,35], queries = [0,1,2,3,4,5,6,7,8,9,10]",
+      "salida": "[7, 7, 7, 7, 7, 7, 7, 7, 7, 14, 36]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3312: LC-3488 - Closest Equal Element Queries. Ambos contestan consultas sobre valores repetidos o relacionados usando listas de posiciones y búsqueda binaria.",
+      "entrada": "nums = [1, 3, 1, 4, 1, 3, 2], queries = [0, 3, 5]",
+      "salida": "[2, -1, 3]",
+      "explicacion": "Relación con LC-3312: Ambos contestan consultas sobre valores repetidos o relacionados usando listas de posiciones y búsqueda binaria.",
+      "codigo_ilustrativo": "class Solution:\n  def solveQueries(self, nums: list[int], queries: list[int]) -> list[int]:\n    n = len(nums)\n    # minDist[i] := the minimum distance between nums[i], and any other index j\n    # in the circular array, where nums[j] == nums[i]\n    minDist = [n] * n\n    lastSeen = {}\n\n    for i in range(n * 2):\n      index = i % n\n      num = nums[index]\n      if num in lastSeen:\n        prevIndex = lastSeen[num] % n\n        d = i - prevIndex\n        minDist[index] = min(minDist[index], d)\n        minDist[prevIndex] = min(minDist[prevIndex], d)\n      lastSeen[num] = i\n\n    return [-1 if minDist[query] == n\n            else minDist[query]\n            for query in queries]"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().gcdValues([5, 10, 15, 20], [0, 1, 2, 3, 4, 5, 6, 8]) == [5, 5, 5, 5, 5, 10, 21, 21]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().gcdValues([7, 14, 28, 35], [0, 3, 5, 10]) == [7, 7, 14, 36]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().gcdValues([7, 14, 21, 28, 35], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [7, 7, 7, 7, 7, 7, 7, 7, 7, 14, 36]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().gcdValues([4, 4, 2, 1], [5, 3, 1, 0]) == [4, 2, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().gcdValues([5, 10, 15], [0, 1, 2]) == [5, 5, 5]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().gcdValues([1, 2, 3, 4, 5], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 2]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().gcdValues([3, 6, 9, 12], [0, 1, 2, 3, 4, 5]) == [3, 3, 3, 3, 3, 6]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().gcdValues([5, 10, 15, 20, 25], [0, 6, 9, 10]) == [5, 5, 10, 26]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().gcdValues([2, 3, 4], [0, 2, 2]) == [1, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().gcdValues([10, 20, 30, 40], [0, 1, 2, 3, 4, 5]) == [10, 10, 10, 10, 10, 20]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().gcdValues([2, 2], [0, 0]) == [2, 2]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().gcdValues([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3312",
+    "fecha-estimada-2024-10-06",
+    "Array",
+    "Hash Table",
+    "Math",
+    "Binary Search",
+    "Combinatorics",
+    "Counting",
+    "Number Theory",
+    "Prefix Sum"
+  ]
+}

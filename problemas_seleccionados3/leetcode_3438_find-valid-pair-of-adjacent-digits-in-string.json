@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3438",
+  "titulo": "Find Valid Pair of Adjacent Digits in String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-valid-pair-of-adjacent-digits-in-string/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Hash Table / String / Counting",
+  "enunciado": "You are given a string s consisting only of digits. A valid pair is defined as two adjacent digits in s such that:\n\nThe first digit is not equal to the second.\nEach digit in the pair appears in s exactly as many times as its numeric value.\n\nReturn the first valid pair found in the string s when traversing from left to right. If no valid pair exists, return an empty string.\n \nExample 1:\n\nInput: s = \"2523533\"\nOutput: \"23\"\nExplanation:\nDigit '2' appears 2 times and digit '3' appears 3 times. Each digit in the pair \"23\" appears in s exactly as many times as its numeric value. Hence, the output is \"23\".\n\nExample 2:\n\nInput: s = \"221\"\nOutput: \"21\"\nExplanation:\nDigit '2' appears 2 times and digit '1' appears 1 time. Hence, the output is \"21\".\n\nExample 3:\n\nInput: s = \"22\"\nOutput: \"\"\nExplanation:\nThere are no valid adjacent pairs.\n\n \nConstraints:\n\n2 <= s.length <= 100\ns only consists of digits from '1' to '9'.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def findValidPair(self, s: str) -> str:\n    count = collections.Counter(s)\n    return next((a + b\n                for a, b in itertools.pairwise(s)\n                if a != b and count[a] == int(a) and count[b] == int(b)), '')\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"213123\"",
+      "salida": "",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"9999999998888888777777666665555444332211\"",
+      "salida": "",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"221\"",
+      "salida": "21",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3438: LC-3442 - Maximum Difference Between Even and Odd Frequency I. Ambos problemas comparten las técnicas de counting, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'abacabadabacaba'",
+      "salida": "-1",
+      "explicacion": "Relación con LC-3438: Ambos problemas comparten las técnicas de counting, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def maxDifference(self, s: str) -> int:\n    count = collections.Counter(s)\n    maxOdd = max((freq for freq in count.values()\n                  if freq % 2 == 1), default=0)\n    minEven = min((freq for freq in count.values()\n                   if freq % 2 == 0), default=len(s))\n    return maxOdd - minEven\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().findValidPair('213123') == ''"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().findValidPair('9999999998888888777777666665555444332211') == ''"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().findValidPair('221') == 21"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().findValidPair('22221111') == ''"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().findValidPair('1222233333444444555555566666667777777788888888999999999') == 89"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().findValidPair('999999999888888887777777666665555444332211') == 98"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().findValidPair('111223334444555566666777778888889999999') == 23"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().findValidPair('2523533') == 23"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().findValidPair('5555544443332211') == 54"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().findValidPair('11111111122222222233333333444444555556666777889') == ''"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().findValidPair('44443332211') == 43"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().findValidPair('91223334444555555666666777777788888888999999999') == 12"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3438",
+    "fecha-estimada-2025-01-26",
+    "Hash Table",
+    "String",
+    "Counting"
+  ]
+}

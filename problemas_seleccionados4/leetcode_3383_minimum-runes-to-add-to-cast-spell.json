@@ -1,0 +1,102 @@
+{
+  "codigo": "LC-3383",
+  "titulo": "Minimum Runes to Add to Cast Spell",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-runes-to-add-to-cast-spell/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Depth-First Search / Breadth-First Search / Union Find / Graph / Topological Sort / Array",
+  "enunciado": "Alice has just graduated from wizard school, and wishes to cast a magic spell to celebrate. The magic spell contains certain focus points where magic needs to be concentrated, and some of these focus points contain magic crystals which serve as the spell's energy source. Focus points can be linked through directed runes, which channel magic flow from one focus point to another.\nYou are given a integer n denoting the number of focus points and an array of integers crystals where crystals[i] indicates a focus point which holds a magic crystal. You are also given two integer arrays flowFrom and flowTo, which represent the existing directed runes. The ith rune allows magic to freely flow from focus point flowFrom[i] to focus point flowTo[i].\nYou need to find the number of directed runes Alice must add to her spell, such that each focus point either:\n\nContains a magic crystal.\nReceives magic flow from another focus point.\n\nReturn the minimum number of directed runes that she should add.\n \nExample 1:\n\nInput: n = 6, crystals = [0], flowFrom = [0,1,2,3], flowTo = [1,2,3,0]\nOutput: 2\nExplanation: \n\nAdd two directed runes:\n\nFrom focus point 0 to focus point 4.\nFrom focus point 0 to focus point 5.\n\n\nExample 2:\n\nInput: n = 7, crystals = [3,5], flowFrom = [0,1,2,3,5], flowTo = [1,2,0,4,6]\nOutput: 1\nExplanation: \n\nAdd a directed rune from focus point 4 to focus point 2.\n\n \nConstraints:\n\n2 <= n <= 105\n1 <= crystals.length <= n\n0 <= crystals[i] <= n - 1\n1 <= flowFrom.length == flowTo.length <= min(2 * 105, (n * (n - 1)) / 2)\n0 <= flowFrom[i], flowTo[i] <= n - 1\nflowFrom[i] != flowTo[i]\nAll pre-existing directed runes are distinct.\n\n",
+  "especificacion_entrada": "n: int, crystals: list[int], flowFrom: list[int], flowTo: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minRunesToAdd(\n      self,\n      n: int,\n      crystals: list[int],\n      flowFrom: list[int],\n      flowTo: list[int]\n  ) -> int:\n    graph = [[] for _ in range(n)]\n    reversedGraph = [[] for _ in range(n)]\n\n    for u, v in zip(flowFrom, flowTo):\n      graph[u].append(v)\n      reversedGraph[v].append(u)\n\n    # Identify Strongly Connected Components (SCC) using Kosaraju's Algorithm.\n    seen = set()\n    orderStack = []\n    componentIds = [-1] * n\n    componentCount = 0\n\n    for i in range(n):\n      if i not in seen:\n        self._kosaraju(graph, i, seen, orderStack)\n\n    while orderStack:\n      u = orderStack.pop()\n      if componentIds[u] == -1:\n        self._identifySCC(reversedGraph, u, componentIds, componentCount)\n        componentCount += 1\n\n    # Track crystal-containing components and inter-component edges.\n    hasCrystal = [False] * componentCount\n    hasInterComponentEdge = [False] * componentCount\n\n    for u in crystals:\n      hasCrystal[componentIds[u]] = True\n\n    for u, v in zip(flowFrom, flowTo):\n      id1 = componentIds[u]\n      id2 = componentIds[v]\n      if id1 != id2:  # Edge is inter-component.\n        hasInterComponentEdge[id2] = True\n\n    return sum(not hasCrystal[i] and not hasInterComponentEdge[i]\n               for i in range(componentCount))\n\n  def _kosaraju(\n      self,\n      graph: list[list[int]],\n      u: int,\n      seen: set[int],\n      orderStack: list\n  ) -> None:\n    \"\"\"Creates a topological order stack using Kosaraju's Algorithm.\"\"\"\n    seen.add(u)\n    for v in graph[u]:\n      if v not in seen:\n        self._kosaraju(graph, v, seen, orderStack)\n    orderStack.append(u)\n\n  def _identifySCC(\n      self,\n      reversedGraph: list[list[int]],\n      u: int,\n      componentIds: list[int],\n      componentId: int\n  ) -> None:\n    \"\"\"Assigns component IDs during SCC identification in the second DFS.\"\"\"\n    if componentIds[u] != -1:\n      return\n    componentIds[u] = componentId\n    for v in reversedGraph[u]:\n      if componentIds[v] == -1:\n        self._identifySCC(reversedGraph, v, componentIds, componentId)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 4, crystals = [2], flowFrom = [1,3], flowTo = [2,0]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 5, crystals = [1,4], flowFrom = [0,2], flowTo = [1,3]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 3, crystals = [0,2], flowFrom = [], flowTo = []",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3383: LC-3310 - Remove Methods From Project. Ambos resuelven propagación o alcanzabilidad en un grafo dirigido de dependencias.",
+      "entrada": "n = 1, k = 0, invocations = []",
+      "salida": "[]",
+      "explicacion": "Relación con LC-3383: Ambos resuelven propagación o alcanzabilidad en un grafo dirigido de dependencias.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def remainingMethods(\n      self,\n      n: int,\n      k: int,\n      invocations: list[list[int]]\n  ) -> list[int]:\n    ans = []\n    graph = [[] for _ in range(n)]\n\n    for u, v in invocations:\n      graph[u].append(v)\n\n    q = collections.deque([k])\n    seen = {k}\n\n    while q:\n      for _ in range(len(q)):\n        for v in graph[q.popleft()]:\n          if v not in seen:\n            q.append(v)\n            seen.add(v)\n\n    for u in range(n):\n      if u in seen:\n        continue\n      for v in graph[u]:\n        if v in seen:\n          return list(range(n))\n      ans.append(u)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minRunesToAdd(4, [2], [1, 3], [2, 0]) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minRunesToAdd(5, [1, 4], [0, 2], [1, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minRunesToAdd(3, [0, 2], [], []) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minRunesToAdd(7, [3, 5], [0, 1, 2, 3, 5], [1, 2, 0, 4, 6]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minRunesToAdd(6, [0], [0, 1, 2, 3], [1, 2, 3, 0]) == 2"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minRunesToAdd(15, [7, 12], [0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14], [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 0]) == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minRunesToAdd(50, [5, 15, 25, 35, 45], [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49], [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 39, 40, 41, 42, 43, 44, 45, 47, 48, 49, 0]) == 5"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minRunesToAdd(20, [5, 15], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minRunesToAdd(11, [2, 8], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minRunesToAdd(12, [5, 9], [0, 1, 2, 3, 4, 6, 7, 8, 10, 11], [1, 2, 3, 4, 5, 7, 8, 9, 11, 5]) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minRunesToAdd(50, [10, 20, 30, 40], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44, 45, 46, 47, 48, 49], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 0]) == 4"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minRunesToAdd(10, [0, 8], [1, 2, 3, 4, 5, 6, 7, 9], [2, 3, 4, 5, 6, 7, 8, 0]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3383",
+    "fecha-estimada-2024-12-08",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Union Find",
+    "Graph",
+    "Topological Sort",
+    "Array"
+  ]
+}

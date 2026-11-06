@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3299",
+  "titulo": "Sum of Consecutive Subsequences",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-consecutive-subsequences/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Hash Table / Dynamic Programming",
+  "enunciado": "We call an array arr of length n consecutive if one of the following holds:\n\narr[i] - arr[i - 1] == 1 for all 1 <= i < n.\narr[i] - arr[i - 1] == -1 for all 1 <= i < n.\n\nThe value of an array is the sum of its elements.\nFor example, [3, 4, 5] is a consecutive array of value 12 and [9, 8] is another of value 17. While [3, 4, 3] and [8, 6] are not consecutive.\nGiven an array of integers nums, return the sum of the values of all consecutive non-empty subsequences.\nSince the answer may be very large, return it modulo 109 + 7.\nNote that an array of length 1 is also considered consecutive.\n \nExample 1:\n\nInput: nums = [1,2]\nOutput: 6\nExplanation:\nThe consecutive subsequences are: [1], [2], [1, 2].\n\nExample 2:\n\nInput: nums = [1,4,2,3]\nOutput: 31\nExplanation:\nThe consecutive subsequences are: [1], [4], [2], [3], [1, 2], [2, 3], [4, 3], [1, 2, 3].\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 105\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def getSum(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    n = len(nums)\n\n    def getSequenceSum(nums: list[int], direction: int) -> int:\n      \"\"\"\n      Returns the sum of all sequences in the array that are in consecutive\n      increasing order if `direction` is 1, or in consecutive decreasing order\n      if `direction` is -1.\"\"\"\n      sequenceSum = 0\n      # {num: the number of subsequences ending in `num` so far}\n      prefixCount = collections.Counter()\n      # {num: the number of subsequences starting from `num` so far}\n      suffixCount = collections.Counter()\n      # prefixSubseqs[i] := the number of subsequences ending in nums[i]\n      prefixSubseqs = [0] * n\n      # suffixSubseqs[i] := the number of subsequences starting from nums[i]\n      suffixSubseqs = [0] * n\n\n      for i, num in enumerate(nums):\n        prevNum = num - direction\n        freq = prefixCount[prevNum] + 1\n        prefixSubseqs[i] = freq\n        prefixCount[num] += freq\n        prefixCount[num] %= MOD\n\n      for i, num in reversed(list(enumerate(nums))):\n        nextNum = num + direction\n        freq = suffixCount[nextNum] + 1\n        suffixSubseqs[i] = freq\n        suffixCount[num] += freq\n        suffixCount[num] %= MOD\n\n      for num, prefixSubseq, suffixSubseq in zip(\n              nums, prefixSubseqs, suffixSubseqs):\n        sequenceSum += num * prefixSubseq * suffixSubseq\n        sequenceSum %= MOD\n\n      return sequenceSum\n\n    increasingSequenceSum = getSequenceSum(nums, 1)\n    decreasingSequenceSum = getSequenceSum(nums, -1)\n    return (increasingSequenceSum + decreasingSequenceSum - sum(nums) + MOD) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,3,2,4,3,5,4,6,5,7]",
+      "salida": "352",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [100000, 99999, 99998, 99997, 99996]",
+      "salida": "3499930",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,2,2,2,2,2,2,2,2,2]",
+      "salida": "20",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3299: LC-3351 - Sum of Good Subsequences. Ambos problemas comparten las técnicas de programación dinámica, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]",
+      "salida": "3681",
+      "explicacion": "Relación con LC-3299: Ambos problemas comparten las técnicas de programación dinámica, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def sumOfGoodSubsequences(self, nums: list[int]) -> int:\n    MOD = 10**9 + 7\n    maxNum = max(nums)\n    # endsIn[i] := the number of good subsequences ending in i\n    endsIn = [0] * (maxNum + 2)\n    # dp[i] := the sum of good subsequences ending in i\n    dp = [0] * (maxNum + 2)\n\n    for num in nums:\n      seqsToAppend = 1 + endsIn[num - 1] + endsIn[num + 1]\n      dp[num] = (seqsToAppend * num +\n                 (dp[num] + dp[num - 1] + dp[num + 1])) % MOD\n      endsIn[num] += seqsToAppend % MOD\n\n    return sum(dp) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().getSum([1, 3, 2, 4, 3, 5, 4, 6, 5, 7]) == 352"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().getSum([100000, 99999, 99998, 99997, 99996]) == 3499930"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().getSum([2, 2, 2, 2, 2, 2, 2, 2, 2, 2]) == 20"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().getSum([1, 2, 4, 3, 5, 6, 7, 8, 10, 9, 11, 12]) == 520"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().getSum([1, 3, 5, 7, 9]) == 25"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().getSum([8, 6]) == 14"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().getSum([1, 4, 2, 3]) == 31"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().getSum([1]) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().getSum([1, 2, 4, 5, 6, 8, 9, 10]) == 146"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().getSum([3, 4, 5]) == 40"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().getSum([1, 2, 3, 4, 5]) == 105"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().getSum([10, 9, 8, 7, 6]) == 280"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3299",
+    "fecha-estimada-2024-09-22",
+    "Array",
+    "Hash Table",
+    "Dynamic Programming"
+  ]
+}

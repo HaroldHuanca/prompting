@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3426",
+  "titulo": "Manhattan Distances of All Arrangements of Pieces",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/manhattan-distances-of-all-arrangements-of-pieces/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Math / Combinatorics",
+  "enunciado": "You are given three integers m, n, and k.\nThere is a rectangular grid of size m × n containing k identical pieces. Return the sum of Manhattan distances between every pair of pieces over all valid arrangements of pieces.\nA valid arrangement is a placement of all k pieces on the grid with at most one piece per cell.\nSince the answer may be very large, return it modulo 109 + 7.\nThe Manhattan Distance between two cells (xi, yi) and (xj, yj) is |xi - xj| + |yi - yj|.\n \nExample 1:\n\nInput: m = 2, n = 2, k = 2\nOutput: 8\nExplanation:\nThe valid arrangements of pieces on the board are:\n\n\nIn the first 4 arrangements, the Manhattan distance between the two pieces is 1.\nIn the last 2 arrangements, the Manhattan distance between the two pieces is 2.\n\nThus, the total Manhattan distance across all valid arrangements is 1 + 1 + 1 + 1 + 2 + 2 = 8.\n\nExample 2:\n\nInput: m = 1, n = 4, k = 3\nOutput: 20\nExplanation:\nThe valid arrangements of pieces on the board are:\n\n\nThe first and last arrangements have a total Manhattan distance of 1 + 1 + 2 = 4.\nThe middle two arrangements have a total Manhattan distance of 1 + 2 + 3 = 6.\n\nThe total Manhattan distance between all pairs of pieces across all arrangements is 4 + 6 + 6 + 4 = 20.\n\n \nConstraints:\n\n1 <= m, n <= 105\n2 <= m * n <= 105\n2 <= k <= m * n\n\n",
+  "especificacion_entrada": "m: int, n: int, k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def distanceSum(self, m: int, n: int, k: int) -> int:\n    # For each distance d, where 1 < d < m, there are `m - d` ways to choose\n    # the two columns that the two pieces are on. For each of the two pieces,\n    # there are `n` ways to choose the row that the piece is on.\n    # Therefore, the contribution of row differences is\n    #   sum(d * (m - d) * n^2), where 1 < d <= m - 1\n    # = n^2 * sum(d * m - d^2)\n    # = n^2 * (d * m * (m - 1) / 2 - m * (m - 1) * (2m - 1) / 6)\n    # = n^2 * (m^3 - m) / 6\n    # Similarly, the contribution of column differences is\n    #   m^2 * (n^3 - n) / 6\n    MOD = 1_000_000_007\n    return (n**2 * (m**3 - m) // 6 +\n            m**2 * (n**3 - n) // 6) * math.comb(m * n - 2, k - 2) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "m = 5, n = 5, k = 5",
+      "salida": "1771000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "m = 100, n = 100, k = 10",
+      "salida": "384963906",
+      "explicacion": ""
+    },
+    {
+      "entrada": "m = 10, n = 10, k = 20",
+      "salida": "80781589",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3426: LC-3470 - Permutations IV. Ambos cuentan o recuperan una disposición entre muchas permutaciones posibles usando combinatoria.",
+      "entrada": "n = 100, k = 1000000000000000",
+      "salida": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 91, 98, 99, 88, 79, 90, 93, 96, 97, 82, 89, 80, 85, 86, 81, 92, 95, 84, 87, 100, 83, 94]",
+      "explicacion": "Relación con LC-3426: Ambos cuentan o recuperan una disposición entre muchas permutaciones posibles usando combinatoria.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def permute(self, n: int, k: int) -> list[int]:\n    ans = []\n    isLookingForEven = True\n    remainingNumbers = list(range(1, n + 1))\n\n    for turn in range(n):\n      remainingPermutations = (math.factorial((n - 1 - turn) // 2) *\n                               math.factorial((n - turn) // 2))\n      found = False\n      for index, number in enumerate(remainingNumbers):\n        if number % 2 != isLookingForEven and (turn > 0 or n % 2 == 1):\n          continue\n        if k <= remainingPermutations:\n          ans.append(remainingNumbers.pop(index))\n          isLookingForEven = ans[-1] % 2 == 0\n          found = True\n          break\n        k -= remainingPermutations\n      if not found:\n        return []\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().distanceSum(5, 5, 5) == 1771000"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().distanceSum(100, 100, 10) == 384963906"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().distanceSum(10, 10, 20) == 80781589"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().distanceSum(1, 4, 3) == 20"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().distanceSum(10, 10, 10) == 800580356"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().distanceSum(10, 10, 5) == 19167965"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().distanceSum(3, 3, 4) == 1512"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().distanceSum(2, 2, 2) == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().distanceSum(5, 5, 25) == 1000"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().distanceSum(50, 50, 200) == 461891397"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().distanceSum(20, 20, 100) == 642676804"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().distanceSum(1000, 1, 500) == 349233848"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3426",
+    "fecha-estimada-2025-01-12",
+    "Math",
+    "Combinatorics"
+  ]
+}

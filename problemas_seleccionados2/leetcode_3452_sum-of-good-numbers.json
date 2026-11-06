@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3452",
+  "titulo": "Sum of Good Numbers",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-good-numbers/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "Given an array of integers nums and an integer k, an element nums[i] is considered good if it is strictly greater than the elements at indices i - k and i + k (if those indices exist). If neither of these indices exists, nums[i] is still considered good.\nReturn the sum of all the good elements in the array.\n \nExample 1:\n\nInput: nums = [1,3,2,1,5,4], k = 2\nOutput: 12\nExplanation:\nThe good numbers are nums[1] = 3, nums[4] = 5, and nums[5] = 4 because they are strictly greater than the numbers at indices i - k and i + k.\n\nExample 2:\n\nInput: nums = [2,1], k = 1\nOutput: 2\nExplanation:\nThe only good number is nums[0] = 2 because it is strictly greater than nums[1].\n\n \nConstraints:\n\n2 <= nums.length <= 100\n1 <= nums[i] <= 1000\n1 <= k <= floor(nums.length / 2)\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def sumOfGoodNumbers(self, nums: list[int], k: int) -> int:\n    return sum(num for i, num in enumerate(nums)\n               if (i - k < 0 or num > nums[i - k])\n               and (i + k >= len(nums) or num > nums[i + k]))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,1], k = 1",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [3,1,4,1,5,9,2,6,5,3,5], k = 2",
+      "salida": "14",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 3",
+      "salida": "27",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3452: LC-3285 - Find Indices of Stable Mountains. La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "entrada": "height = [50, 50, 50, 50, 50], threshold = 49",
+      "salida": "[1, 2, 3, 4]",
+      "explicacion": "Relación con LC-3452: La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "class Solution:\n  def stableMountains(self, height: list[int], threshold: int) -> list[int]:\n    return [i for i in range(1, len(height))\n            if height[i - 1] > threshold]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().sumOfGoodNumbers([2, 1], 1) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().sumOfGoodNumbers([3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5], 2) == 14"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().sumOfGoodNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3) == 27"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().sumOfGoodNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 1) == 10"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().sumOfGoodNumbers([1, 3, 2, 1, 5, 4], 2) == 12"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().sumOfGoodNumbers([5, 1, 4, 1, 5, 9, 2, 6], 2) == 19"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().sumOfGoodNumbers([5, 6, 7, 8, 9, 10, 11, 12], 3) == 33"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().sumOfGoodNumbers([5, 6, 7, 8, 9, 10], 3) == 27"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().sumOfGoodNumbers([10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 2) == 19"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().sumOfGoodNumbers([5, 4, 3, 2, 1], 1) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().sumOfGoodNumbers([5, 4, 3, 2, 1], 2) == 9"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().sumOfGoodNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 4) == 34"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3452",
+    "fecha-estimada-2025-02-09",
+    "Array"
+  ]
+}

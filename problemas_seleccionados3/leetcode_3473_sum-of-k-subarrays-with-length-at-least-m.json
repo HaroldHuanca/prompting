@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3473",
+  "titulo": "Sum of K Subarrays With Length at Least M",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-k-subarrays-with-length-at-least-m/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Programación Dinámica / Arreglos / Sumas de Prefijos",
+  "enunciado": "You are given an integer array nums and two integers, k and m.\nReturn the maximum sum of k non-overlapping subarrays of nums, where each subarray has a length of at least m.\n \nExample 1:\n\nInput: nums = [1,2,-1,3,3,4], k = 2, m = 2\nOutput: 13\nExplanation:\nThe optimal choice is:\n\nSubarray nums[3..5] with sum 3 + 3 + 4 = 10 (length is 3 >= m).\nSubarray nums[0..1] with sum 1 + 2 = 3 (length is 2 >= m).\n\nThe total sum is 10 + 3 = 13.\n\nExample 2:\n\nInput: nums = [-10,3,-1,-2], k = 4, m = 1\nOutput: -10\nExplanation:\nThe optimal choice is choosing each element as a subarray. The output is (-10) + 3 + (-1) + (-2) = -10.\n\n \nConstraints:\n\n1 <= nums.length <= 2000\n-104 <= nums[i] <= 104\n1 <= k <= floor(nums.length / m)\n1 <= m <= 3\n\n",
+  "especificacion_entrada": "nums: integer[], k: integer, m: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= nums.length <= 2000\n-104 <= nums[i] <= 104\n1 <= k <= floor(nums.length / m)\n1 <= m <= 3",
+  "solucion_referencia": "import itertools\nimport functools\n\nclass Solution:\n  def maxSum(self, nums: list[int], k: int, m: int) -> int:\n    INF = 20_000_000\n    n = len(nums)\n    prefix = list(itertools.accumulate(nums, initial=0))\n\n    @functools.lru_cache(None)\n    def dp(i: int, ongoing: int, k: int) -> int:\n      if k < 0:\n        return -INF\n      if i == n:\n        return 0 if k == 0 else -INF\n      if ongoing == 1:\n        # 1. End the current subarray (transition to state 0, same index i)\n        # 2. Extend the current subarray by picking nums[i] and move to i + 1\n        return max(dp(i, 0, k),\n                   dp(i + 1, 1, k) + nums[i])\n      # ongoing == 0\n      # 1. Skip nums[i]\n      # 2. Pick nums[i:i+m] (only if k > 0 and there're enough elements)\n      res = dp(i + 1, 0, k)\n      if i + m <= n:  # If we have enough elements for a new segment\n        res = max(res,\n                  dp(i + m, 1, k - 1) + (prefix[i + m] - prefix[i]))\n      return res\n\n    return dp(0, 0, k)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,-1,3,3,4], k = 2, m = 2",
+      "salida": "13",
+      "explicacion": "The optimal choice is:\n\nSubarray nums[3..5] with sum 3 + 3 + 4 = 10 (length is 3 >= m).\nSubarray nums[0..1] with sum 1 + 2 = 3 (length is 2 >= m).\n\nThe total sum is 10 + 3 = 13."
+    },
+    {
+      "entrada": "nums = [-10,3,-1,-2], k = 4, m = 1",
+      "salida": "-10",
+      "explicacion": "The optimal choice is choosing each element as a subarray. The output is (-10) + 3 + (-1) + (-2) = -10."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3473: LC-3427 - Sum of Variable Length Subarrays. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [5, 4, 3, 2, 1]",
+      "salida": "38",
+      "explicacion": "Relación con LC-3473: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def subarraySum(self, nums: list[int]) -> int:\n    prefix = list(itertools.accumulate(nums, initial=0))\n    return sum(prefix[i + 1] - prefix[max(0, i - num)]\n               for i, num in enumerate((nums)))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxSum([1, 0, -1, 0, 1, -1, 0, 1], 2, 2) == 2"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxSum([5, 4, 3, 2, 1], 2, 2) == 15"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxSum([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 2, 3) == 0"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3) == 45"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 4, 2) == 78"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxSum([0, 0, 0, 0, 0, 0, 0, 0, 0], 1, 1) == 0"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxSum([0, 0, 0, 0, 0, 0, 0, 0, 0], 2, 1) == 0"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxSum([10, 20, 30, 40, 50], 2, 3) == -19999850"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5], 1, 1) == 15"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 2) == 45"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSum([-10, 3, -1, -2], 4, 1) == -10"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSum([5, 5, 5, 5, 5, 5, 5, 5, 5], 2, 3) == 45"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3473",
+    "seleccion-reciente-2026-11"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3483",
+  "titulo": "Unique 3-Digit Even Numbers",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/unique-3-digit-even-numbers/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Matemáticas / Combinatoria / Conteo de Frecuencias",
+  "enunciado": "You are given an array of digits called digits. Your task is to determine the number of distinct three-digit even numbers that can be formed using these digits.\nNote: Each copy of a digit can only be used once per number, and there may not be leading zeros.\n \nExample 1:\n\nInput: digits = [1,2,3,4]\nOutput: 12\nExplanation: The 12 distinct 3-digit even numbers that can be formed are 124, 132, 134, 142, 214, 234, 312, 314, 324, 342, 412, and 432. Note that 222 cannot be formed because there is only 1 copy of the digit 2.\n\nExample 2:\n\nInput: digits = [0,2,2]\nOutput: 2\nExplanation: The only 3-digit even numbers that can be formed are 202 and 220. Note that the digit 2 can be used twice because it appears twice in the array.\n\nExample 3:\n\nInput: digits = [6,6,6]\nOutput: 1\nExplanation: Only 666 can be formed.\n\nExample 4:\n\nInput: digits = [1,3,5]\nOutput: 0\nExplanation: No even 3-digit numbers can be formed.\n\n \nConstraints:\n\n3 <= digits.length <= 10\n0 <= digits[i] <= 9\n\n",
+  "especificacion_entrada": "digits: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "3 <= digits.length <= 10\n0 <= digits[i] <= 9",
+  "solucion_referencia": "import itertools\n\nclass Solution:\n  def totalNumbers(self, digits: list[int]) -> int:\n    nums = set()\n\n    for a, b, c in itertools.permutations(digits, 3):\n      if a != 0 and c % 2 == 0:\n        nums.add(a * 100 + b * 10 + c)\n\n    return len(nums)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "digits = [1,2,3,4]",
+      "salida": "12",
+      "explicacion": "The 12 distinct 3-digit even numbers that can be formed are 124, 132, 134, 142, 214, 234, 312, 314, 324, 342, 412, and 432. Note that 222 cannot be formed because there is only 1 copy of the digit 2."
+    },
+    {
+      "entrada": "digits = [0,2,2]",
+      "salida": "2",
+      "explicacion": "The only 3-digit even numbers that can be formed are 202 and 220. Note that the digit 2 can be used twice because it appears twice in the array."
+    },
+    {
+      "entrada": "digits = [6,6,6]",
+      "salida": "1",
+      "explicacion": "Only 666 can be formed."
+    },
+    {
+      "entrada": "digits = [1,3,5]",
+      "salida": "0",
+      "explicacion": "No even 3-digit numbers can be formed."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3483: LC-3470 - Permutations IV. Ambos cuentan configuraciones de dígitos o permutaciones válidas bajo restricciones combinatorias.",
+      "entrada": "n = 100, k = 1000000000000000",
+      "salida": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 91, 98, 99, 88, 79, 90, 93, 96, 97, 82, 89, 80, 85, 86, 81, 92, 95, 84, 87, 100, 83, 94]",
+      "explicacion": "Relación con LC-3483: Ambos cuentan configuraciones de dígitos o permutaciones válidas bajo restricciones combinatorias.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def permute(self, n: int, k: int) -> list[int]:\n    ans = []\n    isLookingForEven = True\n    remainingNumbers = list(range(1, n + 1))\n\n    for turn in range(n):\n      remainingPermutations = (math.factorial((n - 1 - turn) // 2) *\n                               math.factorial((n - turn) // 2))\n      found = False\n      for index, number in enumerate(remainingNumbers):\n        if number % 2 != isLookingForEven and (turn > 0 or n % 2 == 1):\n          continue\n        if k <= remainingPermutations:\n          ans.append(remainingNumbers.pop(index))\n          isLookingForEven = ans[-1] % 2 == 0\n          found = True\n          break\n        k -= remainingPermutations\n      if not found:\n        return []\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().totalNumbers([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().totalNumbers([8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) == 1"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().totalNumbers([6, 6, 6]) == 1"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().totalNumbers([1, 3, 5]) == 0"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().totalNumbers([2, 2, 2, 2, 2, 2, 2, 2, 2, 2]) == 1"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().totalNumbers([1, 0, 2, 3, 5, 7, 9]) == 55"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().totalNumbers([9, 9, 9, 9, 9, 9, 9, 9, 9, 9]) == 0"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().totalNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 0]) == 328"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().totalNumbers([0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().totalNumbers([2, 0, 0, 2]) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().totalNumbers([1, 2, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().totalNumbers([2, 2, 2, 2]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3483",
+    "seleccion-reciente-2026-11"
+  ]
+}

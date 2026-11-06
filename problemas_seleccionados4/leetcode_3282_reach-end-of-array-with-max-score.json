@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3282",
+  "titulo": "Reach End of Array With Max Score",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/reach-end-of-array-with-max-score/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array",
+  "enunciado": "You are given an integer array nums of length n.\nYour goal is to start at index 0 and reach index n - 1. You can only jump to indices greater than your current index.\nThe score for a jump from index i to index j is calculated as (j - i) * nums[i].\nReturn the maximum possible total score by the time you reach the last index.\n \nExample 1:\n\nInput: nums = [1,3,1,5]\nOutput: 7\nExplanation:\nFirst, jump to index 1 and then jump to the last index. The final score is 1 * 1 + 2 * 3 = 7.\n\nExample 2:\n\nInput: nums = [4,3,1,3,2]\nOutput: 16\nExplanation:\nJump directly to the last index. The final score is 4 * 4 = 16.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 105\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  # Similar to 3205. Maximum Array Hopping Score I\n  def findMaximumScore(self, nums: list[int]) -> int:\n    return sum(itertools.accumulate(nums[:-1], max))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,3,5,6,7,8]",
+      "salida": "23",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,9,8,7,6,5,4,3,2,1]",
+      "salida": "90",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,4,6,8,10]",
+      "salida": "20",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3282: LC-3502 - Minimum Cost to Reach Every Position. Ambos recorren posiciones de un arreglo y acumulan el mejor costo o puntaje posible hasta cada posición.",
+      "entrada": "cost = [1, 10, 1, 10, 1, 10, 1, 10, 1, 10]",
+      "salida": "[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",
+      "explicacion": "Relación con LC-3282: Ambos recorren posiciones de un arreglo y acumulan el mejor costo o puntaje posible hasta cada posición.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def minCosts(self, cost: list[int]) -> list[int]:\n    return list(itertools.accumulate(cost, min))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().findMaximumScore([2, 3, 5, 6, 7, 8]) == 23"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().findMaximumScore([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 90"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().findMaximumScore([2, 4, 6, 8, 10]) == 20"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().findMaximumScore([4, 3, 1, 3, 2]) == 16"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().findMaximumScore([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 45"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().findMaximumScore([2, 1, 4, 5, 3]) == 13"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().findMaximumScore([1, 3, 1, 5]) == 7"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().findMaximumScore([10, 20, 30, 40, 50]) == 100"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().findMaximumScore([5, 5, 5, 5, 5]) == 20"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().findMaximumScore([5, 6, 7, 8, 9]) == 26"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().findMaximumScore([100000, 1, 100000, 1, 100000]) == 400000"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().findMaximumScore([1, 1, 1, 1, 1, 1, 1]) == 6"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3282",
+    "fecha-estimada-2024-09-08",
+    "Greedy",
+    "Array"
+  ]
+}

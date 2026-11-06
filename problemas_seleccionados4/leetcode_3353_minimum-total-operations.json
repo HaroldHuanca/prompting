@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3353",
+  "titulo": "Minimum Total Operations",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-total-operations/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "Given an array of integers nums, you can perform any number of operations on this array.\nIn each operation, you can:\n\nChoose a prefix of the array.\nChoose an integer k (which can be negative) and add k to each element in the chosen prefix.\n\nA prefix of an array is a subarray that starts from the beginning of the array and extends to any point within it.\nReturn the minimum number of operations required to make all elements in arr equal.\n \nExample 1:\n\nInput: nums = [1,4,2]\nOutput: 2\nExplanation:\n\nOperation 1: Choose the prefix [1, 4] of length 2 and add -2 to each element of the prefix. The array becomes [-1, 2, 2].\nOperation 2: Choose the prefix [-1] of length 1 and add 3 to it. The array becomes [2, 2, 2].\nThus, the minimum number of required operations is 2.\n\n\nExample 2:\n\nInput: nums = [10,10,10]\nOutput: 0\nExplanation:\n\nAll elements are already equal, so no operations are needed.\n\n\n \nConstraints:\n\n1 <= nums.length <= 105\n-109 <= nums[i] <= 109\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minOperations(self, nums: list[int]) -> int:\n    return sum(a != b for a, b in itertools.pairwise(nums))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [0,0,0,0,0,0,0,0,0,0]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [-1,2,-3,4,-5]",
+      "salida": "4",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,-1,1,-1,1]",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3353: LC-3392 - Count Subarrays of Length Three With a Condition. La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "entrada": "nums = [5, 10, 5, 15, 5]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3353: La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "class Solution:\n  def countSubarrays(self, nums: list[int]) -> int:\n    return sum(b == (a + c) * 2\n               for a, b, c in zip(nums, nums[1:], nums[2:]))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minOperations([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minOperations([-1, 2, -3, 4, -5]) == 4"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minOperations([1, -1, 1, -1, 1]) == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minOperations([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 9"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minOperations([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 9"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minOperations([1]) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minOperations([1000000000, -1000000000, 1000000000, -1000000000, 1000000000]) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minOperations([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == 9"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minOperations([5, 5, 5, 5, 5]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minOperations([0, 0, 0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minOperations([1, 2, 3, 4, 5]) == 4"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minOperations([10, 10, 10]) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3353",
+    "fecha-estimada-2024-11-10",
+    "Array"
+  ]
+}

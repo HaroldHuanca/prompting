@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3485",
+  "titulo": "Longest Common Prefix of K Strings After Removal",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-common-prefix-of-k-strings-after-removal/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Trie / Árboles / Heap / Cadenas",
+  "enunciado": "You are given an array of strings words and an integer k.\nFor each index i in the range [0, words.length - 1], find the length of the longest common prefix among any k strings (selected at distinct indices) from the remaining array after removing the ith element.\nReturn an array answer, where answer[i] is the answer for ith element. If removing the ith element leaves the array with fewer than k strings, answer[i] is 0.\n \nExample 1:\n\nInput: words = [\"jump\",\"run\",\"run\",\"jump\",\"run\"], k = 2\nOutput: [3,4,4,3,4]\nExplanation:\n\nRemoving index 0 (\"jump\"):\n\n\t\nwords becomes: [\"run\", \"run\", \"jump\", \"run\"]. \"run\" occurs 3 times. Choosing any two gives the longest common prefix \"run\" (length 3).\n\n\nRemoving index 1 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"jump\", \"run\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4).\n\n\nRemoving index 2 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"jump\", \"run\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4).\n\n\nRemoving index 3 (\"jump\"):\n\t\nwords becomes: [\"jump\", \"run\", \"run\", \"run\"]. \"run\" occurs 3 times. Choosing any two gives the longest common prefix \"run\" (length 3).\n\n\nRemoving index 4 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"run\", \"jump\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4).\n\n\n\n\nExample 2:\n\nInput: words = [\"dog\",\"racer\",\"car\"], k = 2\nOutput: [0,0,0]\nExplanation:\n\nRemoving any index results in an answer of 0.\n\n\n \nConstraints:\n\n1 <= k <= words.length <= 105\n1 <= words[i].length <= 104\nwords[i] consists of lowercase English letters.\nThe sum of words[i].length is smaller than or equal 105.\n\n",
+  "especificacion_entrada": "words: string[], k: integer",
+  "especificacion_salida": "integer[]",
+  "restricciones": "1 <= k <= words.length <= 105\n1 <= words[i].length <= 104\nwords[i] consists of lowercase English letters.\nThe sum of words[i].length is smaller than or equal 105.",
+  "solucion_referencia": "import collections\nimport heapq\n\nclass TrieNode:\n    def __init__(self):\n        self.children: dict[str, TrieNode] = {}\n        self.count = 0\n\nclass Trie:\n    def __init__(self, k: int):\n        self.k = k\n        self.root = TrieNode()\n        self.prefixLengthsCount = collections.Counter()\n        self.max_heap = []\n\n    def insert(self, word: str) -> None:\n        node = self.root\n        for i, c in enumerate(word):\n            sz = i + 1\n            node = node.children.setdefault(c, TrieNode())\n            node.count += 1\n            if node.count >= self.k:\n                self.prefixLengthsCount[sz] += 1\n                if self.prefixLengthsCount[sz] == 1:\n                    heapq.heappush(self.max_heap, -sz)\n\n    def erase(self, word: str) -> None:\n        node = self.root\n        for i, c in enumerate(word):\n            sz = i + 1\n            node = node.children[c]\n            if node.count == self.k:\n                self.prefixLengthsCount[sz] -= 1\n            node.count -= 1\n\n    def getLongestCommonPrefix(self) -> int:\n        while self.max_heap and self.prefixLengthsCount[-self.max_heap[0]] == 0:\n            heapq.heappop(self.max_heap)\n        return -self.max_heap[0] if self.max_heap else 0\n\nclass Solution:\n    def longestCommonPrefix(self, words: list[str], k: int) -> list[int]:\n        ans = []\n        trie = Trie(k)\n        for word in words:\n            trie.insert(word)\n        for word in words:\n            trie.erase(word)\n            ans.append(trie.getLongestCommonPrefix())\n            trie.insert(word)\n        return ans",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "words = [\"jump\",\"run\",\"run\",\"jump\",\"run\"], k = 2",
+      "salida": "[3,4,4,3,4]",
+      "explicacion": "Removing index 0 (\"jump\"):\n\n\t\nwords becomes: [\"run\", \"run\", \"jump\", \"run\"]. \"run\" occurs 3 times. Choosing any two gives the longest common prefix \"run\" (length 3).\n\n\nRemoving index 1 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"jump\", \"run\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4).\n\n\nRemoving index 2 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"jump\", \"run\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4).\n\n\nRemoving index 3 (\"jump\"):\n\t\nwords becomes: [\"jump\", \"run\", \"run\", \"run\"]. \"run\" occurs 3 times. Choosing any two gives the longest common prefix \"run\" (length 3).\n\n\nRemoving index 4 (\"run\"):\n\t\nwords becomes: [\"jump\", \"run\", \"run\", \"jump\"]. \"jump\" occurs twice. Choosing these two gives the longest common prefix \"jump\" (length 4)."
+    },
+    {
+      "entrada": "words = [\"dog\",\"racer\",\"car\"], k = 2",
+      "salida": "[0,0,0]",
+      "explicacion": "Removing any index results in an answer of 0."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3485: LC-3460 - Longest Common Prefix After at Most One Removal. Ambos actualizan o consultan el prefijo común de cadenas cuando se elimina o cambia un elemento.",
+      "entrada": "s = 'one', t = 'one'",
+      "salida": "3",
+      "explicacion": "Relación con LC-3485: Ambos actualizan o consultan el prefijo común de cadenas cuando se elimina o cambia un elemento.",
+      "codigo_ilustrativo": "class Solution:\n  def longestCommonPrefix(self, s: str, t: str) -> int:\n    i = 0  # s's index\n    j = 0  # t's index\n    canSkip = True\n\n    while i < len(s) and j < len(t):\n      if s[i] == t[j]:\n        i += 1\n        j += 1\n      elif canSkip:\n        i += 1\n        canSkip = False\n      else:\n        return j\n\n    return j\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().longestCommonPrefix(['banana', 'band', 'bend', 'bendy'], 3) == [1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().longestCommonPrefix(['abcd', 'abce', 'abcf', 'abcg'], 2) == [3, 3, 3, 3]"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().longestCommonPrefix(['apple', 'application', 'aptitude', 'appetite'], 3) == [2, 2, 3, 2]"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().longestCommonPrefix(['aaa', 'aa', 'a'], 2) == [1, 1, 2]"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().longestCommonPrefix(['aaaa', 'aaa', 'aa', 'a'], 2) == [2, 2, 3, 3]"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().longestCommonPrefix(['jump', 'run', 'run', 'jump', 'run'], 2) == [3, 4, 4, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().longestCommonPrefix(['apple', 'application', 'appetite'], 2) == [3, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().longestCommonPrefix(['abcdefg', 'abcde', 'abcd', 'abc', 'ab', 'a'], 4) == [2, 2, 2, 2, 3, 3]"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().longestCommonPrefix(['a', 'a', 'a', 'a', 'a'], 3) == [1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().longestCommonPrefix(['abc', 'abcd', 'ab', 'abcde'], 3) == [2, 2, 3, 2]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().longestCommonPrefix(['dog', 'racer', 'car'], 2) == [0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().longestCommonPrefix(['hello', 'hell', 'he', 'h'], 4) == [0, 0, 0, 0]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3485",
+    "seleccion-reciente-2026-11"
+  ]
+}

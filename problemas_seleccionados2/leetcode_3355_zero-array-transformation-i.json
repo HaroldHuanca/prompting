@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3355",
+  "titulo": "Zero Array Transformation I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/zero-array-transformation-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Prefix Sum",
+  "enunciado": "You are given an integer array nums of length n and a 2D array queries, where queries[i] = [li, ri].\nFor each queries[i]:\n\nSelect a subset of indices within the range [li, ri] in nums.\nDecrement the values at the selected indices by 1.\n\nA Zero Array is an array where all elements are equal to 0.\nReturn true if it is possible to transform nums into a Zero Array after processing all the queries sequentially, otherwise return false.\n \nExample 1:\n\nInput: nums = [1,0,1], queries = [[0,2]]\nOutput: true\nExplanation:\n\nFor i = 0:\n\nSelect the subset of indices as [0, 2] and decrement the values at these indices by 1.\nThe array will become [0, 0, 0], which is a Zero Array.\n\n\n\n\nExample 2:\n\nInput: nums = [4,3,2,1], queries = [[1,3],[0,2]]\nOutput: false\nExplanation:\n\nFor i = 0:\n\nSelect the subset of indices as [1, 2, 3] and decrement the values at these indices by 1.\nThe array will become [4, 2, 1, 0].\n\n\nFor i = 1:\n\nSelect the subset of indices as [0, 1, 2] and decrement the values at these indices by 1.\nThe array will become [3, 1, 0, 0], which is not a Zero Array.\n\n\n\n\n \nConstraints:\n\n1 <= nums.length <= 105\n0 <= nums[i] <= 105\n1 <= queries.length <= 105\nqueries[i].length == 2\n0 <= li <= ri < nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], queries: list[list[int]]",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def isZeroArray(self, nums: list[int], queries: list[list[int]]) -> bool:\n    line = [0] * (len(nums) + 1)\n    decrement = 0\n\n    for l, r in queries:\n      line[l] += 1\n      line[r + 1] -= 1\n\n    for i, num in enumerate(nums):\n      decrement += line[i]\n      if decrement < num:\n        return False\n\n    return True\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [0,0,0,0], queries = [[0,3],[1,2],[2,2]]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [0,0,0,0], queries = [[0,3]]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [5,4,3,2,1], queries = [[0,4],[1,3],[2,2]]",
+      "salida": "False",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3355: LC-3356 - Zero Array Transformation II. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [2, 0, 2], queries = [[0, 2, 1], [0, 2, 1], [1, 1, 3]]",
+      "salida": "2",
+      "explicacion": "Relación con LC-3355: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minZeroArray(self, nums: list[int], queries: list[list[int]]) -> int:\n    line = [0] * (len(nums) + 1)\n    decrement = 0\n    k = 0\n\n    for i, num in enumerate(nums):\n      while decrement + line[i] < num:\n        if k == len(queries):\n          return -1\n        l, r, val = queries[k]\n        k += 1\n        if r < i:\n          continue\n        line[max(l, i)] += val\n        line[r + 1] -= val\n      decrement += line[i]\n\n    return k\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().isZeroArray([0, 0, 0, 0], [[0, 3], [1, 2], [2, 2]]) == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().isZeroArray([0, 0, 0, 0], [[0, 3]]) == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().isZeroArray([5, 4, 3, 2, 1], [[0, 4], [1, 3], [2, 2]]) == False"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().isZeroArray([0, 0, 0, 0], [[0, 3], [1, 2], [2, 3]]) == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().isZeroArray([2, 2, 2, 2, 2], [[0, 4], [0, 4], [0, 4], [0, 4], [0, 4]]) == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().isZeroArray([1, 0, 1], [[0, 2]]) == True"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().isZeroArray([1, 2, 3, 4, 5], [[0, 1], [1, 2], [2, 3], [3, 4]]) == False"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().isZeroArray([10, 9, 8, 7, 6, 5, 4, 3, 2, 1], [[0, 9], [1, 8], [2, 7], [3, 6], [4, 5]]) == False"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().isZeroArray([2, 2, 2], [[0, 2], [0, 1], [1, 2]]) == True"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().isZeroArray([2, 2, 2], [[0, 0], [1, 1], [2, 2]]) == False"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().isZeroArray([5, 5, 5, 5, 5], [[0, 2], [1, 4], [0, 3]]) == False"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().isZeroArray([1, 2, 3, 4, 5], [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]) == False"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3355",
+    "fecha-estimada-2024-11-17",
+    "Array",
+    "Prefix Sum"
+  ]
+}

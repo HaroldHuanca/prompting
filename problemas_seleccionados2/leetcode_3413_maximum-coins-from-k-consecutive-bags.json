@@ -1,0 +1,102 @@
+{
+  "codigo": "LC-3413",
+  "titulo": "Maximum Coins From K Consecutive Bags",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-coins-from-k-consecutive-bags/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Binary Search / Prefix Sum / Sorting / Sliding Window",
+  "enunciado": "There are an infinite amount of bags on a number line, one bag for each coordinate. Some of these bags contain coins.\nYou are given a 2D array coins, where coins[i] = [li, ri, ci] denotes that every bag from li to ri contains ci coins.\nThe segments that coins contain are non-overlapping.\nYou are also given an integer k.\nReturn the maximum amount of coins you can obtain by collecting k consecutive bags.\n \nExample 1:\n\nInput: coins = [[8,10,1],[1,3,2],[5,6,4]], k = 4\nOutput: 10\nExplanation:\nSelecting bags at positions [3, 4, 5, 6] gives the maximum number of coins: 2 + 0 + 4 + 4 = 10.\n\nExample 2:\n\nInput: coins = [[1,10,3]], k = 2\nOutput: 6\nExplanation:\nSelecting bags at positions [1, 2] gives the maximum number of coins: 3 + 3 = 6.\n\n \nConstraints:\n\n1 <= coins.length <= 105\n1 <= k <= 109\ncoins[i] == [li, ri, ci]\n1 <= li <= ri <= 109\n1 <= ci <= 1000\nThe given segments are non-overlapping.\n\n",
+  "especificacion_entrada": "coins: list[list[int]], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maximumCoins(self, coins: list[list[int]], k: int) -> int:\n    return max(self._slide(coins, k),\n               self._slide([[-r, -l, c] for l, r, c in coins], k))\n\n  def _slide(self, coins: list[list[int]], k: int) -> int:\n    coins.sort()\n    res = 0\n    windowSum = 0\n    j = 0\n    for li, ri, ci in coins:  # Consider the number line [li..li + k).\n      rightBoundary = li + k\n\n      # [lj, rj] is fully in [li..li + k).\n      while j + 1 < len(coins) and coins[j + 1][0] < rightBoundary:\n        lj, rj, cj = coins[j]\n        windowSum += (rj - lj + 1) * cj\n        j += 1\n\n      # [lj, rj] may be partially in [l..l + k).\n      last = 0\n      if j < len(coins) and coins[j][0] < rightBoundary:\n        lj, rj, cj = coins[j]\n        last = (min(rightBoundary - 1, rj) - lj + 1) * cj\n\n      res = max(res, windowSum + last)\n      windowSum -= (ri - li + 1) * ci\n    return res\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "coins = [[8,10,1],[1,3,2],[5,6,4]], k = 4",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coins = [[1,10,3]], k = 2",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coins = [[10,20,5],[30,40,10],[50,60,15]], k = 5",
+      "salida": "75",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3413: LC-3346 - Maximum Frequency of an Element After Performing Operations I. Ambos problemas comparten las técnicas de búsqueda binaria, sumas de prefijos, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 100000], k = 100000, numOperations = 1",
+      "salida": "2",
+      "explicacion": "Relación con LC-3413: Ambos problemas comparten las técnicas de búsqueda binaria, sumas de prefijos, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from bisect import bisect_left, bisect_right\nfrom collections import Counter\n\nclass Solution:\n  def maxFrequency(self, nums: list[int], k: int, numOperations: int) -> int:\n    ordered = sorted(nums)\n    frequency = Counter(ordered)\n    candidates = set(ordered)\n    for value in ordered:\n      candidates.add(value - k)\n      candidates.add(value + k)\n    answer = 0\n    for target in candidates:\n      reachable = bisect_right(ordered, target + k) - bisect_left(ordered, target - k)\n      answer = max(answer, frequency[target] + min(numOperations, reachable - frequency[target]))\n    return answer\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maximumCoins([[8, 10, 1], [1, 3, 2], [5, 6, 4]], 4) == 10"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maximumCoins([[1, 10, 3]], 2) == 6"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maximumCoins([[10, 20, 5], [30, 40, 10], [50, 60, 15]], 5) == 75"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maximumCoins([[1, 2, 5], [4, 6, 7], [8, 10, 3]], 3) == 21"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maximumCoins([[1, 1, 1000], [2, 2, 1000], [3, 3, 1000]], 2) == 2000"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maximumCoins([[5, 5, 10], [15, 15, 20], [25, 25, 30]], 1) == 30"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maximumCoins([[2, 3, 1], [5, 7, 3], [9, 11, 2]], 5) == 11"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maximumCoins([[1, 2, 1], [3, 4, 2], [5, 6, 3], [7, 8, 4]], 3) == 11"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maximumCoins([[2, 3, 1], [5, 7, 3], [9, 11, 5]], 5) == 18"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maximumCoins([[1, 2, 5], [4, 6, 2], [7, 8, 4]], 3) == 10"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maximumCoins([[1, 2, 5], [4, 6, 7], [8, 10, 2]], 3) == 21"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maximumCoins([[1, 2, 5], [4, 5, 7], [6, 8, 2]], 3) == 16"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3413",
+    "fecha-estimada-2025-01-05",
+    "Greedy",
+    "Array",
+    "Binary Search",
+    "Prefix Sum",
+    "Sorting",
+    "Sliding Window"
+  ]
+}

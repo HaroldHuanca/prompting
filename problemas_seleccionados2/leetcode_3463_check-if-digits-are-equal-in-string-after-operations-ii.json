@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3463",
+  "titulo": "Check If Digits Are Equal in String After Operations II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/check-if-digits-are-equal-in-string-after-operations-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Math / String / Combinatorics / Number Theory",
+  "enunciado": "You are given a string s consisting of digits. Perform the following operation repeatedly until the string has exactly two digits:\n\nFor each pair of consecutive digits in s, starting from the first digit, calculate a new digit as the sum of the two digits modulo 10.\nReplace s with the sequence of newly calculated digits, maintaining the order in which they are computed.\n\nReturn true if the final two digits in s are the same; otherwise, return false.\n \nExample 1:\n\nInput: s = \"3902\"\nOutput: true\nExplanation:\n\nInitially, s = \"3902\"\nFirst operation:\n\t\n(s[0] + s[1]) % 10 = (3 + 9) % 10 = 2\n(s[1] + s[2]) % 10 = (9 + 0) % 10 = 9\n(s[2] + s[3]) % 10 = (0 + 2) % 10 = 2\ns becomes \"292\"\n\n\nSecond operation:\n\t\n(s[0] + s[1]) % 10 = (2 + 9) % 10 = 1\n(s[1] + s[2]) % 10 = (9 + 2) % 10 = 1\ns becomes \"11\"\n\n\nSince the digits in \"11\" are the same, the output is true.\n\n\nExample 2:\n\nInput: s = \"34789\"\nOutput: false\nExplanation:\n\nInitially, s = \"34789\".\nAfter the first operation, s = \"7157\".\nAfter the second operation, s = \"862\".\nAfter the third operation, s = \"48\".\nSince '4' != '8', the output is false.\n\n\n \nConstraints:\n\n3 <= s.length <= 105\ns consists of only digits.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  # Same as 3461. Check If Digits Are Equal in String After Operations I\n  def hasSameDigits(self, s: str) -> bool:\n    n = len(s)\n    num1 = 0\n    num2 = 0\n\n    for i in range(n - 1):\n      coefficient = self._nCMOD10(n - 2, i)\n      num1 += (coefficient * (int(s[i]) - 0)) % 10\n      num1 %= 10\n      num2 += (coefficient * (int(s[i + 1]) - 0)) % 10\n      num2 %= 10\n\n    return num1 == num2\n\n  def _nCMOD10(self, n: int, k: int) -> int:\n    \"\"\"Returns (n, k) % 10.\"\"\"\n    mod2 = self._lucasTheorem(n, k, 2)\n    mod5 = self._lucasTheorem(n, k, 5)\n    lookup = [\n        [0, 6, 2, 8, 4],  # mod2 == 0\n        [5, 1, 7, 3, 9]   # mod2 == 1\n    ]\n    return lookup[mod2][mod5]\n\n  def _lucasTheorem(self, n: int, k: int, prime: int) -> int:\n    \"\"\"Returns (n, k) % prime.\"\"\"\n    res = 1\n    while n > 0 or k > 0:\n      nMod = n % prime\n      MOD = k % prime\n      res *= math.comb(nMod, MOD)\n      res %= prime\n      n //= prime\n      k //= prime\n    return res\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"9876543210\"",
+      "salida": "False",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"111\"",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"1234567890\"",
+      "salida": "False",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3463: LC-3461 - Check If Digits Are Equal in String After Operations I. Ambos problemas comparten las técnicas de combinatoria, number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = '9876543210'",
+      "salida": "False",
+      "explicacion": "Relación con LC-3463: Ambos problemas comparten las técnicas de combinatoria, number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def hasSameDigits(self, s: str) -> bool:\n    n = len(s)\n    num1 = 0\n    num2 = 0\n\n    for i in range(n - 1):\n      coefficient = self._nCMOD10(n - 2, i)\n      num1 += (coefficient * (int(s[i]) - 0)) % 10\n      num1 %= 10\n      num2 += (coefficient * (int(s[i + 1]) - 0)) % 10\n      num2 %= 10\n\n    return num1 == num2\n\n  def _nCMOD10(self, n: int, k: int) -> int:\n    \"\"\"Returns (n, k) % 10.\"\"\"\n    mod2 = self._lucasTheorem(n, k, 2)\n    mod5 = self._lucasTheorem(n, k, 5)\n    lookup = [\n        [0, 6, 2, 8, 4],  # mod2 == 0\n        [5, 1, 7, 3, 9]   # mod2 == 1\n    ]\n    return lookup[mod2][mod5]\n\n  def _lucasTheorem(self, n: int, k: int, prime: int) -> int:\n    \"\"\"Returns (n, k) % prime.\"\"\"\n    res = 1\n    while n > 0 or k > 0:\n      nMod = n % prime\n      MOD = k % prime\n      res *= math.comb(nMod, MOD)\n      res %= prime\n      n //= prime\n      k //= prime\n    return res\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().hasSameDigits('9876543210') == False"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().hasSameDigits('111') == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().hasSameDigits('1234567890') == False"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().hasSameDigits('898989898') == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().hasSameDigits('1111111111') == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().hasSameDigits('99999') == True"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().hasSameDigits('999999999') == True"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().hasSameDigits('3902') == True"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().hasSameDigits('000000000') == True"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().hasSameDigits('121212121') == True"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().hasSameDigits('11111') == True"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().hasSameDigits('34789') == False"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3463",
+    "fecha-estimada-2025-02-23",
+    "Math",
+    "String",
+    "Combinatorics",
+    "Number Theory"
+  ]
+}

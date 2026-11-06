@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3323",
+  "titulo": "Minimize Connected Groups by Inserting Interval",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimize-connected-groups-by-inserting-interval/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Binary Search / Sorting / Sliding Window",
+  "enunciado": "You are given a 2D array intervals, where intervals[i] = [starti, endi] represents the start and the end of interval i. You are also given an integer k.\nYou must add exactly one new interval [startnew, endnew] to the array such that:\n\nThe length of the new interval, endnew - startnew, is at most k.\nAfter adding, the number of connected groups in intervals is minimized.\n\nA connected group of intervals is a maximal collection of intervals that, when considered together, cover a continuous range from the smallest point to the largest point with no gaps between them. Here are some examples:\n\nA group of intervals [[1, 2], [2, 5], [3, 3]] is connected because together they cover the range from 1 to 5 without any gaps.\nHowever, a group of intervals [[1, 2], [3, 4]] is not connected because the segment (2, 3) is not covered.\n\nReturn the minimum number of connected groups after adding exactly one new interval to the array.\n \nExample 1:\n\nInput: intervals = [[1,3],[5,6],[8,10]], k = 3\nOutput: 2\nExplanation:\nAfter adding the interval [3, 5], we have two connected groups: [[1, 3], [3, 5], [5, 6]] and [[8, 10]].\n\nExample 2:\n\nInput: intervals = [[5,10],[1,1],[3,3]], k = 1\nOutput: 3\nExplanation:\nAfter adding the interval [1, 1], we have three connected groups: [[1, 1], [1, 1]], [[3, 3]], and [[5, 10]].\n\n \nConstraints:\n\n1 <= intervals.length <= 105\nintervals[i] == [starti, endi]\n1 <= starti <= endi <= 109\n1 <= k <= 109\n\n",
+  "especificacion_entrada": "intervals: list[list[int]], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minConnectedGroups(self, intervals: list[list[int]], k: int) -> int:\n    mergedIntervals = 0\n    maxMergedIntervals = 0\n\n    intervals = self._merge(intervals)\n\n    i = 0\n    for _, end in intervals:\n      while i < len(intervals) and end + k >= intervals[i][0]:\n        mergedIntervals += 1\n        i += 1\n      mergedIntervals -= 1  # Exclude intervals[i].\n      maxMergedIntervals = max(maxMergedIntervals, mergedIntervals)\n\n    return len(intervals) - maxMergedIntervals\n\n  # Same as 56. Merge Intervals\n  def _merge(self, intervals: list[list[int]]) -> list[list[int]]:\n    res = []\n    for interval in sorted(intervals):\n      if not res or res[-1][1] < interval[0]:\n        res.append(interval)\n      else:\n        res[-1][1] = max(res[-1][1], interval[1])\n    return res\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "intervals = [[1,2],[2,3],[3,4]], k = 0",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "intervals = [[1,10]], k = 5",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "intervals = [[1,2],[4,8],[10,15]], k = 2",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3323: LC-3346 - Maximum Frequency of an Element After Performing Operations I. Ambos problemas comparten las técnicas de búsqueda binaria, ventana deslizante, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 100000], k = 100000, numOperations = 1",
+      "salida": "2",
+      "explicacion": "Relación con LC-3323: Ambos problemas comparten las técnicas de búsqueda binaria, ventana deslizante, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from bisect import bisect_left, bisect_right\nfrom collections import Counter\n\nclass Solution:\n  def maxFrequency(self, nums: list[int], k: int, numOperations: int) -> int:\n    ordered = sorted(nums)\n    frequency = Counter(ordered)\n    candidates = set(ordered)\n    for value in ordered:\n      candidates.add(value - k)\n      candidates.add(value + k)\n    answer = 0\n    for target in candidates:\n      reachable = bisect_right(ordered, target + k) - bisect_left(ordered, target - k)\n      answer = max(answer, frequency[target] + min(numOperations, reachable - frequency[target]))\n    return answer\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minConnectedGroups([[1, 2], [2, 3], [3, 4]], 0) == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minConnectedGroups([[1, 10]], 5) == 1"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minConnectedGroups([[1, 2], [4, 8], [10, 15]], 2) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minConnectedGroups([[1, 2], [4, 5], [7, 8]], 2) == 2"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minConnectedGroups([[1, 5], [6, 10], [11, 15], [16, 20]], 4) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minConnectedGroups([[1, 2], [3, 4], [5, 6]], 1) == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minConnectedGroups([[5, 10], [1, 1], [3, 3]], 1) == 3"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minConnectedGroups([[1, 10], [10, 20], [20, 30]], 5) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minConnectedGroups([[1, 100]], 50) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minConnectedGroups([[2, 4], [6, 8], [10, 12]], 5) == 2"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minConnectedGroups([[1, 3], [5, 6], [8, 10]], 3) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minConnectedGroups([[1, 2], [2, 3], [3, 4], [4, 5]], 1) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3323",
+    "fecha-estimada-2024-10-13",
+    "Array",
+    "Binary Search",
+    "Sorting",
+    "Sliding Window"
+  ]
+}

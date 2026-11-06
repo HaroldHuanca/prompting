@@ -1,0 +1,10 @@
+leetcode_id,title,slug,url,description,difficulty,publication_date,date_type,original_date_field,source_name,source_url,extracted_at,tags,constraints,examples,signature,test_cases,reference_solution,source_license,completeness,date_conflicts,notes
+4054,Longest Increasing Path in a Matrix,longest-increasing-path-in-a-matrix,https://leetcode.com/problems/longest-increasing-path-in-a-matrix/,"Given an m x n matrix, return the length of the longest increasing path.",Hard,2024-08-09,official,,example_dataset,https://example.invalid/records/4054,2026-10-31T02:51:02Z,Dynamic Programming; Graph; Topological Sort,"1 <= m, n <= 2000","Input: grid = [[9,9,4],[6,6,8],[2,1,1]]
+Output: 4","class Solution:
+    def longestIncreasingPath(self, matrix: list[list[int]]) -> int:",,Use memoized DFS with topological sorting semantics.,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4055,Minimum Cost to Connect Points,min-cost-to-connect-points,https://leetcode.com/problems/min-cost-to-connect-points/,Return the minimum cost to connect all points with a Steiner tree variant.,Medium,2024-08-15,official,,example_dataset,https://example.invalid/records/4055,2026-10-31T02:51:02Z,Graph; Prim; Union-Find,2 <= points.length <= 1000,"Input: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]
+Output: 20","class Solution:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4056,Count Paths Through Grid,count-paths-through-grid,https://leetcode.com/problems/count-paths-through-grid/,Count the number of valid paths through a grid with obstacle constraints.,Easy,2024-08-27,official,,example_dataset,https://example.invalid/records/4056,2026-10-31T02:51:02Z,Dynamic Programming; Grid,"1 <= m, n <= 100","Input: grid = [[0,0],[0,0]]
+Output: 2","class Solution:
+    def countPaths(self, grid: list[list[int]]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.

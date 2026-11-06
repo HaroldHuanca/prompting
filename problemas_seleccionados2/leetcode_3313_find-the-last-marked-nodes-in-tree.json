@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3313",
+  "titulo": "Find the Last Marked Nodes in Tree",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-last-marked-nodes-in-tree/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Tree / Depth-First Search",
+  "enunciado": "There exists an undirected tree with n nodes numbered 0 to n - 1. You are given a 2D integer array edges of length n - 1, where edges[i] = [ui, vi] indicates that there is an edge between nodes ui and vi in the tree.\nInitially, all nodes are unmarked. After every second, you mark all unmarked nodes which have at least one marked node adjacent to them.\nReturn an array nodes where nodes[i] is the last node to get marked in the tree, if you mark node i at time t = 0. If nodes[i] has multiple answers for any node i, you can choose any one answer.\n \nExample 1:\n\nInput: edges = [[0,1],[0,2]]\nOutput: [2,2,1]\nExplanation:\n\n\nFor i = 0, the nodes are marked in the sequence: [0] -> [0,1,2]. Either 1 or 2 can be the answer.\nFor i = 1, the nodes are marked in the sequence: [1] -> [0,1] -> [0,1,2]. Node 2 is marked last.\nFor i = 2, the nodes are marked in the sequence: [2] -> [0,2] -> [0,1,2]. Node 1 is marked last.\n\n\nExample 2:\n\nInput: edges = [[0,1]]\nOutput: [1,0]\nExplanation:\n\n\nFor i = 0, the nodes are marked in the sequence: [0] -> [0,1].\nFor i = 1, the nodes are marked in the sequence: [1] -> [0,1].\n\n\nExample 3:\n\nInput: edges = [[0,1],[0,2],[2,3],[2,4]]\nOutput: [3,3,1,1,1]\nExplanation:\n\n\nFor i = 0, the nodes are marked in the sequence: [0] -> [0,1,2] -> [0,1,2,3,4].\nFor i = 1, the nodes are marked in the sequence: [1] -> [0,1] -> [0,1,2] -> [0,1,2,3,4].\nFor i = 2, the nodes are marked in the sequence: [2] -> [0,2,3,4] -> [0,1,2,3,4].\nFor i = 3, the nodes are marked in the sequence: [3] -> [2,3] -> [0,2,3,4] -> [0,1,2,3,4].\nFor i = 4, the nodes are marked in the sequence: [4] -> [2,4] -> [0,2,3,4] -> [0,1,2,3,4].\n\n\n \nConstraints:\n\n2 <= n <= 105\nedges.length == n - 1\nedges[i].length == 2\n0 <= edges[i][0], edges[i][1] <= n - 1\nThe input is generated such that edges represents a valid tree.\n\n",
+  "especificacion_entrada": "edges: list[list[int]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "from dataclasses import dataclass\n\n\n@dataclass\nclass Node:\n  node: int = 0  # the node number\n  time: int = 0  # the time it got marked\n\n\nclass Last2:\n  def __init__(self, last1: Node = Node(), last2: Node = Node()):\n    self.last1 = last1  # the last marked node\n    self.last2 = last2  # the second last marked node\n\n\nclass Solution:\n  # Similar to 3241. Time Taken to Mark All Nodes\n  def lastMarkedNodes(self, edges: list[list[int]]) -> list[int]:\n    n = len(edges) + 1\n    ans = [0] * n\n    tree = [[] for _ in range(n)]\n    # dp[i] := the last marked two nodes for subtree rooted at node i, where\n    # each node contains the time it got marked\n    dp = [Last2()] * n\n\n    for u, v in edges:\n      tree[u].append(v)\n      tree[v].append(u)\n\n    self._dfs(tree, 0, -1, dp)\n    self._reroot(tree, 0, -1, Node(), dp, ans)\n    return ans\n\n  def _dfs(\n      self,\n      tree: list[list[int]],\n      u: int,\n      prev: int,\n      dp: list[Last2]\n  ) -> Node:\n    \"\"\"\n    Performs a DFS traversal of the subtree rooted at node `u`, computes the\n    time taken to mark all nodes in the subtree, records the last two marked\n    nodes, and returns the last marked node.\n\n    These values are used later in the rerooting process.\n    \"\"\"\n    last1 = Node(u, 0)\n    last2 = Node()\n    for v in tree[u]:\n      if v == prev:\n        continue\n      child = self._dfs(tree, v, u, dp)\n      time = child.time + 1\n      if time > last1.time:\n        last2 = last1\n        last1 = Node(child.node, time)\n      elif time > last2.time:\n        last2 = Node(child.node, time)\n    dp[u] = Last2(last1, last2)\n    return last1\n\n  def _reroot(\n      self,\n      tree: list[list[int]],\n      u: int,\n      prev: int,\n      last: Node,\n      dp: list[list[int]],\n      ans: list[int]\n  ) -> None:\n    \"\"\"\n    Reroots the tree at node `u` and updates the answer array, where `last`\n    is the last marked node that doesn't go through `u`'s subtree.\n    \"\"\"\n    ans[u] = last.node if last.time > dp[u].last1.time else dp[u].last1.node\n    for v in tree[u]:\n      if v == prev:\n        continue\n      newLast = Node(last.node, last.time + 1)\n      if dp[u].last1.node == dp[v].last1.node:\n        alternativeTime = 1 + dp[u].last2.time\n        if alternativeTime > newLast.time:\n          newLast = Node(dp[u].last2.node, alternativeTime)\n      else:\n        alternativeTime = 1 + dp[u].last1.time\n        if alternativeTime > newLast.time:\n          newLast = Node(dp[u].last1.node, alternativeTime)\n      self._reroot(tree, v, u, newLast, dp, ans)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "edges = [[0,1],[0,2]]",
+      "salida": "[2, 2, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1],[0,2],[2,3],[2,4]]",
+      "salida": "[3, 3, 1, 1, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1],[1,2],[1,3],[3,4],[3,5],[5,6]]",
+      "salida": "[6, 6, 6, 0, 0, 0, 0]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3313: LC-3249 - Count the Number of Good Nodes. Ambos problemas comparten las técnicas de depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "edges = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [1, 6], [2, 7], [3, 8]]",
+      "salida": "6",
+      "explicacion": "Relación con LC-3313: Ambos problemas comparten las técnicas de depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def countGoodNodes(self, edges: list[list[int]]) -> int:\n    n = len(edges) + 1\n    graph = [[] for _ in range(n)]\n\n    for u, v in edges:\n      graph[u].append(v)\n      graph[v].append(u)\n\n    ans = 0\n\n    def dfs(u: int, prev: int) -> int:\n      \"\"\"Returns the size of the subtree rooted at u.\"\"\"\n      nonlocal ans\n      size = 1\n      childrenSizes = []\n      for v in graph[u]:\n        if v == prev:\n          continue\n        child_size = dfs(v, u)\n        size += child_size\n        childrenSizes.append(child_size)\n\n      if not childrenSizes or all(s == childrenSizes[0]\n                                  for s in childrenSizes):\n        ans += 1\n\n      return size\n\n    dfs(0, -1)\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2]]) == [2, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2], [2, 3], [2, 4]]) == [3, 3, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [1, 2], [1, 3], [3, 4], [3, 5], [5, 6]]) == [6, 6, 6, 0, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1]]) == [1, 0]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 2], [0, 3], [1, 2]]) == [1, 3, 3, 1]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2], [2, 3], [2, 4], [2, 5], [5, 6]]) == [6, 6, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [1, 2], [2, 3], [3, 4], [2, 5], [5, 6]]) == [4, 4, 0, 0, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]]) == [5, 5, 3, 5, 5, 3, 3]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [2, 6], [2, 7], [3, 8], [3, 9]]) == [6, 6, 4, 6, 6, 6, 4, 4, 6, 6]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]) == [5, 5, 5, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [1, 2], [1, 3], [3, 4], [3, 5], [3, 6]]) == [4, 4, 4, 0, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().lastMarkedNodes([[0, 1], [0, 2], [2, 3], [2, 4], [4, 5], [4, 6], [4, 7], [5, 8], [5, 9], [6, 10], [6, 11], [7, 12], [7, 13]]) == [8, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3313",
+    "fecha-estimada-2024-10-06",
+    "Tree",
+    "Depth-First Search"
+  ]
+}

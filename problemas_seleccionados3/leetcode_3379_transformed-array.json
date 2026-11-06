@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3379",
+  "titulo": "Transformed Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/transformed-array/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Simulation",
+  "enunciado": "You are given an integer array nums that represents a circular array. Your task is to create a new array result of the same size, following these rules:\nFor each index i (where 0 <= i < nums.length), perform the following independent actions:\n\n\nIf nums[i] > 0: Start at index i and move nums[i] steps to the right in the circular array. Set result[i] to the value of the index where you land.\nIf nums[i] < 0: Start at index i and move abs(nums[i]) steps to the left in the circular array. Set result[i] to the value of the index where you land.\nIf nums[i] == 0: Set result[i] to nums[i].\n\nReturn the new array result.\nNote: Since nums is circular, moving past the last element wraps around to the beginning, and moving before the first element wraps back to the end.\n \nExample 1:\n\nInput: nums = [3,-2,1,1]\nOutput: [1,1,1,3]\nExplanation:\n\nFor nums[0] that is equal to 3, If we move 3 steps to right, we reach nums[3]. So result[0] should be 1.\nFor nums[1] that is equal to -2, If we move 2 steps to left, we reach nums[3]. So result[1] should be 1.\nFor nums[2] that is equal to 1, If we move 1 step to right, we reach nums[3]. So result[2] should be 1.\nFor nums[3] that is equal to 1, If we move 1 step to right, we reach nums[0]. So result[3] should be 3.\n\n\nExample 2:\n\nInput: nums = [-1,4,-1]\nOutput: [-1,-1,4]\nExplanation:\n\nFor nums[0] that is equal to -1, If we move 1 step to left, we reach nums[2]. So result[0] should be -1.\nFor nums[1] that is equal to 4, If we move 4 steps to right, we reach nums[2]. So result[1] should be -1.\nFor nums[2] that is equal to -1, If we move 1 step to left, we reach nums[1]. So result[2] should be 4.\n\n\n \nConstraints:\n\n1 <= nums.length <= 100\n-100 <= nums[i] <= 100\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def constructTransformedArray(self, nums: list[int]) -> list[int]:\n    n = len(nums)\n    return [nums[(i + num % n + n) % n]\n            for i, num in enumerate(nums)]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,-1,2,-2,3,-3]",
+      "salida": "[-1, 1, 3, -1, -1, 2]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [3,-2,1,1]",
+      "salida": "[1, 1, 1, 3]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,-10,20,-20]",
+      "salida": "[20, -20, 20, -20]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3379: LC-3248 - Snake in Matrix. Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "n = 2, commands = ['RIGHT', 'DOWN']",
+      "salida": "3",
+      "explicacion": "Relación con LC-3379: Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def finalPositionOfSnake(self, n: int, commands: list[str]) -> int:\n    directions = {\n        \"UP\": (-1, 0),\n        \"RIGHT\": (0, 1),\n        \"DOWN\": (1, 0),\n        \"LEFT\": (0, -1),\n    }\n    i = 0\n    j = 0\n\n    for command in commands:\n      dx, dy = directions[command]\n      i += dx\n      j += dy\n\n    return i * n + j\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().constructTransformedArray([1, -1, 2, -2, 3, -3]) == [-1, 1, 3, -1, -1, 2]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().constructTransformedArray([3, -2, 1, 1]) == [1, 1, 1, 3]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().constructTransformedArray([10, -10, 20, -20]) == [20, -20, 20, -20]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().constructTransformedArray([-4, -3, -2, -1]) == [-4, -2, -4, -2]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().constructTransformedArray([-5, -5, -5, -5, -5]) == [-5, -5, -5, -5, -5]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().constructTransformedArray([-5, -5, -5, -5]) == [-5, -5, -5, -5]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().constructTransformedArray([100, -100, 50, -50, 25, -25]) == [25, -50, 25, -100, -25, 25]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().constructTransformedArray([1, 2, 3, 4]) == [2, 4, 2, 4]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().constructTransformedArray([1, -1, 1, -1]) == [-1, 1, -1, 1]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().constructTransformedArray([-1, -1, -1, -1, -1]) == [-1, -1, -1, -1, -1]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().constructTransformedArray([5, -5, 5, -5, 5, -5, 5]) == [-5, -5, 5, -5, 5, 5, 5]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().constructTransformedArray([10, 20, 30, 40, 50]) == [10, 20, 30, 40, 50]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3379",
+    "fecha-estimada-2024-12-08",
+    "Array",
+    "Simulation"
+  ]
+}

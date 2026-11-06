@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3462",
+  "titulo": "Maximum Sum With at Most K Elements",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-sum-with-at-most-k-elements/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Matrix / Sorting / Heap (Priority Queue)",
+  "enunciado": "You are given a 2D integer matrix grid of size n x m, an integer array limits of length n, and an integer k. The task is to find the maximum sum of at most k elements from the matrix grid such that:\n\n\nThe number of elements taken from the ith row of grid does not exceed limits[i].\n\n\nReturn the maximum sum.\n \nExample 1:\n\nInput: grid = [[1,2],[3,4]], limits = [1,2], k = 2\nOutput: 7\nExplanation:\n\nFrom the second row, we can take at most 2 elements. The elements taken are 4 and 3.\nThe maximum possible sum of at most 2 selected elements is 4 + 3 = 7.\n\n\nExample 2:\n\nInput: grid = [[5,3,7],[8,2,6]], limits = [2,2], k = 3\nOutput: 21\nExplanation:\n\nFrom the first row, we can take at most 2 elements. The element taken is 7.\nFrom the second row, we can take at most 2 elements. The elements taken are 8 and 6.\nThe maximum possible sum of at most 3 selected elements is 7 + 8 + 6 = 21.\n\n\n \nConstraints:\n\nn == grid.length == limits.length\nm == grid[i].length\n1 <= n, m <= 500\n0 <= grid[i][j] <= 105\n0 <= limits[i] <= m\n0 <= k <= min(n * m, sum(limits))\n\n",
+  "especificacion_entrada": "grid: list[list[int]], limits: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxSum(self, grid: list[list[int]], limits: list[int], k: int) -> int:\n    minHeap = []\n\n    for row, limit in zip(grid, limits):\n      row.sort(reverse=True)\n      for i in range(limit):\n        heapq.heappush(minHeap, row[i])\n        if len(minHeap) == k + 1:\n          heapq.heappop(minHeap)\n\n    return sum(minHeap)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "grid = [[10,20,30],[5,15,25],[1,9,18]], limits = [2,1,2], k = 5",
+      "salida": "102",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[5,3,7],[8,2,6]], limits = [2,2], k = 3",
+      "salida": "21",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[1,2],[3,4]], limits = [1,2], k = 2",
+      "salida": "7",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3462: LC-3478 - Choose K Elements With Maximum Sum. Ambos problemas comparten las técnicas de heap, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums1 = [10, 20, 30, 40, 50], nums2 = [50, 40, 30, 20, 10], k = 2",
+      "salida": "[0, 50, 90, 90, 90]",
+      "explicacion": "Relación con LC-3462: Ambos problemas comparten las técnicas de heap, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\nfrom itertools import pairwise\nimport heapq\n\nclass Solution:\n  def findMaxSum(self, nums1: list[int], nums2: list[int], k: int) -> list[int]:\n    ans = [0] * len(nums1)\n    numAndIndexes = sorted([(num, i) for i, num in enumerate(nums1)])\n    minHeap = []\n\n    firstIndex = numAndIndexes[0][1]\n    heapq.heappush(minHeap, nums2[firstIndex])\n    summ = nums2[firstIndex]\n\n    for (prevNum, prevIndex), (currNum, currIndex) in itertools.pairwise(numAndIndexes):\n      if currNum == prevNum:\n        ans[currIndex] = ans[prevIndex]\n      else:\n        ans[currIndex] = summ\n      heapq.heappush(minHeap, nums2[currIndex])\n      summ += nums2[currIndex]\n      if len(minHeap) == k + 1:\n        summ -= heapq.heappop(minHeap)\n\n    return ans"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxSum([[10, 20, 30], [5, 15, 25], [1, 9, 18]], [2, 1, 2], 5) == 102"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxSum([[5, 3, 7], [8, 2, 6]], [2, 2], 3) == 21"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxSum([[1, 2], [3, 4]], [1, 2], 2) == 7"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxSum([[0, 0, 0], [0, 0, 0]], [1, 2], 1) == 0"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxSum([[1, 2, 3], [4, 5, 6], [7, 8, 9]], [3, 3, 3], 6) == 39"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxSum([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 2, 2, 2, 2, 2, 2, 2, 2, 2], [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]], [5, 5, 5], 12) == 27"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxSum([[1000, 900, 800, 700, 600], [500, 400, 300, 200, 100]], [3, 4], 6) == 3900"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxSum([[9, 8, 7, 6, 5], [4, 3, 2, 1, 0], [99, 88, 77, 66, 55]], [3, 2, 4], 12) == 361"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxSum([[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]], [0, 2, 2, 2], 5) == 11"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSum([[1, 1, 1, 1, 1], [2, 2, 2, 2, 2], [3, 3, 3, 3, 3]], [1, 2, 3], 6) == 14"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSum([[100, 200], [300, 400], [500, 600]], [1, 1, 1], 3) == 1200"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSum([[100000, 90000, 80000, 70000], [60000, 50000, 40000, 30000]], [4, 4], 3) == 270000"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3462",
+    "fecha-estimada-2025-02-23",
+    "Greedy",
+    "Array",
+    "Matrix",
+    "Sorting",
+    "Heap (Priority Queue)"
+  ]
+}

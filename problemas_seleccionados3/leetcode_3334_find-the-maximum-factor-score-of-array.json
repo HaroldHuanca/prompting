@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3334",
+  "titulo": "Find the Maximum Factor Score of Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-maximum-factor-score-of-array/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Math / Number Theory",
+  "enunciado": "You are given an integer array nums.\nThe factor score of an array is defined as the product of the LCM and GCD of all elements of that array.\nReturn the maximum factor score of nums after removing at most one element from it.\nNote that both the LCM and GCD of a single number are the number itself, and the factor score of an empty array is 0.\n \nExample 1:\n\nInput: nums = [2,4,8,16]\nOutput: 64\nExplanation:\nOn removing 2, the GCD of the rest of the elements is 4 while the LCM is 16, which gives a maximum factor score of 4 * 16 = 64.\n\nExample 2:\n\nInput: nums = [1,2,3,4,5]\nOutput: 60\nExplanation:\nThe maximum factor score of 60 can be obtained without removing any elements.\n\nExample 3:\n\nInput: nums = [3]\nOutput: 9\n\n \nConstraints:\n\n1 <= nums.length <= 100\n1 <= nums[i] <= 30\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxScore(self, nums: list[int]) -> int:\n    n = len(nums)\n    # prefixGcd[i] := GCD of nums[0..i]\n    # prefixLcm[i] := LCM of nums[0..i]\n    prefixGcd, prefixLcm = self._getPrefix(nums)\n    # suffixGcd[i] := GCD of nums[i..n - 1]\n    # suffixLcm[i] := LCM of nums[i..n - 1]\n    suffixGcd, suffixLcm = self._getSuffix(nums)\n    ans = suffixGcd[0] * suffixLcm[0]\n\n    for i in range(n):\n      gcd1 = prefixGcd[i - 1] if i > 0 else 0\n      gcd2 = suffixGcd[i + 1] if i + 1 < n else 0\n      lcm1 = prefixLcm[i - 1] if i > 0 else 1\n      lcm2 = suffixLcm[i + 1] if i + 1 < n else 1\n      score = math.gcd(gcd1, gcd2) * math.lcm(lcm1, lcm2)\n      ans = max(ans, score)\n\n    return ans\n\n  def _getPrefix(self, nums: list[int]) -> tuple[list[int], list[int]]:\n    \"\"\"Returns the prefix GCD and LCM arrays.\"\"\"\n    prefixGcd = []\n    prefixLcm = []\n    currGcd = 0\n    currLcm = 1\n    for num in nums:\n      currGcd = math.gcd(currGcd, num)\n      currLcm = math.lcm(currLcm, num)\n      prefixGcd.append(currGcd)\n      prefixLcm.append(currLcm)\n    return prefixGcd, prefixLcm\n\n  def _getSuffix(self, nums: list[int]) -> tuple[list[int], list[int]]:\n    \"\"\"Returns the suffix GCD and LCM arrays.\"\"\"\n    suffixGcd = []\n    suffixLcm = []\n    currGcd = 0\n    currLcm = 1\n    for num in reversed(nums):\n      currGcd = math.gcd(currGcd, num)\n      currLcm = math.lcm(currLcm, num)\n      suffixGcd.append(currGcd)\n      suffixLcm.append(currLcm)\n    return list(reversed(suffixGcd)), list(reversed(suffixLcm))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [10,20,30]",
+      "salida": "600",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [100,200,300,400]",
+      "salida": "120000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,3,5,7,11,13]",
+      "salida": "30030",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3334: LC-3326 - Minimum Division Operations to Make Array Non Decreasing. Ambos problemas comparten las técnicas de number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [2, 3, 4, 6, 9]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3334: Ambos problemas comparten las técnicas de number theory, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def minOperations(self, nums: list[int]) -> int:\n    ans = 0\n\n    for i in range(len(nums) - 2, -1, -1):\n      if nums[i] > nums[i + 1]:\n        minDivisor = self._getMinDivisor(nums[i])\n        if minDivisor > nums[i + 1]:\n          return -1\n        nums[i] = minDivisor\n        ans += 1\n\n    return ans\n\n  def _getMinDivisor(self, num: int) -> int:\n    for divisor in range(2, math.isqrt(num) + 1):\n      if num % divisor == 0:\n        return divisor\n    return num\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxScore([10, 20, 30]) == 600"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxScore([100, 200, 300, 400]) == 120000"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxScore([2, 3, 5, 7, 11, 13]) == 30030"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxScore([2, 3, 5, 7, 11]) == 2310"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxScore([12, 15, 18, 21]) == 3780"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxScore([25, 50, 75, 100]) == 7500"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxScore([30, 15, 10, 5]) == 150"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxScore([25, 10, 5, 1]) == 250"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore([11, 22, 33, 44]) == 1452"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore([30, 20, 10, 5]) == 600"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore([3]) == 9"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3334",
+    "fecha-estimada-2024-10-27",
+    "Array",
+    "Math",
+    "Number Theory"
+  ]
+}

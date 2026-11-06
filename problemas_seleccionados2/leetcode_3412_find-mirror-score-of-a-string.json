@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3412",
+  "titulo": "Find Mirror Score of a String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-mirror-score-of-a-string/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Stack / Hash Table / String / Simulation",
+  "enunciado": "You are given a string s.\nWe define the mirror of a letter in the English alphabet as its corresponding letter when the alphabet is reversed. For example, the mirror of 'a' is 'z', and the mirror of 'y' is 'b'.\nInitially, all characters in the string s are unmarked.\nYou start with a score of 0, and you perform the following process on the string s:\n\nIterate through the string from left to right.\nAt each index i, find the closest unmarked index j such that j < i and s[j] is the mirror of s[i]. Then, mark both indices i and j, and add the value i - j to the total score.\nIf no such index j exists for the index i, move on to the next index without making any changes.\n\nReturn the total score at the end of the process.\n \nExample 1:\n\nInput: s = \"aczzx\"\nOutput: 5\nExplanation:\n\ni = 0. There is no index j that satisfies the conditions, so we skip.\ni = 1. There is no index j that satisfies the conditions, so we skip.\ni = 2. The closest index j that satisfies the conditions is j = 0, so we mark both indices 0 and 2, and then add 2 - 0 = 2 to the score.\ni = 3. There is no index j that satisfies the conditions, so we skip.\ni = 4. The closest index j that satisfies the conditions is j = 1, so we mark both indices 1 and 4, and then add 4 - 1 = 3 to the score.\n\n\nExample 2:\n\nInput: s = \"abcdef\"\nOutput: 0\nExplanation:\nFor each index i, there is no index j that satisfies the conditions.\n\n \nConstraints:\n\n1 <= s.length <= 105\ns consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def calculateScore(self, s: str) -> int:\n    ans = 0\n    indices = [[] for _ in range(26)]\n\n    for i, c in enumerate(s):\n      index = ord(c) - ord('a')\n      oppositeIndex = 25 - index\n      if indices[oppositeIndex]:\n        ans += i - indices[oppositeIndex].pop()\n      else:\n        indices[index].append(i)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"b\"",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"mirror\"",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"az\"",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3412: LC-3498 - Reverse Degree of a String. Ambos asignan puntajes a caracteres según su posición o carácter espejo y acumulan el resultado de la cadena.",
+      "entrada": "s = 'zzzz'",
+      "salida": "10",
+      "explicacion": "Relación con LC-3412: Ambos asignan puntajes a caracteres según su posición o carácter espejo y acumulan el resultado de la cadena.",
+      "codigo_ilustrativo": "class Solution:\n  def reverseDegree(self, s: str) -> int:\n    return sum((26 - (ord(c) - ord('a'))) * (i + 1)\n               for i, c in enumerate(s))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().calculateScore('b') == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().calculateScore('mirror') == 1"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().calculateScore('az') == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().calculateScore('abbabba') == 0"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().calculateScore('abcba') == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().calculateScore('abcdefghijklmnopqrstuvwxyz') == 169"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().calculateScore('qpwoeirutyplkjhgfdsazxcvbnm') == 96"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().calculateScore('abzabzabz') == 6"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().calculateScore('abcdef') == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().calculateScore('zazbzczdz') == 1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().calculateScore('a') == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().calculateScore('azbzczdzezfz') == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3412",
+    "fecha-estimada-2025-01-05",
+    "Stack",
+    "Hash Table",
+    "String",
+    "Simulation"
+  ]
+}

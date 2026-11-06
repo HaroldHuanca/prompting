@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3339",
+  "titulo": "Find the Number of K-Even Arrays",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-number-of-k-even-arrays/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Dynamic Programming",
+  "enunciado": "You are given three integers n, m, and k.\nAn array arr is called k-even if there are exactly k indices such that, for each of these indices i (0 <= i < n - 1):\n\n(arr[i] * arr[i + 1]) - arr[i] - arr[i + 1] is even.\n\nReturn the number of possible k-even arrays of size n where all elements are in the range [1, m].\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: n = 3, m = 4, k = 2\nOutput: 8\nExplanation:\nThe 8 possible 2-even arrays are:\n\n[2, 2, 2]\n[2, 2, 4]\n[2, 4, 2]\n[2, 4, 4]\n[4, 2, 2]\n[4, 2, 4]\n[4, 4, 2]\n[4, 4, 4]\n\n\nExample 2:\n\nInput: n = 5, m = 1, k = 0\nOutput: 1\nExplanation:\nThe only 0-even array is [1, 1, 1, 1, 1].\n\nExample 3:\n\nInput: n = 7, m = 7, k = 5\nOutput: 5832\n\n \nConstraints:\n\n1 <= n <= 750\n0 <= k <= n - 1\n1 <= m <= 1000\n\n",
+  "especificacion_entrada": "n: int, m: int, k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countOfArrays(self, n: int, m: int, k: int) -> int:\n    MOD = 10**9 + 7\n    even = m // 2  # the number of even numbers in [1, m]\n    odd = m - even  # the number of odd numbers in [1, m]\n    # dp[i][j][0/1] := the number of arrays of length i with j consecutive even\n    # number pairs ending in an even number (0) or an odd number (1)\n    dp = [[[0] * 2\n          for _ in range(k + 1)]\n          for _ in range(n + 1)]\n\n    # Base case: arrays of length 1\n    # For an array of length 1, we can't have any even number pairs yet.\n    dp[1][0][0] = even\n    dp[1][0][1] = odd\n\n    for i in range(2, n + 1):\n      for j in range(k + 1):\n        # 1. Appending an even number to an array ending in an even number\n        #    creates a new consecutive even number pair.\n        # 2. Appending an even number to an array ending in an odd number.\n        dp[i][j][0] = ((dp[i - 1][j - 1][0] if j > 0 else 0) * even +\n                       dp[i - 1][j][1] * even) % MOD\n        # 3. Appending an odd number to an array.\n        dp[i][j][1] = sum(dp[i - 1][j]) * odd % MOD\n\n    return sum(dp[n][k]) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 1, m = 10, k = 0",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 1, m = 1000, k = 0",
+      "salida": "1000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 50, m = 10, k = 20",
+      "salida": "554673901",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3339: LC-3290 - Maximum Multiplication Score. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "a = [0, 0, 0, 0], b = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3339: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxScore(self, a: list[int], b: list[int]) -> int:\n    n = len(b)\n    # dp[i][j] := the maximum score by selecting 4 - i numbers from b[j..n - 1]\n    # using the corresponding numbers from a[i..3]\n    dp = [[0] * (n + 1) for _ in range(5)]\n\n    # Run out of numbers in b but still need to select numbers from a.\n    for i in range(4):\n      dp[i][n] = -math.inf\n\n    for i in reversed(range(4)):\n      for j in reversed(range(n)):\n        # Skip b[j] or pair a[i] with b[j].\n        dp[i][j] = max(dp[i][j + 1], a[i] * b[j] + dp[i + 1][j + 1])\n\n    return -1 if dp[0][0] == -math.inf else dp[0][0]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countOfArrays(1, 10, 0) == 10"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countOfArrays(1, 1000, 0) == 1000"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countOfArrays(50, 10, 20) == 554673901"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countOfArrays(150, 3, 75) == 277195090"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countOfArrays(1, 1, 0) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countOfArrays(5, 1, 0) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countOfArrays(20, 10, 5) == 944866948"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countOfArrays(3, 4, 2) == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countOfArrays(10, 5, 4) == 513216"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countOfArrays(1, 2, 0) == 2"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countOfArrays(4, 2, 3) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countOfArrays(50, 20, 10) == 176270007"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3339",
+    "fecha-estimada-2024-10-27",
+    "Dynamic Programming"
+  ]
+}

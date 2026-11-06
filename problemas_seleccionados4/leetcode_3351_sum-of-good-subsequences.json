@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3351",
+  "titulo": "Sum of Good Subsequences",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-good-subsequences/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Hash Table / Dynamic Programming",
+  "enunciado": "You are given an integer array nums. A good subsequence is defined as a subsequence of nums where the absolute difference between any two consecutive elements in the subsequence is exactly 1.\nReturn the sum of all possible good subsequences of nums.\nSince the answer may be very large, return it modulo 109 + 7.\nNote that a subsequence of size 1 is considered good by definition.\n \nExample 1:\n\nInput: nums = [1,2,1]\nOutput: 14\nExplanation:\n\nGood subsequences are: [1], [2], [1], [1,2], [2,1], [1,2,1].\nThe sum of elements in these subsequences is 14.\n\n\nExample 2:\n\nInput: nums = [3,4,5]\nOutput: 40\nExplanation:\n\nGood subsequences are: [3], [4], [5], [3,4], [4,5], [3,4,5].\nThe sum of elements in these subsequences is 40.\n\n\n \nConstraints:\n\n1 <= nums.length <= 105\n0 <= nums[i] <= 105\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def sumOfGoodSubsequences(self, nums: list[int]) -> int:\n    MOD = 10**9 + 7\n    maxNum = max(nums)\n    # endsIn[i] := the number of good subsequences ending in i\n    endsIn = [0] * (maxNum + 2)\n    # dp[i] := the sum of good subsequences ending in i\n    dp = [0] * (maxNum + 2)\n\n    for num in nums:\n      seqsToAppend = 1 + endsIn[num - 1] + endsIn[num + 1]\n      dp[num] = (seqsToAppend * num +\n                 (dp[num] + dp[num - 1] + dp[num + 1])) % MOD\n      endsIn[num] += seqsToAppend % MOD\n\n    return sum(dp) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,5,5,6,6,7,7,8,8,9,9]",
+      "salida": "3681",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [0,1,2,3,4,5]",
+      "salida": "140",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [0,0,0,0,0,0,0,0,0,0]",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3351: LC-3299 - Sum of Consecutive Subsequences. Ambos problemas comparten las técnicas de programación dinámica, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 3, 2, 4, 3, 5, 4, 6, 5, 7]",
+      "salida": "352",
+      "explicacion": "Relación con LC-3351: Ambos problemas comparten las técnicas de programación dinámica, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def getSum(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    n = len(nums)\n\n    def getSequenceSum(nums: list[int], direction: int) -> int:\n      \"\"\"\n      Returns the sum of all sequences in the array that are in consecutive\n      increasing order if `direction` is 1, or in consecutive decreasing order\n      if `direction` is -1.\"\"\"\n      sequenceSum = 0\n      # {num: the number of subsequences ending in `num` so far}\n      prefixCount = collections.Counter()\n      # {num: the number of subsequences starting from `num` so far}\n      suffixCount = collections.Counter()\n      # prefixSubseqs[i] := the number of subsequences ending in nums[i]\n      prefixSubseqs = [0] * n\n      # suffixSubseqs[i] := the number of subsequences starting from nums[i]\n      suffixSubseqs = [0] * n\n\n      for i, num in enumerate(nums):\n        prevNum = num - direction\n        freq = prefixCount[prevNum] + 1\n        prefixSubseqs[i] = freq\n        prefixCount[num] += freq\n        prefixCount[num] %= MOD\n\n      for i, num in reversed(list(enumerate(nums))):\n        nextNum = num + direction\n        freq = suffixCount[nextNum] + 1\n        suffixSubseqs[i] = freq\n        suffixCount[num] += freq\n        suffixCount[num] %= MOD\n\n      for num, prefixSubseq, suffixSubseq in zip(\n              nums, prefixSubseqs, suffixSubseqs):\n        sequenceSum += num * prefixSubseq * suffixSubseq\n        sequenceSum %= MOD\n\n      return sequenceSum\n\n    increasingSequenceSum = getSequenceSum(nums, 1)\n    decreasingSequenceSum = getSequenceSum(nums, -1)\n    return (increasingSequenceSum + decreasingSequenceSum - sum(nums) + MOD) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().sumOfGoodSubsequences([5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9]) == 3681"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().sumOfGoodSubsequences([0, 1, 2, 3, 4, 5]) == 140"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().sumOfGoodSubsequences([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().sumOfGoodSubsequences([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 1430"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().sumOfGoodSubsequences([2, 2, 2, 2, 2, 2, 2, 2, 2, 2]) == 20"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().sumOfGoodSubsequences([1, 1, 1, 1]) == 4"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().sumOfGoodSubsequences([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 1210"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().sumOfGoodSubsequences([1, 3, 5, 7, 9]) == 25"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().sumOfGoodSubsequences([1, 3, 5, 7, 9, 10, 8, 6, 4, 2]) == 154"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().sumOfGoodSubsequences([3, 4, 5]) == 40"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().sumOfGoodSubsequences([1, 1, 2, 2, 3, 3, 4, 4, 5, 5]) == 1206"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().sumOfGoodSubsequences([5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]) == 100"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3351",
+    "fecha-estimada-2024-11-10",
+    "Array",
+    "Hash Table",
+    "Dynamic Programming"
+  ]
+}

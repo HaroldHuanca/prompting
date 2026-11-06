@@ -1,0 +1,7 @@
+﻿dataset,metric,n_blocks,statistic,df,p_raw,kendall_w,method,p_holm,significant
+strict_3_repetitions,porcentaje_pruebas_aprobadas,144,3.998181818181977,3,0.2616605276791954,0.009255050505050873,"Friedman, problem as block; one median per problem-technique",0.8797787724574728,False
+strict_3_repetitions,maintainability_index,144,15.718274111675202,3,0.001295205080263492,0.03638489377702593,"Friedman, problem as block; one median per problem-technique",0.007771230481580953,True
+strict_3_repetitions,complejidad_ciclomatica_max,144,4.415584415584416,3,0.2199446931143682,0.010221260221260221,"Friedman, problem as block; one median per problem-technique",0.8797787724574728,False
+strict_3_repetitions,sloc,143,10.986447241045578,3,0.011799386658822204,0.025609434128311372,"Friedman, problem as block; one median per problem-technique",0.058996933294111015,False
+strict_3_repetitions,tiempo_promedio_ms,67,2.337313432835913,3,0.505410355505755,0.011628425038984641,"Friedman, problem as block; one median per problem-technique",1.0,False
+strict_3_repetitions,memoria_mediana_bytes,67,0.6666666666672604,3,0.8810148425136461,0.0033167495854092557,"Friedman, problem as block; one median per problem-technique",1.0,False

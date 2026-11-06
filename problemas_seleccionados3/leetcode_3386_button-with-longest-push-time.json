@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3386",
+  "titulo": "Button with Longest Push Time",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/button-with-longest-push-time/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "You are given a 2D array events which represents a sequence of events where a child pushes a series of buttons on a keyboard.\nEach events[i] = [indexi, timei] indicates that the button at index indexi was pressed at time timei.\n\nThe array is sorted in increasing order of time.\nThe time taken to press a button is the difference in time between consecutive button presses. The time for the first button is simply the time at which it was pressed.\n\nReturn the index of the button that took the longest time to push. If multiple buttons have the same longest time, return the button with the smallest index.\n \nExample 1:\n\nInput: events = [[1,2],[2,5],[3,9],[1,15]]\nOutput: 1\nExplanation:\n\nButton with index 1 is pressed at time 2.\nButton with index 2 is pressed at time 5, so it took 5 - 2 = 3 units of time.\nButton with index 3 is pressed at time 9, so it took 9 - 5 = 4 units of time.\nButton with index 1 is pressed again at time 15, so it took 15 - 9 = 6 units of time.\n\n\nExample 2:\n\nInput: events = [[10,5],[1,7]]\nOutput: 10\nExplanation:\n\nButton with index 10 is pressed at time 5.\nButton with index 1 is pressed at time 7, so it took 7 - 5 = 2 units of time.\n\n\n \nConstraints:\n\n1 <= events.length <= 1000\nevents[i] == [indexi, timei]\n1 <= indexi, timei <= 105\nThe input is generated such that events is sorted in increasing order of timei.\n\n",
+  "especificacion_entrada": "events: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def buttonWithLongestTime(self, events: list[list[int]]) -> int:\n    ans = 0\n    maxTimeTaken = 0\n    prevTime = 0\n\n    for index, time in events:\n      timeTaken = time - prevTime\n      if timeTaken > maxTimeTaken or timeTaken == maxTimeTaken and index < ans:\n        maxTimeTaken = timeTaken\n        ans = index\n      prevTime = time\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "events = [[1,1],[2,2],[3,3],[4,4],[5,5]]",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "events = [[3,1],[1,3],[2,6],[3,10]]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "events = [[10,5],[1,7]]",
+      "salida": "10",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3386: LC-3433 - Count Mentions Per User. Ambos procesan eventos con marcas de tiempo e identificadores, actualizando el estado a medida que se recorren los eventos.",
+      "entrada": "numberOfUsers = 1, events = [['MESSAGE', '1', 'id0'], ['MESSAGE', '1', 'HERE'], ['MESSAGE', '1', 'ALL']]",
+      "salida": "[3]",
+      "explicacion": "Relación con LC-3386: Ambos procesan eventos con marcas de tiempo e identificadores, actualizando el estado a medida que se recorren los eventos.",
+      "codigo_ilustrativo": "import heapq\n\nfrom dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass OfflineUser:\n  returnTimestamp: int\n  userId: int\n\n  def __lt__(self, other):\n    return self.returnTimestamp < other.returnTimestamp\n\n\nclass Solution:\n  def countMentions(\n      self,\n      numberOfUsers: int,\n      events: list[list[str]]\n  ) -> list[int]:\n    ans = [0] * numberOfUsers\n    online = [True] * numberOfUsers\n    offlineQueue = []  # min-heap to track users that are offline\n    allMentionsCount = 0\n\n    events.sort(key=lambda x: (int(x[1]), -ord(x[0][0])))\n\n    for eventType, t, messageContent in events:\n      timestamp = int(t)\n      # Bring users back online if their offline period has ended.\n      while offlineQueue and offlineQueue[0].returnTimestamp <= timestamp:\n        user = heapq.heappop(offlineQueue)\n        online[user.userId] = True\n      if eventType == \"MESSAGE\":\n        match messageContent:\n          case \"ALL\":\n            allMentionsCount += 1\n          case \"HERE\":\n            for userId in range(numberOfUsers):\n              if online[userId]:\n                ans[userId] += 1\n          case _:\n            for userId in [int(part[2:]) for part in messageContent.split()]:\n              ans[userId] += 1\n      elif eventType == \"OFFLINE\":\n        userId = int(messageContent)\n        online[userId] = False\n        # Add to queue to bring back online after 60 units.\n        heapq.heappush(offlineQueue, OfflineUser(timestamp + 60, userId))\n\n    # Add the \"ALL\" mentions to all users.\n    for userId in range(numberOfUsers):\n      ans[userId] += allMentionsCount\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().buttonWithLongestTime([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]) == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().buttonWithLongestTime([[3, 1], [1, 3], [2, 6], [3, 10]]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().buttonWithLongestTime([[10, 5], [1, 7]]) == 10"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().buttonWithLongestTime([[100, 100], [200, 200], [100, 300], [200, 400]]) == 100"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().buttonWithLongestTime([[3, 1], [3, 4], [5, 8], [5, 12], [3, 16]]) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().buttonWithLongestTime([[1, 10], [2, 20], [3, 30], [4, 40], [5, 50]]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().buttonWithLongestTime([[5, 10], [5, 15], [5, 20], [5, 25]]) == 5"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().buttonWithLongestTime([[5, 10], [3, 12], [5, 18], [1, 25]]) == 5"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().buttonWithLongestTime([[2, 3], [4, 8], [2, 15], [3, 20]]) == 2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().buttonWithLongestTime([[5, 10], [3, 15], [5, 25], [2, 30]]) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().buttonWithLongestTime([[3, 3], [4, 8], [2, 15], [4, 20]]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().buttonWithLongestTime([[5, 10], [5, 20], [5, 30], [5, 40]]) == 5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3386",
+    "fecha-estimada-2024-12-15",
+    "Array"
+  ]
+}

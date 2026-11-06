@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3428",
+  "titulo": "Maximum and Minimum Sums of at Most Size K Subsequences",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-and-minimum-sums-of-at-most-size-k-subsequences/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Math / Dynamic Programming / Combinatorics / Sorting",
+  "enunciado": "You are given an integer array nums and a positive integer k. Return the sum of the maximum and minimum elements of all subsequences of nums with at most k elements.\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: nums = [1,2,3], k = 2\nOutput: 24\nExplanation:\nThe subsequences of nums with at most 2 elements are:\n\n\n\nSubsequence \nMinimum\nMaximum\nSum\n\n\n[1]\n1\n1\n2\n\n\n[2]\n2\n2\n4\n\n\n[3]\n3\n3\n6\n\n\n[1, 2]\n1\n2\n3\n\n\n[1, 3]\n1\n3\n4\n\n\n[2, 3]\n2\n3\n5\n\n\nFinal Total\n \n \n24\n\n\n\nThe output would be 24.\n\nExample 2:\n\nInput: nums = [5,0,6], k = 1\nOutput: 22\nExplanation: \nFor subsequences with exactly 1 element, the minimum and maximum values are the element itself. Therefore, the total is 5 + 5 + 0 + 0 + 6 + 6 = 22.\n\nExample 3:\n\nInput: nums = [1,1,1], k = 2\nOutput: 12\nExplanation:\nThe subsequences [1, 1] and [1] each appear 3 times. For all of them, the minimum and maximum are both 1. Thus, the total is 12.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n0 <= nums[i] <= 109\n1 <= k <= min(70, nums.length)\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minMaxSums(self, nums: list[int], k: int) -> int:\n    # In a sorted array, nums[i] will be\n    #   1. The maximum for subsequences formed by nums[0..i].\n    #   2. The minimum for subsequences formed by nums[i..n - 1].\n    #\n    # The number of times nums[i] is the maximum is the same as the number of\n    # times nums[n - 1 - i] is the minimum, due to the symmetry in subsequences\n    # derived from the sorted order.\n    #\n    # To calculate the contribution of nums[i], we need to find the number of\n    # ways to select at most (k - 1) elements from the range of indices where\n    # nums[i] is the smallest or nums[n - 1 - i] is the largest.\n    MOD = 1_000_000_007\n    n = len(nums)\n\n    def getComb(n: int, k: int) -> list[list[int]]:\n      \"\"\"C(n, k) = C(n - 1, k) + C(n - 1, k - 1)\"\"\"\n      comb = [[0] * (k + 1) for _ in range(n + 1)]\n      for i in range(n + 1):\n        comb[i][0] = 1\n      for i in range(1, n + 1):\n        for j in range(1, k + 1):\n          comb[i][j] = (comb[i - 1][j] + comb[i - 1][j - 1]) % MOD\n      return comb\n\n    comb = getComb(n, k - 1)\n    ans = 0\n\n    nums.sort()\n\n    # i: available numbers from the left of nums[i] or\n    #    available numbers from the right of nums[-1 - i]\n    for i in range(n):\n      count = 0\n      for j in range(k):  # selected numbers\n        count = (count + comb[i][j]) % MOD\n      ans += nums[i] * count\n      ans += nums[-1 - i] * count\n      ans %= MOD\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [7,8,9,10,11], k = 4",
+      "salida": "540",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [5,0,6], k = 1",
+      "salida": "22",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 5",
+      "salida": "7007",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3428: LC-3317 - Find the Number of Possible Ways for an Event. Ambos problemas comparten las técnicas de combinatoria, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "n = 500, x = 250, y = 250",
+      "salida": "604049962",
+      "explicacion": "Relación con LC-3428: Ambos problemas comparten las técnicas de combinatoria, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def numberOfWays(self, n: int, x: int, y: int) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def fact(i: int) -> int:\n      return 1 if i <= 1 else i * fact(i - 1) % MOD\n\n    @functools.lru_cache(None)\n    def inv(i: int) -> int:\n      return pow(i, MOD - 2, MOD)\n\n    @functools.lru_cache(None)\n    def nCk(n: int, k: int) -> int:\n      return fact(n) * inv(fact(k)) * inv(fact(n - k)) % MOD\n\n    @functools.lru_cache(None)\n    def stirling(n: int, k: int) -> int:\n      \"\"\"\n      Returns the number of ways to partition a set of n objects into k\n      non-empty subsets.\n\n      https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind\n      \"\"\"\n      if k == 0 or n < k:\n        return 0\n      if k == 1 or n == k:\n        return 1\n      return (k * stirling(n - 1, k) + stirling(n - 1, k - 1)) % MOD\n\n    # 1. Choose `k` stages from `x` stages.\n    # 2. Partition `n` performers into `k` stages.\n    # 3. Permute `k` stages.\n    # 4. Score `k` stages with score in the range [1, y], so y^k ways.\n    return sum(nCk(x, k) * stirling(n, k) * fact(k) * pow(y, k, MOD) % MOD\n               for k in range(1, min(n, x) + 1)) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minMaxSums([7, 8, 9, 10, 11], 4) == 540"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minMaxSums([5, 0, 6], 1) == 22"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minMaxSums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5) == 7007"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minMaxSums([4, 3, 2, 1], 3) == 70"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minMaxSums([0, 0, 0, 0, 0], 5) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minMaxSums([10, 20, 30, 40], 3) == 700"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minMaxSums([10, 20, 30, 40, 50], 4) == 1800"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minMaxSums([0, 0, 0, 0], 4) == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minMaxSums([2, 4, 6, 8, 10, 12, 14, 16, 18, 20], 7) == 21274"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minMaxSums([4, 5, 6, 7], 3) == 154"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minMaxSums([1, 3, 5, 7, 9, 11, 13], 6) == 1764"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minMaxSums([10, 20, 30, 40, 50], 5) == 1860"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3428",
+    "fecha-estimada-2025-01-19",
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Combinatorics",
+    "Sorting"
+  ]
+}

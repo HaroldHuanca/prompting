@@ -1,0 +1,26 @@
+[
+  {
+    "leetcode_id": "4058",
+    "title": "Best Time to Buy and Sell After Events",
+    "slug": "best-time-to-buy-and-sell-after-events",
+    "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-after-events/",
+    "description": "A dynamic programming problem on event-driven stock price updates.",
+    "difficulty": "Hard",
+    "publication_date": "2024-09-01",
+    "date_type": "unknown",
+    "original_date_field": "",
+    "source_name": "example_dataset",
+    "source_url": "https://example.invalid/records/4058",
+    "extracted_at": "2026-10-31T02:51:02Z",
+    "tags": "Dynamic Programming; Stock Market",
+    "constraints": "1 <= events.length <= 10^5",
+    "examples": "Input: events = [1,2,3]\nOutput: 6",
+    "signature": "class Solution:\n    def maxProfit(self, events: list[int]) -> int:",
+    "test_cases": "",
+    "reference_solution": "",
+    "source_license": "",
+    "completeness": "partial",
+    "date_conflicts": "",
+    "notes": "Fallback sample dataset used when live sources are inaccessible."
+  }
+]

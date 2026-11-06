@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3249",
+  "titulo": "Count the Number of Good Nodes",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-the-number-of-good-nodes/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Tree / Depth-First Search",
+  "enunciado": "There is an undirected tree with n nodes labeled from 0 to n - 1, and rooted at node 0. You are given a 2D integer array edges of length n - 1, where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the tree.\nA node is good if all the subtrees rooted at its children have the same size.\nReturn the number of good nodes in the given tree.\nA subtree of treeName is a tree consisting of a node in treeName and all of its descendants.\n \nExample 1:\n\nInput: edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]]\nOutput: 7\nExplanation:\n\nAll of the nodes of the given tree are good.\n\nExample 2:\n\nInput: edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[1,6],[2,7],[3,8]]\nOutput: 6\nExplanation:\n\nThere are 6 good nodes in the given tree. They are colored in the image above.\nExample 3:\n\nInput: edges = [[0,1],[1,2],[1,3],[1,4],[0,5],[5,6],[6,7],[7,8],[0,9],[9,10],[9,12],[10,11]]\nOutput: 12\nExplanation:\n\nAll nodes except node 9 are good.\n\n\n \nConstraints:\n\n2 <= n <= 105\nedges.length == n - 1\nedges[i].length == 2\n0 <= ai, bi < n\nThe input is generated such that edges represents a valid tree.\n\n",
+  "especificacion_entrada": "edges: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countGoodNodes(self, edges: list[list[int]]) -> int:\n    n = len(edges) + 1\n    graph = [[] for _ in range(n)]\n\n    for u, v in edges:\n      graph[u].append(v)\n      graph[v].append(u)\n\n    ans = 0\n\n    def dfs(u: int, prev: int) -> int:\n      \"\"\"Returns the size of the subtree rooted at u.\"\"\"\n      nonlocal ans\n      size = 1\n      childrenSizes = []\n      for v in graph[u]:\n        if v == prev:\n          continue\n        child_size = dfs(v, u)\n        size += child_size\n        childrenSizes.append(child_size)\n\n      if not childrenSizes or all(s == childrenSizes[0]\n                                  for s in childrenSizes):\n        ans += 1\n\n      return size\n\n    dfs(0, -1)\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[1,6],[2,7],[3,8]]",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1],[1,2],[1,3],[1,4],[0,5],[5,6],[6,7],[7,8],[0,9],[9,10],[9,12],[10,11]]",
+      "salida": "12",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]]",
+      "salida": "7",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3249: LC-3313 - Find the Last Marked Nodes in Tree. Ambos problemas comparten las técnicas de depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "edges = [[0, 1], [0, 2], [2, 3], [2, 4]]",
+      "salida": "[3, 3, 1, 1, 1]",
+      "explicacion": "Relación con LC-3249: Ambos problemas comparten las técnicas de depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from dataclasses import dataclass\n\n\n@dataclass\nclass Node:\n  node: int = 0  # the node number\n  time: int = 0  # the time it got marked\n\n\nclass Last2:\n  def __init__(self, last1: Node = Node(), last2: Node = Node()):\n    self.last1 = last1  # the last marked node\n    self.last2 = last2  # the second last marked node\n\n\nclass Solution:\n  # Similar to 3241. Time Taken to Mark All Nodes\n  def lastMarkedNodes(self, edges: list[list[int]]) -> list[int]:\n    n = len(edges) + 1\n    ans = [0] * n\n    tree = [[] for _ in range(n)]\n    # dp[i] := the last marked two nodes for subtree rooted at node i, where\n    # each node contains the time it got marked\n    dp = [Last2()] * n\n\n    for u, v in edges:\n      tree[u].append(v)\n      tree[v].append(u)\n\n    self._dfs(tree, 0, -1, dp)\n    self._reroot(tree, 0, -1, Node(), dp, ans)\n    return ans\n\n  def _dfs(\n      self,\n      tree: list[list[int]],\n      u: int,\n      prev: int,\n      dp: list[Last2]\n  ) -> Node:\n    \"\"\"\n    Performs a DFS traversal of the subtree rooted at node `u`, computes the\n    time taken to mark all nodes in the subtree, records the last two marked\n    nodes, and returns the last marked node.\n\n    These values are used later in the rerooting process.\n    \"\"\"\n    last1 = Node(u, 0)\n    last2 = Node()\n    for v in tree[u]:\n      if v == prev:\n        continue\n      child = self._dfs(tree, v, u, dp)\n      time = child.time + 1\n      if time > last1.time:\n        last2 = last1\n        last1 = Node(child.node, time)\n      elif time > last2.time:\n        last2 = Node(child.node, time)\n    dp[u] = Last2(last1, last2)\n    return last1\n\n  def _reroot(\n      self,\n      tree: list[list[int]],\n      u: int,\n      prev: int,\n      last: Node,\n      dp: list[list[int]],\n      ans: list[int]\n  ) -> None:\n    \"\"\"\n    Reroots the tree at node `u` and updates the answer array, where `last`\n    is the last marked node that doesn't go through `u`'s subtree.\n    \"\"\"\n    ans[u] = last.node if last.time > dp[u].last1.time else dp[u].last1.node\n    for v in tree[u]:\n      if v == prev:\n        continue\n      newLast = Node(last.node, last.time + 1)\n      if dp[u].last1.node == dp[v].last1.node:\n        alternativeTime = 1 + dp[u].last2.time\n        if alternativeTime > newLast.time:\n          newLast = Node(dp[u].last2.node, alternativeTime)\n      else:\n        alternativeTime = 1 + dp[u].last1.time\n        if alternativeTime > newLast.time:\n          newLast = Node(dp[u].last1.node, alternativeTime)\n      self._reroot(tree, v, u, newLast, dp, ans)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [1, 6], [2, 7], [3, 8]]) == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [1, 3], [1, 4], [0, 5], [5, 6], [6, 7], [7, 8], [0, 9], [9, 10], [9, 12], [10, 11]]) == 12"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]]) == 7"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [1, 3], [2, 4], [2, 5], [3, 6], [3, 7], [4, 8], [4, 9], [5, 10], [5, 11], [6, 12], [6, 13], [7, 14], [7, 15], [8, 16], [8, 17], [9, 18], [9, 19], [10, 20], [10, 21], [11, 22], [11, 23], [12, 24], [12, 25], [13, 26], [13, 27], [14, 28], [14, 29]]) == 27"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [0, 3], [0, 4], [1, 5], [1, 6], [2, 7], [2, 8], [2, 9], [3, 10], [3, 11], [3, 12], [4, 13], [4, 14], [5, 15], [5, 16], [6, 17], [6, 18], [7, 19], [7, 20], [7, 21], [8, 22], [8, 23], [8, 24], [9, 25], [9, 26], [10, 27], [10, 28], [10, 29], [11, 30], [11, 31], [12, 32], [12, 33], [13, 34], [13, 35], [13, 36]]) == 33"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [1, 3], [2, 4], [2, 5], [3, 6], [3, 7], [4, 8], [4, 9], [5, 10], [5, 11], [6, 12], [6, 13], [7, 14], [7, 15], [8, 16], [8, 17], [9, 18], [9, 19], [10, 20], [10, 21], [11, 22], [11, 23], [12, 24], [12, 25], [13, 26], [13, 27], [14, 28], [14, 29], [15, 30], [15, 31], [16, 32], [16, 33], [17, 34], [17, 35], [18, 36], [18, 37], [19, 38], [19, 39], [20, 40], [20, 41], [21, 42], [21, 43], [22, 44], [22, 45], [23, 46], [23, 47]]) == 47"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10], [5, 11], [5, 12], [6, 13], [6, 14], [7, 15], [7, 16], [8, 17], [8, 18], [9, 19], [9, 20], [10, 21], [10, 22], [11, 23], [11, 24], [12, 25], [12, 26], [13, 27], [13, 28], [14, 29], [14, 30]]) == 31"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [2, 6], [2, 7], [3, 8], [3, 9], [4, 10], [4, 11], [5, 12], [5, 13], [6, 14], [6, 15], [7, 16], [7, 17], [8, 18], [8, 19], [9, 20], [9, 21], [10, 22], [10, 23], [11, 24], [11, 25], [12, 26], [12, 27], [13, 28], [13, 29], [14, 30], [14, 31], [15, 32], [15, 33], [16, 34], [16, 35], [17, 36], [17, 37]]) == 37"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [1, 6], [2, 7], [2, 8], [2, 9], [3, 10], [3, 11], [3, 12], [4, 13], [4, 14], [5, 15], [5, 16], [6, 17], [6, 18], [6, 19], [7, 20], [7, 21], [8, 22], [8, 23], [9, 24], [9, 25], [10, 26], [10, 27], [11, 28], [11, 29], [12, 30], [12, 31]]) == 30"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14]]) == 15"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [1, 2], [1, 3], [2, 4], [2, 5], [3, 6], [3, 7], [4, 8], [4, 9], [5, 10], [5, 11], [6, 12], [6, 13], [7, 14], [7, 15], [8, 16], [8, 17], [9, 18], [9, 19], [10, 20], [10, 21], [11, 22], [11, 23], [12, 24], [12, 25], [13, 26], [13, 27]]) == 26"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countGoodNodes([[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [1, 6], [2, 7], [2, 8], [2, 9], [3, 10], [3, 11], [3, 12], [4, 13], [4, 14], [5, 15], [5, 16], [6, 17], [6, 18], [7, 19], [7, 20], [8, 21], [8, 22], [9, 23], [9, 24]]) == 24"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3249",
+    "fecha-estimada-2024-08-11",
+    "Tree",
+    "Depth-First Search"
+  ]
+}

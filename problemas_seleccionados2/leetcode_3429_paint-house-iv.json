@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3429",
+  "titulo": "Paint House IV",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/paint-house-iv/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "You are given an even integer n representing the number of houses arranged in a straight line, and a 2D array cost of size n x 3, where cost[i][j] represents the cost of painting house i with color j + 1.\nThe houses will look beautiful if they satisfy the following conditions:\n\nNo two adjacent houses are painted the same color.\nHouses equidistant from the ends of the row are not painted the same color. For example, if n = 6, houses at positions (0, 5), (1, 4), and (2, 3) are considered equidistant.\n\nReturn the minimum cost to paint the houses such that they look beautiful.\n \nExample 1:\n\nInput: n = 4, cost = [[3,5,7],[6,2,9],[4,8,1],[7,3,5]]\nOutput: 9\nExplanation:\nThe optimal painting sequence is [1, 2, 3, 2] with corresponding costs [3, 2, 1, 3]. This satisfies the following conditions:\n\nNo adjacent houses have the same color.\nHouses at positions 0 and 3 (equidistant from the ends) are not painted the same color (1 != 2).\nHouses at positions 1 and 2 (equidistant from the ends) are not painted the same color (2 != 3).\n\nThe minimum cost to paint the houses so that they look beautiful is 3 + 2 + 1 + 3 = 9.\n\nExample 2:\n\nInput: n = 6, cost = [[2,4,6],[5,3,8],[7,1,9],[4,6,2],[3,5,7],[8,2,4]]\nOutput: 18\nExplanation:\nThe optimal painting sequence is [1, 3, 2, 3, 1, 2] with corresponding costs [2, 8, 1, 2, 3, 2]. This satisfies the following conditions:\n\nNo adjacent houses have the same color.\nHouses at positions 0 and 5 (equidistant from the ends) are not painted the same color (1 != 2).\nHouses at positions 1 and 4 (equidistant from the ends) are not painted the same color (3 != 1).\nHouses at positions 2 and 3 (equidistant from the ends) are not painted the same color (2 != 3).\n\nThe minimum cost to paint the houses so that they look beautiful is 2 + 8 + 1 + 2 + 3 + 2 = 18.\n\n \nConstraints:\n\n2 <= n <= 105\nn is even.\ncost.length == n\ncost[i].length == 3\n0 <= cost[i][j] <= 105\n\n",
+  "especificacion_entrada": "n: int, costs: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minCost(self, n: int, costs: list[list[int]]) -> int:\n    INVALID_COLOR = 3\n\n    def getValidColors(prevColor: int) -> list[int]:\n      return [color for color in range(3) if color != prevColor]\n\n    @functools.lru_cache(None)\n    def minCost(i: int, prevLeftColor: int, prevRightColor: int) -> int:\n      if i == len(costs) // 2:\n        return 0\n      res = math.inf\n      for leftColor in getValidColors(prevLeftColor):\n        for rightColor in getValidColors(prevRightColor):\n          if leftColor == rightColor:\n            continue\n          leftCost = costs[i][leftColor]\n          rightCost = costs[-1 - i][rightColor]\n          res = min(res, leftCost + rightCost +\n                    minCost(i + 1, leftColor, rightColor))\n      return res\n\n    return minCost(0, INVALID_COLOR, INVALID_COLOR)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 4, cost = [[3,5,7],[6,2,9],[4,8,1],[7,3,5]]",
+      "salida": "9",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 10, cost = [[5,5,5],[4,4,4],[3,3,3],[2,2,2],[1,1,1],[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5]]",
+      "salida": "30",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 8, cost = [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],[22,23,24]]",
+      "salida": "96",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3429: LC-3290 - Maximum Multiplication Score. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "a = [0, 0, 0, 0], b = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3429: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxScore(self, a: list[int], b: list[int]) -> int:\n    n = len(b)\n    # dp[i][j] := the maximum score by selecting 4 - i numbers from b[j..n - 1]\n    # using the corresponding numbers from a[i..3]\n    dp = [[0] * (n + 1) for _ in range(5)]\n\n    # Run out of numbers in b but still need to select numbers from a.\n    for i in range(4):\n      dp[i][n] = -math.inf\n\n    for i in reversed(range(4)):\n      for j in reversed(range(n)):\n        # Skip b[j] or pair a[i] with b[j].\n        dp[i][j] = max(dp[i][j + 1], a[i] * b[j] + dp[i + 1][j + 1])\n\n    return -1 if dp[0][0] == -math.inf else dp[0][0]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minCost(4, [[3, 5, 7], [6, 2, 9], [4, 8, 1], [7, 3, 5]]) == 9"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minCost(10, [[5, 5, 5], [4, 4, 4], [3, 3, 3], [2, 2, 2], [1, 1, 1], [1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5]]) == 30"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minCost(8, [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21], [22, 23, 24]]) == 96"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minCost(10, [[5, 3, 1], [4, 6, 2], [7, 9, 8], [1, 2, 3], [9, 8, 7], [3, 2, 1], [2, 1, 4], [6, 5, 9], [8, 7, 3], [4, 2, 6]]) == 35"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minCost(10, [[1, 3, 5], [2, 4, 6], [7, 9, 11], [8, 10, 12], [13, 15, 17], [14, 16, 18], [19, 21, 23], [20, 22, 24], [25, 27, 29], [26, 28, 30]]) == 145"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minCost(10, [[5, 8, 6], [3, 9, 7], [8, 4, 2], [6, 5, 3], [2, 9, 7], [7, 4, 2], [6, 5, 3], [3, 9, 7], [8, 4, 2], [5, 8, 6]]) == 35"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minCost(6, [[2, 4, 6], [5, 3, 8], [7, 1, 9], [4, 6, 2], [3, 5, 7], [8, 2, 4]]) == 18"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minCost(12, [[15, 5, 20], [10, 1, 18], [25, 6, 3], [8, 14, 9], [30, 2, 16], [12, 7, 11], [11, 12, 7], [16, 2, 13], [9, 14, 8], [3, 6, 19], [20, 1, 15], [24, 5, 10]]) == 80"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minCost(18, [[1, 4, 3], [4, 3, 1], [3, 1, 4], [1, 4, 3], [4, 3, 1], [3, 1, 4], [1, 4, 3], [4, 3, 1], [3, 1, 4], [1, 4, 3], [4, 3, 1], [3, 1, 4], [1, 4, 3], [4, 3, 1], [3, 1, 4], [1, 4, 3], [4, 3, 1], [3, 1, 4]]) == 33"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minCost(16, [[10, 20, 30], [40, 50, 60], [70, 80, 90], [100, 110, 120], [130, 140, 150], [160, 170, 180], [190, 200, 210], [220, 230, 240], [250, 260, 270], [280, 290, 300], [310, 320, 330], [340, 350, 360], [370, 380, 390], [400, 410, 420], [430, 440, 450], [460, 470, 480]]) == 3840"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minCost(12, [[10, 15, 5], [5, 10, 15], [15, 5, 10], [20, 25, 10], [10, 20, 25], [25, 10, 20], [20, 10, 25], [10, 25, 20], [25, 20, 10], [10, 15, 5], [5, 10, 15], [15, 5, 10]]) == 135"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minCost(16, [[1, 2, 3], [3, 2, 1], [2, 1, 3], [3, 1, 2], [1, 3, 2], [2, 3, 1], [3, 2, 1], [1, 2, 3], [3, 1, 2], [2, 3, 1], [1, 2, 3], [3, 2, 1], [2, 1, 3], [3, 1, 2], [1, 3, 2], [2, 3, 1]]) == 19"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "medium",
+    "leetcode-id-3429",
+    "fecha-estimada-2025-01-19",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

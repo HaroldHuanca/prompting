@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3309",
+  "titulo": "Maximum Possible Number by Binary Concatenation",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-possible-number-by-binary-concatenation/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Bit Manipulation / Array / Enumeration",
+  "enunciado": "You are given an array of integers nums of size 3.\nReturn the maximum possible number whose binary representation can be formed by concatenating the binary representation of all elements in nums in some order.\nNote that the binary representation of any number does not contain leading zeros.\n \nExample 1:\n\nInput: nums = [1,2,3]\nOutput: 30\nExplanation:\nConcatenate the numbers in the order [3, 1, 2] to get the result \"11110\", which is the binary representation of 30.\n\nExample 2:\n\nInput: nums = [2,8,16]\nOutput: 1296\nExplanation:\nConcatenate the numbers in the order [2, 8, 16] to get the result \"10100010000\", which is the binary representation of 1296.\n\n \nConstraints:\n\nnums.length == 3\n1 <= nums[i] <= 127\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxGoodNumber(self, nums: list[int]) -> int:\n    ans = 0\n\n    def concat(a: int, b: int) -> int:\n      \"\"\"Returns the concatenation of the binary representations of a and b.\"\"\"\n      return (a << b.bit_length()) + b\n\n    nums.sort(key=functools.cmp_to_key(\n        lambda a, b: concat(b, a) - concat(a, b)))\n\n    for num in nums:\n      ans = concat(ans, num)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [64,1,127]",
+      "salida": "32704",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [7,5,3]",
+      "salida": "253",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [127,127,127]",
+      "salida": "2097151",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3309: LC-3315 - Construct the Minimum Bitwise Array II. Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [41, 43, 47, 53]",
+      "salida": "[40, 41, 39, 52]",
+      "explicacion": "Relación con LC-3309: Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  # Same as 3314. Construct the Minimum Bitwise Array I\n  def minBitwiseArray(self, nums: list[int]) -> list[int]:\n    return [-1 if num == 2 else num - self._getLeadingOneOfLastGroupOfOnes(num)\n            for num in nums]\n\n  def _getLeadingOneOfLastGroupOfOnes(self, num: int) -> int:\n    \"\"\"\n    Returns the leading one of the last group of 1s in the binary\n    representation of num. For example, if num = 0b10111, the leading one of\n    the last group of 1s is 0b100.\n    \"\"\"\n    leadingOne = 1\n    while (num & leadingOne) > 0:\n      leadingOne <<= 1\n    return leadingOne >> 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxGoodNumber([64, 1, 127]) == 32704"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxGoodNumber([7, 5, 3]) == 253"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxGoodNumber([127, 127, 127]) == 2097151"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxGoodNumber([32, 16, 8]) == 17440"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxGoodNumber([1, 5, 7]) == 125"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxGoodNumber([64, 32, 16]) == 135232"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxGoodNumber([1, 2, 3]) == 30"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxGoodNumber([2, 8, 16]) == 1296"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxGoodNumber([1, 1, 1]) == 7"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxGoodNumber([127, 64, 32]) == 1044544"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxGoodNumber([3, 4, 126]) == 4084"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxGoodNumber([127, 1, 1]) == 511"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3309",
+    "fecha-estimada-2024-10-06",
+    "Bit Manipulation",
+    "Array",
+    "Enumeration"
+  ]
+}

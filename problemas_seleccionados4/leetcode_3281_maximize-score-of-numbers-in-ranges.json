@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3281",
+  "titulo": "Maximize Score of Numbers in Ranges",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-score-of-numbers-in-ranges/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Binary Search / Sorting",
+  "enunciado": "You are given an array of integers start and an integer d, representing n intervals [start[i], start[i] + d].\nYou are asked to choose n integers where the ith integer must belong to the ith interval. The score of the chosen integers is defined as the minimum absolute difference between any two integers that have been chosen.\nReturn the maximum possible score of the chosen integers.\n \nExample 1:\n\nInput: start = [6,0,3], d = 2\nOutput: 4\nExplanation:\nThe maximum possible score can be obtained by choosing integers: 8, 0, and 4. The score of these chosen integers is min(|8 - 0|, |8 - 4|, |0 - 4|) which equals 4.\n\nExample 2:\n\nInput: start = [2,6,13,13], d = 5\nOutput: 5\nExplanation:\nThe maximum possible score can be obtained by choosing integers: 2, 7, 13, and 18. The score of these chosen integers is min(|2 - 7|, |2 - 13|, |2 - 18|, |7 - 13|, |7 - 18|, |13 - 18|) which equals 5.\n\n \nConstraints:\n\n2 <= start.length <= 105\n0 <= start[i] <= 109\n0 <= d <= 109\n\n",
+  "especificacion_entrada": "start: list[int], d: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxPossibleScore(self, start: list[int], d: int) -> int:\n    def isPossible(m: int) -> bool:\n      lastPick = start[0]\n      for i in range(1, len(start)):\n        if lastPick + m > start[i] + d:\n          return False\n        lastPick = max(lastPick + m, start[i])\n      return True\n\n    start.sort()\n\n    maxScore = (start[-1] + d) - start[0] + 1\n    l = bisect.bisect_left(range(maxScore), True,\n                           key=lambda m: not isPossible(m))\n    return l - 1\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "start = [5,10,15,20,25], d = 4",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "start = [1,10,20,30], d = 9",
+      "salida": "12",
+      "explicacion": ""
+    },
+    {
+      "entrada": "start = [10,20,30,40,50], d = 15",
+      "salida": "13",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3281: LC-3449 - Maximize the Minimum Game Score. Ambos problemas comparten las técnicas de búsqueda binaria, estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "points = [5, 3, 8, 2, 6], m = 10",
+      "salida": "6",
+      "explicacion": "Relación con LC-3281: Ambos problemas comparten las técnicas de búsqueda binaria, estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxScore(self, points: list[int], m: int) -> int:\n    def isPossible(minVal: int, m: int) -> bool:\n      \"\"\"\n      Returns True if it is possible to achieve the maximum minimum value `x`\n      with `m` number of moves.\n      \"\"\"\n      moves = 0\n      prevMoves = 0  # to track remaining moves from the previous point\n      for i, point in enumerate(points):\n        required = (minVal + point - 1) // point  # ceil(minVal / point)\n        required = max(0, required - prevMoves)\n        if required > 0:\n          moves += 2 * required - 1\n          prevMoves = required - 1\n        elif i + 1 < len(points):\n          moves += 1\n          prevMoves = 0\n        if moves > m:\n          return False\n      return True\n\n    l = 0\n    r = (m + 1) // 2 * points[0] + 1\n\n    while l < r:\n      mid = (l + r + 1) // 2\n      if isPossible(mid, m):\n        l = mid\n      else:\n        r = mid - 1\n\n    return l\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxPossibleScore([5, 10, 15, 20, 25], 4) == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxPossibleScore([1, 10, 20, 30], 9) == 12"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxPossibleScore([10, 20, 30, 40, 50], 15) == 13"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxPossibleScore([100, 200, 300, 400, 500], 50) == 112"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxPossibleScore([2, 6, 13, 13], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxPossibleScore([1, 1, 1, 1], 10) == 3"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxPossibleScore([5, 5, 5, 5, 5], 0) == 0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxPossibleScore([10, 20, 30, 40, 50, 60], 15) == 13"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxPossibleScore([1, 2, 3, 4, 5], 1) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxPossibleScore([1, 5, 9, 14], 3) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxPossibleScore([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 1) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxPossibleScore([0, 1000000000], 999999999) == 1999999999"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3281",
+    "fecha-estimada-2024-09-08",
+    "Greedy",
+    "Array",
+    "Binary Search",
+    "Sorting"
+  ]
+}

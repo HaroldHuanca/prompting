@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3256",
+  "titulo": "Maximum Value Sum by Placing Three Rooks I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-value-sum-by-placing-three-rooks-i/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Dynamic Programming / Enumeration / Matrix",
+  "enunciado": "You are given a m x n 2D array board representing a chessboard, where board[i][j] represents the value of the cell (i, j).\nRooks in the same row or column attack each other. You need to place three rooks on the chessboard such that the rooks do not attack each other.\nReturn the maximum sum of the cell values on which the rooks are placed.\n \nExample 1:\n\nInput: board = [[-3,1,1,1],[-3,1,-3,1],[-3,2,1,1]]\nOutput: 4\nExplanation:\n\nWe can place the rooks in the cells (0, 2), (1, 3), and (2, 1) for a sum of 1 + 1 + 2 = 4.\n\nExample 2:\n\nInput: board = [[1,2,3],[4,5,6],[7,8,9]]\nOutput: 15\nExplanation:\nWe can place the rooks in the cells (0, 0), (1, 1), and (2, 2) for a sum of 1 + 5 + 9 = 15.\n\nExample 3:\n\nInput: board = [[1,1,1],[1,1,1],[1,1,1]]\nOutput: 3\nExplanation:\nWe can place the rooks in the cells (0, 2), (1, 1), and (2, 0) for a sum of 1 + 1 + 1 = 3.\n\n \nConstraints:\n\n3 <= m == board.length <= 100\n3 <= n == board[i].length <= 100\n-109 <= board[i][j] <= 109\n\n",
+  "especificacion_entrada": "board: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maximumValueSum(self, board: list[list[int]]) -> int:\n    rows = [heapq.nlargest(3, [(val, i, j)\n            for j, val in enumerate(row)])\n            for i, row in enumerate(board)]\n    cols = [heapq.nlargest(3, [(val, i, j)\n            for i, val in enumerate(col)])\n            for j, col in enumerate(zip(*board))]\n    topNine = heapq.nlargest(9,\n                             set(itertools.chain(*rows)) &\n                             set(itertools.chain(*cols)))\n    return max(\n        (val1 + val2 + val3 for\n         (val1, i1, j1),\n         (val2, i2, j2),\n         (val3, i3, j3) in (itertools.combinations(topNine, 3))\n         if len({i1, i2, i3}) == 3 and len({j1, j2, j3}) == 3))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "board = [[10,20,30],[40,50,60],[70,80,90]]",
+      "salida": "150",
+      "explicacion": ""
+    },
+    {
+      "entrada": "board = [[-1,-2,-3],[-4,-5,-6],[-7,-8,-9]]",
+      "salida": "-15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "board = [[-3,1,1,1],[-3,1,-3,1],[-3,2,1,1]]",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3256: LC-3257 - Maximum Value Sum by Placing Three Rooks II. Ambos problemas comparten las técnicas de programación dinámica, enumeración, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "board = [[5, -2, 3, 7], [1, 8, -1, 2], [-4, 4, -3, 6], [3, 7, 5, -9]]",
+      "salida": "20",
+      "explicacion": "Relación con LC-3256: Ambos problemas comparten las técnicas de programación dinámica, enumeración, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import heapq\nimport itertools\n\nclass Solution:\n  # Same as 3256. Maximum Value Sum by Placing Three Rooks I\n  def maximumValueSum(self, board: list[list[int]]) -> int:\n    rows = [heapq.nlargest(3, [(val, i, j)\n            for j, val in enumerate(row)])\n            for i, row in enumerate(board)]\n    cols = [heapq.nlargest(3, [(val, i, j)\n            for i, val in enumerate(col)])\n            for j, col in enumerate(zip(*board))]\n    topNine = heapq.nlargest(9,\n                             set(itertools.chain(*rows)) &\n                             set(itertools.chain(*cols)))\n    return max(\n        (val1 + val2 + val3 for\n         (val1, i1, j1),\n         (val2, i2, j2),\n         (val3, i3, j3) in (itertools.combinations(topNine, 3))\n         if len({i1, i2, i3}) == 3 and len({j1, j2, j3}) == 3))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maximumValueSum([[10, 20, 30], [40, 50, 60], [70, 80, 90]]) == 150"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maximumValueSum([[-1, -2, -3], [-4, -5, -6], [-7, -8, -9]]) == -15"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maximumValueSum([[-3, 1, 1, 1], [-3, 1, -3, 1], [-3, 2, 1, 1]]) == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maximumValueSum([[1, 1, 1], [1, 1, 1], [1, 1, 1]]) == 3"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maximumValueSum([[5, 3, 1, 4], [2, 7, 6, 8], [9, 0, 2, 3], [1, 4, 7, 5]]) == 24"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maximumValueSum([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) == 15"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maximumValueSum([[5, 3, 2], [1, 6, 4], [7, 8, 9]]) == 20"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maximumValueSum([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]) == 57"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maximumValueSum([[-1, -10, 100, 5], [10, 20, -30, 40], [-50, 60, 70, -80], [90, -100, 110, 120]]) == 280"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maximumValueSum([[-5, 5, -5, 5, -5], [5, -5, 5, -5, 5], [-5, 5, -5, 5, -5], [5, -5, 5, -5, 5], [-5, 5, -5, 5, -5]]) == 15"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maximumValueSum([[1, -2, 3, -4, 5], [6, -7, 8, -9, 10], [-11, 12, -13, 14, -15], [16, -17, 18, -19, 20], [-21, 22, -23, 24, -25]]) == 56"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maximumValueSum([[-1, 2, -3, 4], [5, -6, 7, -8], [-9, 10, -11, 12], [13, -14, 15, -16]]) == 32"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3256",
+    "fecha-estimada-2024-08-11",
+    "Array",
+    "Dynamic Programming",
+    "Enumeration",
+    "Matrix"
+  ]
+}

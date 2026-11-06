@@ -1,0 +1,96 @@
+{
+  "codigo": "LC-3487",
+  "titulo": "Maximum Unique Subarray Sum After Deletion",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-unique-subarray-sum-after-deletion/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Arreglos / Hash Set / Greedy",
+  "enunciado": "You are given an integer array nums.\nYou are allowed to delete any number of elements from nums without making it empty. After performing the deletions, select a subarray of nums such that:\n\nAll elements in the subarray are unique.\nThe sum of the elements in the subarray is maximized.\n\nReturn the maximum sum of such a subarray.\n \nExample 1:\n\nInput: nums = [1,2,3,4,5]\nOutput: 15\nExplanation:\nSelect the entire array without deleting any element to obtain the maximum sum.\n\nExample 2:\n\nInput: nums = [1,1,0,1,1]\nOutput: 1\nExplanation:\nDelete the element nums[0] == 1, nums[1] == 1, nums[2] == 0, and nums[3] == 1. Select the entire array [1] to obtain the maximum sum.\n\nExample 3:\n\nInput: nums = [1,2,-1,-2,1,0,-1]\nOutput: 3\nExplanation:\nDelete the elements nums[2] == -1 and nums[3] == -2, and select the subarray [2, 1] from [1, 2, 1, 0, -1] to obtain the maximum sum.\n\n \nConstraints:\n\n1 <= nums.length <= 100\n-100 <= nums[i] <= 100\n\n",
+  "especificacion_entrada": "nums: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= nums.length <= 100\n-100 <= nums[i] <= 100",
+  "solucion_referencia": "class Solution:\n  def maxSum(self, nums: list[int]) -> int:\n    mx = max(nums)\n    if mx <= 0:\n      return mx\n    return sum(max(0, num) for num in set(nums))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,3,4,5]",
+      "salida": "15",
+      "explicacion": "Select the entire array without deleting any element to obtain the maximum sum."
+    },
+    {
+      "entrada": "nums = [1,1,0,1,1]",
+      "salida": "1",
+      "explicacion": "Delete the element nums[0] == 1, nums[1] == 1, nums[2] == 0, and nums[3] == 1. Select the entire array [1] to obtain the maximum sum."
+    },
+    {
+      "entrada": "nums = [1,2,-1,-2,1,0,-1]",
+      "salida": "3",
+      "explicacion": "Delete the elements nums[2] == -1 and nums[3] == -2, and select the subarray [2, 1] from [1, 2, 1, 0, -1] to obtain the maximum sum."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3487: LC-3381 - Maximum Subarray Sum With Length Divisible by K. Ambos maximizan una suma sobre un subarreglo y deben elegir los elementos que contribuyen al mejor resultado.",
+      "entrada": "nums = [1000000000, -1000000000, 1000000000, -1000000000, 1000000000], k = 2",
+      "salida": "0",
+      "explicacion": "Relación con LC-3487: Ambos maximizan una suma sobre un subarreglo y deben elegir los elementos que contribuyen al mejor resultado.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxSubarraySum(self, nums: list[int], k: int) -> int:\n    ans = -math.inf\n    prefix = 0\n    # minPrefix[i % k] := the minimum prefix sum of the first i numbers\n    minPrefix = [math.inf] * k\n    minPrefix[k - 1] = 0\n\n    for i, num in enumerate(nums):\n      prefix += num\n      ans = max(ans, prefix - minPrefix[i % k])\n      minPrefix[i % k] = min(minPrefix[i % k], prefix)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxSum([-1, 2, -3, 4, -5]) == 6"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxSum([-10, 1, 20, -30, 40, -50, 60]) == 121"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 55"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxSum([1, -1, 1, -1, 1, -1]) == 1"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxSum([1, -1, 1, -1, 1, -1, 1, -1]) == 1"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxSum([100, -100, 50, -50, 25, -25]) == 175"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxSum([10, 20, 30, 40, 50]) == 150"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxSum([5, 5, 5, 5, 5]) == 5"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxSum([-1, -2, -3, -4, -5]) == -1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSum([0, 0, 0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 4, 5]) == 15"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSum([1, 2, 3, 1, 2, 3, 1, 2, 3]) == 6"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3487",
+    "seleccion-reciente-2026-11"
+  ]
+}

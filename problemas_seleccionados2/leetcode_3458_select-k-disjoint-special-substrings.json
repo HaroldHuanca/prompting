@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3458",
+  "titulo": "Select K Disjoint Special Substrings",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/select-k-disjoint-special-substrings/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Hash Table / String / Dynamic Programming / Sorting",
+  "enunciado": "Given a string s of length n and an integer k, determine whether it is possible to select k disjoint special substrings.\nA special substring is a substring where:\n\nAny character present inside the substring should not appear outside it in the string.\nThe substring is not the entire string s.\n\nNote that all k substrings must be disjoint, meaning they cannot overlap.\nReturn true if it is possible to select k such disjoint special substrings; otherwise, return false.\n \nExample 1:\n\nInput: s = \"abcdbaefab\", k = 2\nOutput: true\nExplanation:\n\nWe can select two disjoint special substrings: \"cd\" and \"ef\".\n\"cd\" contains the characters 'c' and 'd', which do not appear elsewhere in s.\n\"ef\" contains the characters 'e' and 'f', which do not appear elsewhere in s.\n\n\nExample 2:\n\nInput: s = \"cdefdc\", k = 3\nOutput: false\nExplanation:\nThere can be at most 2 disjoint special substrings: \"e\" and \"f\". Since k = 3, the output is false.\n\nExample 3:\n\nInput: s = \"abeabe\", k = 0\nOutput: true\n\n \nConstraints:\n\n2 <= n == s.length <= 5 * 104\n0 <= k <= 26\ns consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "s: str, k: int",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxSubstringLength(self, s: str, k: int) -> bool:\n    n = len(s)\n    first = [n] * 26\n    last = [-1] * 26\n    # dp[i] := the maximum disjoint special substrings for the first i letters\n    dp = [0] * (n + 1)\n    seenOrder = []\n\n    for i, c in enumerate(s):\n      a = ord(c) - ord('a')\n      if first[a] == n:\n        first[a] = i\n        seenOrder.append(c)\n      last[a] = i\n\n    for c in seenOrder:\n      a = ord(c) - ord('a')\n      for j in range(first[a], last[a]):\n        b = ord(s[j]) - ord('a')\n        first[a] = min(first[a], first[b])\n        last[a] = max(last[a], last[b])\n\n    for i, c in enumerate(s):\n      a = ord(c) - ord('a')\n      if last[a] != i or (first[a] == 0 and i == n - 1):\n        dp[i + 1] = dp[i]\n      else:  # Start a new special substring.\n        dp[i + 1] = max(dp[i], 1 + dp[first[a]])\n\n    return dp[n] >= k\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"single\", k = 0",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"abeabe\", k = 0",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"cdefdc\", k = 3",
+      "salida": "False",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3458: LC-3473 - Sum of K Subarrays With Length at Least M. Ambos seleccionan k subarreglos o segmentos disjuntos y optimizan una condición con programación dinámica.",
+      "entrada": "nums = [1, 0, -1, 0, 1, -1, 0, 1], k = 2, m = 2",
+      "salida": "2",
+      "explicacion": "Relación con LC-3458: Ambos seleccionan k subarreglos o segmentos disjuntos y optimizan una condición con programación dinámica.",
+      "codigo_ilustrativo": "import itertools\nimport functools\n\nclass Solution:\n  def maxSum(self, nums: list[int], k: int, m: int) -> int:\n    INF = 20_000_000\n    n = len(nums)\n    prefix = list(itertools.accumulate(nums, initial=0))\n\n    @functools.lru_cache(None)\n    def dp(i: int, ongoing: int, k: int) -> int:\n      if k < 0:\n        return -INF\n      if i == n:\n        return 0 if k == 0 else -INF\n      if ongoing == 1:\n        # 1. End the current subarray (transition to state 0, same index i)\n        # 2. Extend the current subarray by picking nums[i] and move to i + 1\n        return max(dp(i, 0, k),\n                   dp(i + 1, 1, k) + nums[i])\n      # ongoing == 0\n      # 1. Skip nums[i]\n      # 2. Pick nums[i:i+m] (only if k > 0 and there're enough elements)\n      res = dp(i + 1, 0, k)\n      if i + m <= n:  # If we have enough elements for a new segment\n        res = max(res,\n                  dp(i + m, 1, k - 1) + (prefix[i + m] - prefix[i]))\n      return res\n\n    return dp(0, 0, k)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxSubstringLength('single', 0) == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxSubstringLength('abeabe', 0) == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxSubstringLength('cdefdc', 3) == False"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxSubstringLength('abacabadabacaba', 3) == False"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxSubstringLength('aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz', 2) == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxSubstringLength('abcdbaefab', 2) == True"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxSubstringLength('unique', 6) == False"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxSubstringLength('xyzzxyzz', 1) == False"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxSubstringLength('abcdefghijklmnopqrstuvwxyz', 26) == True"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSubstringLength('repeatedletters', 3) == True"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSubstringLength('mississippi', 1) == True"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSubstringLength('aaaaabbbbccccdddddeeeeeffffffggggghhhhhh', 6) == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3458",
+    "fecha-estimada-2025-02-16",
+    "Greedy",
+    "Hash Table",
+    "String",
+    "Dynamic Programming",
+    "Sorting"
+  ]
+}

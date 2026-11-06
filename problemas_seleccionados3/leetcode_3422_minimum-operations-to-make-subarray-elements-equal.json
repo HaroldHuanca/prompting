@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3422",
+  "titulo": "Minimum Operations to Make Subarray Elements Equal",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-operations-to-make-subarray-elements-equal/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / Math / Sliding Window / Heap (Priority Queue)",
+  "enunciado": "You are given an integer array nums and an integer k. You can perform the following operation any number of times:\n\nIncrease or decrease any element of nums by 1.\n\nReturn the minimum number of operations required to ensure that at least one subarray of size k in nums has all elements equal.\n \nExample 1:\n\nInput: nums = [4,-3,2,1,-4,6], k = 3\nOutput: 5\nExplanation:\n\nUse 4 operations to add 4 to nums[1]. The resulting array is [4, 1, 2, 1, -4, 6].\nUse 1 operation to subtract 1 from nums[2]. The resulting array is [4, 1, 1, 1, -4, 6].\nThe array now contains a subarray [1, 1, 1] of size k = 3 with all elements equal. Hence, the answer is 5.\n\n\nExample 2:\n\nInput: nums = [-2,-2,3,1,4], k = 2\nOutput: 0\nExplanation:\n\n\nThe subarray [-2, -2] of size k = 2 already contains all equal elements, so no operations are needed. Hence, the answer is 0.\n\n\n\n \nConstraints:\n\n2 <= nums.length <= 105\n-106 <= nums[i] <= 106\n2 <= k <= nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minOperations(self, nums: list[int], k: int) -> int:\n    window = SortedList(nums[:k])\n    median = window[(k - 1) // 2]\n    ops = sum(abs(median - nums[j]) for j in range(k))\n    ans = ops\n\n    for i in range(k, len(nums)):\n      window.remove(nums[i - k])\n      window.add(nums[i])\n      ops -= abs(median - nums[i - k])\n      ops += abs(median - nums[i])\n      newMedian = window[(k - 1) // 2]\n      medianMultiplier = (\n          2\n          if k % 2 == 0 and median <= newMedian <= window[k // 2]\n          else k % 2)\n      ops -= abs(newMedian - median) * medianMultiplier\n      median = newMedian\n      ans = min(ans, ops)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1000000,-1000000,1000000,-1000000], k = 2",
+      "salida": "2000000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10, 10, 10, 10], k = 2",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,10,10,10,10], k = 3",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3422: LC-3321 - Find X-Sum of All K-Long Subarrays II. Ambos problemas comparten las técnicas de tabla hash, heap, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], k = 4, x = 2",
+      "salida": "[70, 90, 110, 130, 150, 170, 190]",
+      "explicacion": "Relación con LC-3422: Ambos problemas comparten las técnicas de tabla hash, heap, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from collections import Counter\n\nclass Solution:\n  def findXSum(self, nums: list[int], k: int, x: int) -> list[int]:\n    counts = Counter()\n    answer = []\n    for i, value in enumerate(nums):\n      counts[value] += 1\n      if i >= k:\n        outgoing = nums[i - k]\n        counts[outgoing] -= 1\n        if counts[outgoing] == 0:\n          del counts[outgoing]\n      if i >= k - 1:\n        top = sorted(counts.items(), key=lambda item: (item[1], item[0]), reverse=True)[:x]\n        answer.append(sum(value * frequency for value, frequency in top))\n    return answer\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minOperations([1000000, -1000000, 1000000, -1000000], 2) == 2000000"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minOperations([10, 10, 10, 10], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minOperations([10, 10, 10, 10, 10], 3) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minOperations([1, 3, 5, 7, 9, 11], 5) == 12"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minOperations([10, 10, 10, 10, 10], 5) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minOperations([1, 2, 3, 5, 6, 7], 5) == 8"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minOperations([1, 2, 3, 4, 5], 4) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minOperations([1, 2, 3, 4, 5, 6], 4) == 4"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minOperations([1, 1000000, -1000000, 1, 1], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minOperations([4, -3, 2, 1, -4, 6], 3) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minOperations([5, 5, 5, 5, 5], 3) == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minOperations([0, 0, 0, 0, 0, 0], 6) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3422",
+    "fecha-estimada-2025-01-12",
+    "Array",
+    "Hash Table",
+    "Math",
+    "Sliding Window",
+    "Heap (Priority Queue)"
+  ]
+}

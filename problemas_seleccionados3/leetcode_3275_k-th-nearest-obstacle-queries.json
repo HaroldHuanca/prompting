@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3275",
+  "titulo": "K-th Nearest Obstacle Queries",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/k-th-nearest-obstacle-queries/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Heap (Priority Queue)",
+  "enunciado": "There is an infinite 2D plane.\nYou are given a positive integer k. You are also given a 2D array queries, which contains the following queries:\n\nqueries[i] = [x, y]: Build an obstacle at coordinate (x, y) in the plane. It is guaranteed that there is no obstacle at this coordinate when this query is made.\n\nAfter each query, you need to find the distance of the kth nearest obstacle from the origin.\nReturn an integer array results where results[i] denotes the kth nearest obstacle after query i, or results[i] == -1 if there are less than k obstacles.\nNote that initially there are no obstacles anywhere.\nThe distance of an obstacle at coordinate (x, y) from the origin is given by |x| + |y|.\n \nExample 1:\n\nInput: queries = [[1,2],[3,4],[2,3],[-3,0]], k = 2\nOutput: [-1,7,5,3]\nExplanation:\n\nInitially, there are 0 obstacles.\nAfter queries[0], there are less than 2 obstacles.\nAfter queries[1], there are obstacles at distances 3 and 7.\nAfter queries[2], there are obstacles at distances 3, 5, and 7.\nAfter queries[3], there are obstacles at distances 3, 3, 5, and 7.\n\n\nExample 2:\n\nInput: queries = [[5,5],[4,4],[3,3]], k = 1\nOutput: [10,8,6]\nExplanation:\n\nAfter queries[0], there is an obstacle at distance 10.\nAfter queries[1], there are obstacles at distances 8 and 10.\nAfter queries[2], there are obstacles at distances 6, 8, and 10.\n\n\n \nConstraints:\n\n1 <= queries.length <= 2 * 105\nAll queries[i] are unique.\n-109 <= queries[i][0], queries[i][1] <= 109\n1 <= k <= 105\n\n",
+  "especificacion_entrada": "queries: list[list[int]], k: int",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def resultsArray(self, queries: list[list[int]], k: int) -> list[int]:\n    ans = []\n    maxHeap = []\n\n    for x, y in queries:\n      heapq.heappush(maxHeap, -(abs(x) + abs(y)))\n      if len(maxHeap) > k:\n        heapq.heappop(maxHeap)\n      ans.append(-maxHeap[0] if len(maxHeap) == k else -1)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "queries = [[5,5],[4,4],[3,3]], k = 1",
+      "salida": "[10, 8, 6]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "queries = [[-1000000000,1000000000],[1000000000,-1000000000]], k = 1",
+      "salida": "[2000000000, 2000000000]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "queries = [[-1,1],[0,0],[1,-1]], k = 3",
+      "salida": "[-1, -1, 2]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3275: LC-3478 - Choose K Elements With Maximum Sum. Ambos problemas comparten las técnicas de heap, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums1 = [10, 20, 30, 40, 50], nums2 = [50, 40, 30, 20, 10], k = 2",
+      "salida": "[0, 50, 90, 90, 90]",
+      "explicacion": "Relación con LC-3275: Ambos problemas comparten las técnicas de heap, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\nfrom itertools import pairwise\nimport heapq\n\nclass Solution:\n  def findMaxSum(self, nums1: list[int], nums2: list[int], k: int) -> list[int]:\n    ans = [0] * len(nums1)\n    numAndIndexes = sorted([(num, i) for i, num in enumerate(nums1)])\n    minHeap = []\n\n    firstIndex = numAndIndexes[0][1]\n    heapq.heappush(minHeap, nums2[firstIndex])\n    summ = nums2[firstIndex]\n\n    for (prevNum, prevIndex), (currNum, currIndex) in itertools.pairwise(numAndIndexes):\n      if currNum == prevNum:\n        ans[currIndex] = ans[prevIndex]\n      else:\n        ans[currIndex] = summ\n      heapq.heappush(minHeap, nums2[currIndex])\n      summ += nums2[currIndex]\n      if len(minHeap) == k + 1:\n        summ -= heapq.heappop(minHeap)\n\n    return ans"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().resultsArray([[5, 5], [4, 4], [3, 3]], 1) == [10, 8, 6]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().resultsArray([[-1000000000, 1000000000], [1000000000, -1000000000]], 1) == [2000000000, 2000000000]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().resultsArray([[-1, 1], [0, 0], [1, -1]], 3) == [-1, -1, 2]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().resultsArray([[10, 10], [20, 20], [30, 30], [40, 40]], 4) == [-1, -1, -1, 80]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().resultsArray([[1, 2], [3, 4], [2, 3], [-3, 0]], 2) == [-1, 7, 5, 3]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().resultsArray([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]], 5) == [-1, -1, -1, -1, 10, 10, 10, 10, 10, 10]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().resultsArray([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0]], 1) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().resultsArray([[-1, 0], [0, 1], [1, 0], [0, -1], [-2, 0], [0, -2], [2, 0], [0, 2], [-3, 0], [0, -3], [3, 0], [0, 3]], 4) == [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().resultsArray([[1000000000, 1000000000], [1000000000, -1000000000], [-1000000000, 1000000000], [-1000000000, -1000000000]], 1) == [2000000000, 2000000000, 2000000000, 2000000000]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().resultsArray([[-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7], [-8, -8], [-9, -9], [-10, -10]], 1) == [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().resultsArray([[-100, -100], [100, -100], [-100, 100], [100, 100]], 2) == [-1, 200, 200, 200]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().resultsArray([[100, 100], [200, 200], [300, 300], [400, 400], [500, 500], [600, 600], [700, 700]], 5) == [-1, -1, -1, -1, 1000, 1000, 1000]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3275",
+    "fecha-estimada-2024-09-01",
+    "Array",
+    "Heap (Priority Queue)"
+  ]
+}

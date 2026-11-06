@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3425",
+  "titulo": "Longest Special Path",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-special-path/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Tree / Depth-First Search / Array / Hash Table / Prefix Sum",
+  "enunciado": "You are given an undirected tree rooted at node 0 with n nodes numbered from 0 to n - 1, represented by a 2D array edges of length n - 1, where edges[i] = [ui, vi, lengthi] indicates an edge between nodes ui and vi with length lengthi. You are also given an integer array nums, where nums[i] represents the value at node i.\nA special path is defined as a downward path from an ancestor node to a descendant node such that all the values of the nodes in that path are unique.\nNote that a path may start and end at the same node.\nReturn an array result of size 2, where result[0] is the length of the longest special path, and result[1] is the minimum number of nodes in all possible longest special paths.\n \nExample 1:\n\nInput: edges = [[0,1,2],[1,2,3],[1,3,5],[1,4,4],[2,5,6]], nums = [2,1,2,1,3,1]\nOutput: [6,2]\nExplanation:\nIn the image below, nodes are colored by their corresponding values in nums\n\nThe longest special paths are 2 -> 5 and 0 -> 1 -> 4, both having a length of 6. The minimum number of nodes across all longest special paths is 2.\n\nExample 2:\n\nInput: edges = [[1,0,8]], nums = [2,2]\nOutput: [0,1]\nExplanation:\n\nThe longest special paths are 0 and 1, both having a length of 0. The minimum number of nodes across all longest special paths is 1.\n\n \nConstraints:\n\n2 <= n <= 5 * 104\nedges.length == n - 1\nedges[i].length == 3\n0 <= ui, vi < n\n1 <= lengthi <= 103\nnums.length == n\n0 <= nums[i] <= 5 * 104\nThe input is generated such that edges represents a valid tree.\n\n",
+  "especificacion_entrada": "edges: list[list[int]], nums: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def longestSpecialPath(\n      self,\n      edges: list[list[int]],\n      nums: list[int]\n  ) -> list[int]:\n    maxLength = 0\n    minNodes = 1\n    graph = [[] for _ in range(len(nums))]\n\n    for u, v, w in edges:\n      graph[u].append((v, w))\n      graph[v].append((u, w))\n\n    prefix = [0]\n    lastSeenDepth = {}\n\n    def dfs(\n        u: int,\n        prev: int,\n        leftBoundary: int,\n    ) -> None:\n      nonlocal maxLength, minNodes\n      prevDepth = lastSeenDepth.get(nums[u], 0)\n      lastSeenDepth[nums[u]] = len(prefix)\n      leftBoundary = max(leftBoundary, prevDepth)\n\n      length = prefix[-1] - prefix[leftBoundary]\n      nodes = len(prefix) - leftBoundary\n      if length > maxLength or (length == maxLength and nodes < minNodes):\n        maxLength = length\n        minNodes = nodes\n\n      for v, w in graph[u]:\n        if v == prev:\n          continue\n        prefix.append(prefix[-1] + w)\n        dfs(v, u, leftBoundary)\n        prefix.pop()\n\n      lastSeenDepth[nums[u]] = prevDepth\n\n    dfs(0, -1, leftBoundary=0)\n    return [maxLength, minNodes]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "edges = [[0,1,1],[0,2,2],[1,3,3],[1,4,4],[2,5,5],[2,6,6]], nums = [1,1,1,1,1,1,1]",
+      "salida": "[0, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1,10],[0,2,10],[1,3,10],[1,4,10],[2,5,10],[2,6,10]], nums = [0,0,0,0,0,0,0]",
+      "salida": "[0, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges = [[0,1,1],[0,2,2],[0,3,3],[1,4,4],[1,5,5],[2,6,6],[2,7,7],[3,8,8],[3,9,9]], nums = [1,2,3,4,5,6,7,8,9,10]",
+      "salida": "[12, 3]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3425: LC-3486 - Longest Special Path II. Ambos problemas comparten las técnicas de depth-first search, tabla hash, sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "edges = [[0, 1, 10], [0, 2, 20], [0, 3, 30]], nums = [1, 1, 1, 1]",
+      "salida": "[30, 2]",
+      "explicacion": "Relación con LC-3425: Ambos problemas comparten las técnicas de depth-first search, tabla hash, sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  # Similar to 3425. Longest Special Path\n  def longestSpecialPath(\n      self,\n      edges: list[list[int]],\n      nums: list[int]\n  ) -> list[int]:\n    maxLength = 0\n    minNodes = 1\n    graph = [[] for _ in range(len(nums))]\n\n    for u, v, w in edges:\n      graph[u].append((v, w))\n      graph[v].append((u, w))\n\n    prefix = [0]\n    lastSeenDepth = {}\n\n    def dfs(\n        u: int,\n        prev: int,\n        leftBoundary: list[int],\n    ) -> None:\n      nonlocal maxLength, minNodes\n      prevDepth = lastSeenDepth.get(nums[u], 0)\n      lastSeenDepth[nums[u]] = len(prefix)\n\n      if prevDepth != 0:\n        leftBoundary = sorted(leftBoundary + [prevDepth])[-2:]\n\n      length = prefix[-1] - prefix[leftBoundary[0]]\n      nodes = len(prefix) - leftBoundary[0]\n      if length > maxLength or (length == maxLength and nodes < minNodes):\n        maxLength = length\n        minNodes = nodes\n\n      for v, w in graph[u]:\n        if v == prev:\n          continue\n        prefix.append(prefix[-1] + w)\n        dfs(v, u, leftBoundary)\n        prefix.pop()\n\n      lastSeenDepth[nums[u]] = prevDepth\n\n    dfs(0, -1, leftBoundary=[0, 0])\n    return [maxLength, minNodes]"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 2], [1, 3, 3], [1, 4, 4], [2, 5, 5], [2, 6, 6]], [1, 1, 1, 1, 1, 1, 1]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 10], [0, 2, 10], [1, 3, 10], [1, 4, 10], [2, 5, 10], [2, 6, 10]], [0, 0, 0, 0, 0, 0, 0]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 2], [0, 3, 3], [1, 4, 4], [1, 5, 5], [2, 6, 6], [2, 7, 7], [3, 8, 8], [3, 9, 9]], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [12, 3]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 1], [0, 3, 1], [1, 4, 1], [1, 5, 1], [2, 6, 1], [2, 7, 1], [3, 8, 1], [3, 9, 1]], [1, 2, 2, 3, 4, 4, 5, 6, 7, 8]) == [2, 3]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 1], [1, 3, 1], [1, 4, 1], [2, 5, 1], [2, 6, 1], [3, 7, 1], [3, 8, 1], [4, 9, 1], [4, 10, 1]], [1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2]) == [2, 3]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], [0, 5, 1]], [1, 2, 3, 2, 1, 1]) == [1, 2]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 10], [0, 2, 10], [0, 3, 10], [1, 4, 10], [1, 5, 10], [2, 6, 10], [2, 7, 10], [3, 8, 10], [3, 9, 10]], [1, 2, 3, 4, 5, 6, 7, 8, 9, 1]) == [20, 3]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 1], [1, 3, 1], [1, 4, 1], [2, 5, 1], [2, 6, 1]], [1, 1, 1, 1, 1, 1, 1]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 2], [0, 2, 5], [1, 3, 10], [1, 4, 8], [2, 5, 4], [2, 6, 3]], [1, 2, 3, 2, 3, 2, 3]) == [10, 3]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [1, 2, 2], [2, 3, 3], [3, 4, 4], [4, 5, 5], [5, 6, 6], [6, 7, 7], [7, 8, 8], [8, 9, 9]], [1, 2, 3, 4, 5, 6, 7, 8, 9, 1]) == [44, 9]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 1], [0, 2, 1], [1, 3, 1], [1, 4, 1], [2, 5, 1], [2, 6, 1], [3, 7, 1], [3, 8, 1], [4, 9, 1], [4, 10, 1]], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().longestSpecialPath([[0, 1, 10], [0, 2, 20], [1, 3, 30], [1, 4, 40], [2, 5, 50], [2, 6, 60]], [1, 2, 3, 4, 5, 6, 7]) == [80, 3]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3425",
+    "fecha-estimada-2025-01-12",
+    "Tree",
+    "Depth-First Search",
+    "Array",
+    "Hash Table",
+    "Prefix Sum"
+  ]
+}

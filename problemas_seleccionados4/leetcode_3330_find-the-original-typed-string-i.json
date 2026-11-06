@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3330",
+  "titulo": "Find the Original Typed String I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-original-typed-string-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "String",
+  "enunciado": "Alice is attempting to type a specific string on her computer. However, she tends to be clumsy and may press a key for too long, resulting in a character being typed multiple times.\nAlthough Alice tried to focus on her typing, she is aware that she may still have done this at most once.\nYou are given a string word, which represents the final output displayed on Alice's screen.\nReturn the total number of possible original strings that Alice might have intended to type.\n \nExample 1:\n\nInput: word = \"abbcccc\"\nOutput: 5\nExplanation:\nThe possible strings are: \"abbcccc\", \"abbccc\", \"abbcc\", \"abbc\", and \"abcccc\".\n\nExample 2:\n\nInput: word = \"abcd\"\nOutput: 1\nExplanation:\nThe only possible string is \"abcd\".\n\nExample 3:\n\nInput: word = \"aaaa\"\nOutput: 4\n\n \nConstraints:\n\n1 <= word.length <= 100\nword consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "word: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def possibleStringCount(self, word: str) -> int:\n    return 1 + sum(a == b\n                   for a, b in itertools.pairwise(word))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "word = \"aaabbbccc\"",
+      "salida": "7",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"abbcccc\"",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"mississippi\"",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3330: LC-3333 - Find the Original Typed String II. Ambos problemas comparten el tema de original, typed, aunque plantean una variante distinta.",
+      "entrada": "word = 'aaaaaa', k = 1",
+      "salida": "6",
+      "explicacion": "Relación con LC-3330: Ambos problemas comparten el tema de original, typed, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def possibleStringCount(self, word: str, k: int) -> int:\n    MOD = 1_000_000_007\n    groups = self._getConsecutiveLetters(word)\n    totalCombinations = functools.reduce(lambda subtotal, group:\n                                         subtotal * group % MOD, groups)\n    if k <= len(groups):\n      return totalCombinations\n\n    # dp[j] := the number of ways to form strings of length j using groups[0..i]\n    dp = [0] * k\n    dp[0] = 1  # Base case: empty string\n\n    for i, group in enumerate(groups):\n      newDp = [0] * k\n      windowSum = 0\n      for j in range(i, k):\n        newDp[j] = (newDp[j] + windowSum) % MOD\n        windowSum = (windowSum + dp[j]) % MOD\n        if j >= group:\n          windowSum = (windowSum - dp[j - group] + MOD) % MOD\n      dp = newDp\n\n    return (totalCombinations - sum(dp)) % MOD\n\n  def _getConsecutiveLetters(self, word: str) -> list[int]:\n    \"\"\"\n    Returns consecutive identical letters in the input string.\n    e.g. \"aabbbc\" -> [2, 3, 1].\n    \"\"\"\n    groups = []\n    group = 1\n    for i in range(1, len(word)):\n      if word[i] == word[i - 1]:\n        group += 1\n      else:\n        groups.append(group)\n        group = 1\n    groups.append(group)\n    return groups\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().possibleStringCount('aaabbbccc') == 7"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().possibleStringCount('abbcccc') == 5"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().possibleStringCount('mississippi') == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().possibleStringCount('zzzzzzz') == 7"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().possibleStringCount('zzzzzzzzzz') == 10"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().possibleStringCount('aabbccdd') == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().possibleStringCount('aabbbaaccc') == 7"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().possibleStringCount('banana') == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().possibleStringCount('aabbccddeeff') == 7"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().possibleStringCount('zzzzzzzzz') == 9"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().possibleStringCount('clumsytyping') == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().possibleStringCount('aaaa') == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3330",
+    "fecha-estimada-2024-10-20",
+    "String"
+  ]
+}

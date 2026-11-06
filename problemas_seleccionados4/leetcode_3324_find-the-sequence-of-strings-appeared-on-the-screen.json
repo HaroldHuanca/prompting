@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3324",
+  "titulo": "Find the Sequence of Strings Appeared on the Screen",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-sequence-of-strings-appeared-on-the-screen/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "String / Simulation",
+  "enunciado": "You are given a string target.\nAlice is going to type target on her computer using a special keyboard that has only two keys:\n\nKey 1 appends the character \"a\" to the string on the screen.\nKey 2 changes the last character of the string on the screen to its next character in the English alphabet. For example, \"c\" changes to \"d\" and \"z\" changes to \"a\".\n\nNote that initially there is an empty string \"\" on the screen, so she can only press key 1.\nReturn a list of all strings that appear on the screen as Alice types target, in the order they appear, using the minimum key presses.\n \nExample 1:\n\nInput: target = \"abc\"\nOutput: [\"a\",\"aa\",\"ab\",\"aba\",\"abb\",\"abc\"]\nExplanation:\nThe sequence of key presses done by Alice are:\n\nPress key 1, and the string on the screen becomes \"a\".\nPress key 1, and the string on the screen becomes \"aa\".\nPress key 2, and the string on the screen becomes \"ab\".\nPress key 1, and the string on the screen becomes \"aba\".\nPress key 2, and the string on the screen becomes \"abb\".\nPress key 2, and the string on the screen becomes \"abc\".\n\n\nExample 2:\n\nInput: target = \"he\"\nOutput: [\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\",\"ha\",\"hb\",\"hc\",\"hd\",\"he\"]\n\n \nConstraints:\n\n1 <= target.length <= 400\ntarget consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "target: str",
+  "especificacion_salida": "list[str]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def stringSequence(self, target: str) -> list[str]:\n    ans = []\n    s = []\n\n    for targetChar in target:\n      s.append('a')\n      ans.append(''.join(s))\n      for offset in range(ord('b'), ord(targetChar) + 1):\n        s[-1] = chr(offset)\n        ans.append(''.join(s))\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "target = \"abcdefg\"",
+      "salida": "['a', 'aa', 'ab', 'aba', 'abb', 'abc', 'abca', 'abcb', 'abcc', 'abcd', 'abcda', 'abcdb', 'abcdc', 'abcdd', 'abcde', 'abcdea', 'abcdeb', 'abcdec', 'abcded', 'abcdee', 'abcdef', 'abcdefa', 'abcdefb', 'abcdefc', 'abcdefd', 'abcdefe', 'abcdeff', 'abcdefg']",
+      "explicacion": ""
+    },
+    {
+      "entrada": "target = \"abc\"",
+      "salida": "['a', 'aa', 'ab', 'aba', 'abb', 'abc']",
+      "explicacion": ""
+    },
+    {
+      "entrada": "target = \"a\"",
+      "salida": "['a']",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3324: LC-3271 - Hash Divided String. Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'aaaa', k = 2",
+      "salida": "aa",
+      "explicacion": "Relación con LC-3324: Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import string\n\nclass Solution:\n  def stringHash(self, s: str, k: int) -> str:\n    ans = []\n\n    for i in range(0, len(s), k):\n      sumHash = sum(string.ascii_lowercase.index(s[j])\n                    for j in range(i, i + k))\n      ans.append(string.ascii_lowercase[sumHash % 26])\n\n    return ''.join(ans)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().stringSequence('abcdefg') == ['a', 'aa', 'ab', 'aba', 'abb', 'abc', 'abca', 'abcb', 'abcc', 'abcd', 'abcda', 'abcdb', 'abcdc', 'abcdd', 'abcde', 'abcdea', 'abcdeb', 'abcdec', 'abcded', 'abcdee', 'abcdef', 'abcdefa', 'abcdefb', 'abcdefc', 'abcdefd', 'abcdefe', 'abcdeff', 'abcdefg']"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().stringSequence('abc') == ['a', 'aa', 'ab', 'aba', 'abb', 'abc']"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().stringSequence('a') == ['a']"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().stringSequence('he') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'ha', 'hb', 'hc', 'hd', 'he']"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().stringSequence('xyz') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'xa', 'xb', 'xc', 'xd', 'xe', 'xf', 'xg', 'xh', 'xi', 'xj', 'xk', 'xl', 'xm', 'xn', 'xo', 'xp', 'xq', 'xr', 'xs', 'xt', 'xu', 'xv', 'xw', 'xx', 'xy', 'xya', 'xyb', 'xyc', 'xyd', 'xye', 'xyf', 'xyg', 'xyh', 'xyi', 'xyj', 'xyk', 'xyl', 'xym', 'xyn', 'xyo', 'xyp', 'xyq', 'xyr', 'xys', 'xyt', 'xyu', 'xyv', 'xyw', 'xyx', 'xyy', 'xyz']"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().stringSequence('zzzz') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'za', 'zb', 'zc', 'zd', 'ze', 'zf', 'zg', 'zh', 'zi', 'zj', 'zk', 'zl', 'zm', 'zn', 'zo', 'zp', 'zq', 'zr', 'zs', 'zt', 'zu', 'zv', 'zw', 'zx', 'zy', 'zz', 'zza', 'zzb', 'zzc', 'zzd', 'zze', 'zzf', 'zzg', 'zzh', 'zzi', 'zzj', 'zzk', 'zzl', 'zzm', 'zzn', 'zzo', 'zzp', 'zzq', 'zzr', 'zzs', 'zzt', 'zzu', 'zzv', 'zzw', 'zzx', 'zzy', 'zzz', 'zzza', 'zzzb', 'zzzc', 'zzzd', 'zzze', 'zzzf', 'zzzg', 'zzzh', 'zzzi', 'zzzj', 'zzzk', 'zzzl', 'zzzm', 'zzzn', 'zzzo', 'zzzp', 'zzzq', 'zzzr', 'zzzs', 'zzzt', 'zzzu', 'zzzv', 'zzzw', 'zzzx', 'zzzy', 'zzzz']"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().stringSequence('zzz') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'za', 'zb', 'zc', 'zd', 'ze', 'zf', 'zg', 'zh', 'zi', 'zj', 'zk', 'zl', 'zm', 'zn', 'zo', 'zp', 'zq', 'zr', 'zs', 'zt', 'zu', 'zv', 'zw', 'zx', 'zy', 'zz', 'zza', 'zzb', 'zzc', 'zzd', 'zze', 'zzf', 'zzg', 'zzh', 'zzi', 'zzj', 'zzk', 'zzl', 'zzm', 'zzn', 'zzo', 'zzp', 'zzq', 'zzr', 'zzs', 'zzt', 'zzu', 'zzv', 'zzw', 'zzx', 'zzy', 'zzz']"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().stringSequence('aaa') == ['a', 'aa', 'aaa']"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().stringSequence('aabbaacc') == ['a', 'aa', 'aaa', 'aab', 'aaba', 'aabb', 'aabba', 'aabbaa', 'aabbaaa', 'aabbaab', 'aabbaac', 'aabbaaca', 'aabbaacb', 'aabbaacc']"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().stringSequence('zyxwvutsrqponmlkjihgfedcba') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'za', 'zb', 'zc', 'zd', 'ze', 'zf', 'zg', 'zh', 'zi', 'zj', 'zk', 'zl', 'zm', 'zn', 'zo', 'zp', 'zq', 'zr', 'zs', 'zt', 'zu', 'zv', 'zw', 'zx', 'zy', 'zya', 'zyb', 'zyc', 'zyd', 'zye', 'zyf', 'zyg', 'zyh', 'zyi', 'zyj', 'zyk', 'zyl', 'zym', 'zyn', 'zyo', 'zyp', 'zyq', 'zyr', 'zys', 'zyt', 'zyu', 'zyv', 'zyw', 'zyx', 'zyxa', 'zyxb', 'zyxc', 'zyxd', 'zyxe', 'zyxf', 'zyxg', 'zyxh', 'zyxi', 'zyxj', 'zyxk', 'zyxl', 'zyxm', 'zyxn', 'zyxo', 'zyxp', 'zyxq', 'zyxr', 'zyxs', 'zyxt', 'zyxu', 'zyxv', 'zyxw', 'zyxwa', 'zyxwb', 'zyxwc', 'zyxwd', 'zyxwe', 'zyxwf', 'zyxwg', 'zyxwh', 'zyxwi', 'zyxwj', 'zyxwk', 'zyxwl', 'zyxwm', 'zyxwn', 'zyxwo', 'zyxwp', 'zyxwq', 'zyxwr', 'zyxws', 'zyxwt', 'zyxwu', 'zyxwv', 'zyxwva', 'zyxwvb', 'zyxwvc', 'zyxwvd', 'zyxwve', 'zyxwvf', 'zyxwvg', 'zyxwvh', 'zyxwvi', 'zyxwvj', 'zyxwvk', 'zyxwvl', 'zyxwvm', 'zyxwvn', 'zyxwvo', 'zyxwvp', 'zyxwvq', 'zyxwvr', 'zyxwvs', 'zyxwvt', 'zyxwvu', 'zyxwvua', 'zyxwvub', 'zyxwvuc', 'zyxwvud', 'zyxwvue', 'zyxwvuf', 'zyxwvug', 'zyxwvuh', 'zyxwvui', 'zyxwvuj', 'zyxwvuk', 'zyxwvul', 'zyxwvum', 'zyxwvun', 'zyxwvuo', 'zyxwvup', 'zyxwvuq', 'zyxwvur', 'zyxwvus', 'zyxwvut', 'zyxwvuta', 'zyxwvutb', 'zyxwvutc', 'zyxwvutd', 'zyxwvute', 'zyxwvutf', 'zyxwvutg', 'zyxwvuth', 'zyxwvuti', 'zyxwvutj', 'zyxwvutk', 'zyxwvutl', 'zyxwvutm', 'zyxwvutn', 'zyxwvuto', 'zyxwvutp', 'zyxwvutq', 'zyxwvutr', 'zyxwvuts', 'zyxwvutsa', 'zyxwvutsb', 'zyxwvutsc', 'zyxwvutsd', 'zyxwvutse', 'zyxwvutsf', 'zyxwvutsg', 'zyxwvutsh', 'zyxwvutsi', 'zyxwvutsj', 'zyxwvutsk', 'zyxwvutsl', 'zyxwvutsm', 'zyxwvutsn', 'zyxwvutso', 'zyxwvutsp', 'zyxwvutsq', 'zyxwvutsr', 'zyxwvutsra', 'zyxwvutsrb', 'zyxwvutsrc', 'zyxwvutsrd', 'zyxwvutsre', 'zyxwvutsrf', 'zyxwvutsrg', 'zyxwvutsrh', 'zyxwvutsri', 'zyxwvutsrj', 'zyxwvutsrk', 'zyxwvutsrl', 'zyxwvutsrm', 'zyxwvutsrn', 'zyxwvutsro', 'zyxwvutsrp', 'zyxwvutsrq', 'zyxwvutsrqa', 'zyxwvutsrqb', 'zyxwvutsrqc', 'zyxwvutsrqd', 'zyxwvutsrqe', 'zyxwvutsrqf', 'zyxwvutsrqg', 'zyxwvutsrqh', 'zyxwvutsrqi', 'zyxwvutsrqj', 'zyxwvutsrqk', 'zyxwvutsrql', 'zyxwvutsrqm', 'zyxwvutsrqn', 'zyxwvutsrqo', 'zyxwvutsrqp', 'zyxwvutsrqpa', 'zyxwvutsrqpb', 'zyxwvutsrqpc', 'zyxwvutsrqpd', 'zyxwvutsrqpe', 'zyxwvutsrqpf', 'zyxwvutsrqpg', 'zyxwvutsrqph', 'zyxwvutsrqpi', 'zyxwvutsrqpj', 'zyxwvutsrqpk', 'zyxwvutsrqpl', 'zyxwvutsrqpm', 'zyxwvutsrqpn', 'zyxwvutsrqpo', 'zyxwvutsrqpoa', 'zyxwvutsrqpob', 'zyxwvutsrqpoc', 'zyxwvutsrqpod', 'zyxwvutsrqpoe', 'zyxwvutsrqpof', 'zyxwvutsrqpog', 'zyxwvutsrqpoh', 'zyxwvutsrqpoi', 'zyxwvutsrqpoj', 'zyxwvutsrqpok', 'zyxwvutsrqpol', 'zyxwvutsrqpom', 'zyxwvutsrqpon', 'zyxwvutsrqpona', 'zyxwvutsrqponb', 'zyxwvutsrqponc', 'zyxwvutsrqpond', 'zyxwvutsrqpone', 'zyxwvutsrqponf', 'zyxwvutsrqpong', 'zyxwvutsrqponh', 'zyxwvutsrqponi', 'zyxwvutsrqponj', 'zyxwvutsrqponk', 'zyxwvutsrqponl', 'zyxwvutsrqponm', 'zyxwvutsrqponma', 'zyxwvutsrqponmb', 'zyxwvutsrqponmc', 'zyxwvutsrqponmd', 'zyxwvutsrqponme', 'zyxwvutsrqponmf', 'zyxwvutsrqponmg', 'zyxwvutsrqponmh', 'zyxwvutsrqponmi', 'zyxwvutsrqponmj', 'zyxwvutsrqponmk', 'zyxwvutsrqponml', 'zyxwvutsrqponmla', 'zyxwvutsrqponmlb', 'zyxwvutsrqponmlc', 'zyxwvutsrqponmld', 'zyxwvutsrqponmle', 'zyxwvutsrqponmlf', 'zyxwvutsrqponmlg', 'zyxwvutsrqponmlh', 'zyxwvutsrqponmli', 'zyxwvutsrqponmlj', 'zyxwvutsrqponmlk', 'zyxwvutsrqponmlka', 'zyxwvutsrqponmlkb', 'zyxwvutsrqponmlkc', 'zyxwvutsrqponmlkd', 'zyxwvutsrqponmlke', 'zyxwvutsrqponmlkf', 'zyxwvutsrqponmlkg', 'zyxwvutsrqponmlkh', 'zyxwvutsrqponmlki', 'zyxwvutsrqponmlkj', 'zyxwvutsrqponmlkja', 'zyxwvutsrqponmlkjb', 'zyxwvutsrqponmlkjc', 'zyxwvutsrqponmlkjd', 'zyxwvutsrqponmlkje', 'zyxwvutsrqponmlkjf', 'zyxwvutsrqponmlkjg', 'zyxwvutsrqponmlkjh', 'zyxwvutsrqponmlkji', 'zyxwvutsrqponmlkjia', 'zyxwvutsrqponmlkjib', 'zyxwvutsrqponmlkjic', 'zyxwvutsrqponmlkjid', 'zyxwvutsrqponmlkjie', 'zyxwvutsrqponmlkjif', 'zyxwvutsrqponmlkjig', 'zyxwvutsrqponmlkjih', 'zyxwvutsrqponmlkjiha', 'zyxwvutsrqponmlkjihb', 'zyxwvutsrqponmlkjihc', 'zyxwvutsrqponmlkjihd', 'zyxwvutsrqponmlkjihe', 'zyxwvutsrqponmlkjihf', 'zyxwvutsrqponmlkjihg', 'zyxwvutsrqponmlkjihga', 'zyxwvutsrqponmlkjihgb', 'zyxwvutsrqponmlkjihgc', 'zyxwvutsrqponmlkjihgd', 'zyxwvutsrqponmlkjihge', 'zyxwvutsrqponmlkjihgf', 'zyxwvutsrqponmlkjihgfa', 'zyxwvutsrqponmlkjihgfb', 'zyxwvutsrqponmlkjihgfc', 'zyxwvutsrqponmlkjihgfd', 'zyxwvutsrqponmlkjihgfe', 'zyxwvutsrqponmlkjihgfea', 'zyxwvutsrqponmlkjihgfeb', 'zyxwvutsrqponmlkjihgfec', 'zyxwvutsrqponmlkjihgfed', 'zyxwvutsrqponmlkjihgfeda', 'zyxwvutsrqponmlkjihgfedb', 'zyxwvutsrqponmlkjihgfedc', 'zyxwvutsrqponmlkjihgfedca', 'zyxwvutsrqponmlkjihgfedcb', 'zyxwvutsrqponmlkjihgfedcba']"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().stringSequence('abcdabcd') == ['a', 'aa', 'ab', 'aba', 'abb', 'abc', 'abca', 'abcb', 'abcc', 'abcd', 'abcda', 'abcdaa', 'abcdab', 'abcdaba', 'abcdabb', 'abcdabc', 'abcdabca', 'abcdabcb', 'abcdabcc', 'abcdabcd']"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().stringSequence('mnopqr') == ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'ma', 'mb', 'mc', 'md', 'me', 'mf', 'mg', 'mh', 'mi', 'mj', 'mk', 'ml', 'mm', 'mn', 'mna', 'mnb', 'mnc', 'mnd', 'mne', 'mnf', 'mng', 'mnh', 'mni', 'mnj', 'mnk', 'mnl', 'mnm', 'mnn', 'mno', 'mnoa', 'mnob', 'mnoc', 'mnod', 'mnoe', 'mnof', 'mnog', 'mnoh', 'mnoi', 'mnoj', 'mnok', 'mnol', 'mnom', 'mnon', 'mnoo', 'mnop', 'mnopa', 'mnopb', 'mnopc', 'mnopd', 'mnope', 'mnopf', 'mnopg', 'mnoph', 'mnopi', 'mnopj', 'mnopk', 'mnopl', 'mnopm', 'mnopn', 'mnopo', 'mnopp', 'mnopq', 'mnopqa', 'mnopqb', 'mnopqc', 'mnopqd', 'mnopqe', 'mnopqf', 'mnopqg', 'mnopqh', 'mnopqi', 'mnopqj', 'mnopqk', 'mnopql', 'mnopqm', 'mnopqn', 'mnopqo', 'mnopqp', 'mnopqq', 'mnopqr']"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3324",
+    "fecha-estimada-2024-10-20",
+    "String",
+    "Simulation"
+  ]
+}

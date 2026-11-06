@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3448",
+  "titulo": "Count Substrings Divisible By Last Digit",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-substrings-divisible-by-last-digit/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "String / Dynamic Programming",
+  "enunciado": "You are given a string s consisting of digits.\nReturn the number of substrings of s divisible by their non-zero last digit.\nNote: A substring may contain leading zeros.\n \nExample 1:\n\nInput: s = \"12936\"\nOutput: 11\nExplanation:\nSubstrings \"29\", \"129\", \"293\" and \"2936\" are not divisible by their last digit. There are 15 substrings in total, so the answer is 15 - 4 = 11.\n\nExample 2:\n\nInput: s = \"5701283\"\nOutput: 18\nExplanation:\nSubstrings \"01\", \"12\", \"701\", \"012\", \"128\", \"5701\", \"7012\", \"0128\", \"57012\", \"70128\", \"570128\", and \"701283\" are all divisible by their last digit. Additionally, all substrings that are just 1 non-zero digit are divisible by themselves. Since there are 6 such digits, the answer is 12 + 6 = 18.\n\nExample 3:\n\nInput: s = \"1010101010\"\nOutput: 25\nExplanation:\nOnly substrings that end with digit '1' are divisible by their last digit. There are 25 such substrings.\n\n \nConstraints:\n\n1 <= s.length <= 105\ns consists of digits only.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countSubstrings(self, s: str) -> int:\n    ans = 0\n    # dp[i][num][rem] := the number of first `i` digits of s that have a\n    # remainder of `rem` when divided by `num`\n    dp = [[[0] * 10 for _ in range(10)] for _ in range(len(s) + 1)]\n\n    for i in range(1, len(s) + 1):\n      digit = int(s[i - 1])\n      for num in range(1, 10):\n        for rem in range(num):\n          dp[i][num][(rem * 10 + digit) % num] += dp[i - 1][num][rem]\n        dp[i][num][digit % num] += 1\n      ans += dp[i][digit][0]\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"24680\"",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"11111\"",
+      "salida": "15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"5701283\"",
+      "salida": "18",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3448: LC-3320 - Count The Number of Winning Sequences. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'WFWFWFWFWFWFWFWFWFWF'",
+      "salida": "730500",
+      "explicacion": "Relación con LC-3448: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def countWinningSequences(self, s: str) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def dp(i: int, prev: int, bob: int) -> int:\n      \"\"\"\n      Returns the number of distinct sequences Bob can use to beat Alice for\n      s[i..n), where the previous character is `prev` (0: F, 1: W, 2: E) and the\n      number of points that Bob is having is `bob`.\n      \"\"\"\n      if i == len(s):\n        return int(bob > 0)\n\n      f = 0  # If Bob summons a Fire Dragon at i.\n      w = 0  # If Bob summons a Water Serpent at i.\n      e = 0  # If Bob summons a Earth Golem at i.\n\n      match s[i]:\n        case 'F':\n          if prev != 0:\n            f = dp(i + 1, 0, bob) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob + 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob - 1) % MOD\n        case 'W':\n          if prev != 0:\n            f = dp(i + 1, 0, bob - 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob + 1) % MOD\n        case 'E':\n          if prev != 0:\n            f = dp(i + 1, 0, bob + 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob - 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob) % MOD\n\n      return f + w + e\n\n    return (dp(0, 0, 0) + dp(0, 1, 0) + dp(0, 2, 0)) // 2 % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countSubstrings('24680') == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countSubstrings('11111') == 15"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countSubstrings('5701283') == 18"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countSubstrings('9876543210') == 35"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countSubstrings('1001001001') == 22"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countSubstrings('9999999999') == 55"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countSubstrings('1111111111') == 55"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countSubstrings('9090909090') == 25"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countSubstrings('909090909') == 25"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countSubstrings('2468024680') == 24"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countSubstrings('00000') == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countSubstrings('13579') == 8"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3448",
+    "fecha-estimada-2025-02-09",
+    "String",
+    "Dynamic Programming"
+  ]
+}

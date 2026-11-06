@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3441",
+  "titulo": "Minimum Cost Good Caption",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-cost-good-caption/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "String / Dynamic Programming",
+  "enunciado": "You are given a string caption of length n. A good caption is a string where every character appears in groups of at least 3 consecutive occurrences.\nFor example:\n\n\"aaabbb\" and \"aaaaccc\" are good captions.\n\"aabbb\" and \"ccccd\" are not good captions.\n\nYou can perform the following operation any number of times:\nChoose an index i (where 0 <= i < n) and change the character at that index to either:\n\nThe character immediately before it in the alphabet (if caption[i] != 'a').\nThe character immediately after it in the alphabet (if caption[i] != 'z').\n\nYour task is to convert the given caption into a good caption using the minimum number of operations, and return it. If there are multiple possible good captions, return the lexicographically smallest one among them. If it is impossible to create a good caption, return an empty string \"\".\n \nExample 1:\n\nInput: caption = \"cdcd\"\nOutput: \"cccc\"\nExplanation:\nIt can be shown that the given caption cannot be transformed into a good caption with fewer than 2 operations. The possible good captions that can be created using exactly 2 operations are:\n\n\"dddd\": Change caption[0] and caption[2] to their next character 'd'.\n\"cccc\": Change caption[1] and caption[3] to their previous character 'c'.\n\nSince \"cccc\" is lexicographically smaller than \"dddd\", return \"cccc\".\n\nExample 2:\n\nInput: caption = \"aca\"\nOutput: \"aaa\"\nExplanation:\nIt can be proven that the given caption requires at least 2 operations to be transformed into a good caption. The only good caption that can be obtained with exactly 2 operations is as follows:\n\nOperation 1: Change caption[1] to 'b'. caption = \"aba\".\nOperation 2: Change caption[1] to 'a'. caption = \"aaa\".\n\nThus, return \"aaa\".\n\nExample 3:\n\nInput: caption = \"bc\"\nOutput: \"\"\nExplanation:\nIt can be shown that the given caption cannot be converted to a good caption by using any number of operations.\n\n \nConstraints:\n\n1 <= caption.length <= 5 * 104\ncaption consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "caption: str",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n\n  def minCostGoodCaption(self, caption: str) -> str:\n    n = len(caption)\n    if n < 3:\n      return ''\n\n    MAX_COST = 1_000_000_000\n    # dp[i][j][k] := the minimum cost of caption[i..n - 1], where j is the last\n    # letter used, and k is the count of consecutive letters\n    dp = [[[MAX_COST] * 3 for _ in range(26)] for _ in range(n)]\n\n    for c in range(26):\n      dp[-1][c][0] = abs(string.ascii_lowercase.index(caption[-1]) - c)\n\n    minCost = MAX_COST\n\n    for i in range(n - 2, -1, -1):\n      newMinCost = MAX_COST\n      for c in range(26):\n        changeCost = abs(string.ascii_lowercase.index(caption[i]) - c)\n        dp[i][c][0] = changeCost + minCost\n        dp[i][c][1] = changeCost + dp[i + 1][c][0]\n        dp[i][c][2] = changeCost + min(dp[i + 1][c][1], dp[i + 1][c][2])\n        newMinCost = min(newMinCost, dp[i][c][2])\n      minCost = newMinCost\n\n    # Reconstruct the string.\n    ans = []\n    cost = MAX_COST\n    letter = -1\n\n    # Find the initial best letter.\n    for c in range(25, -1, -1):\n      if dp[0][c][2] <= cost:\n        letter = c\n        cost = dp[0][c][2]\n\n    # Add the initial triplet.\n    cost -= self._appendLetter(caption, 0, chr(ord('a') + letter), ans)\n    cost -= self._appendLetter(caption, 1, chr(ord('a') + letter), ans)\n    cost -= self._appendLetter(caption, 2, chr(ord('a') + letter), ans)\n\n    # Build the rest of the string.\n    i = 3\n    while i < n:\n      nextLetter = self._getNextLetter(dp, i, cost)\n      if nextLetter < letter or min(dp[i][letter]) > cost:\n        letter = nextLetter\n        cost -= self._appendLetter(caption, i, chr(ord('a') + letter), ans)\n        cost -= self._appendLetter(caption, i + 1, chr(ord('a') + letter), ans)\n        cost -= self._appendLetter(caption, i + 2, chr(ord('a') + letter), ans)\n        i += 3\n      else:\n        cost -= self._appendLetter(caption, i, chr(ord('a') + letter), ans)\n        i += 1\n\n    return ''.join(ans)\n\n  def _getNextLetter(self, dp: list[list[list[int]]], i: int, cost: int) -> int:\n    nextLetter = 26\n    for c in range(25, -1, -1):\n      if cost == dp[i][c][2]:\n        nextLetter = c\n    return nextLetter\n\n  def _appendLetter(\n      self,\n      caption: str,\n      i: int,\n      letter: str,\n      ans: list[str]\n  ) -> int:\n    ans.append(letter)\n    return abs(ord(caption[i]) - ord(letter))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "caption = \"cdcd\"",
+      "salida": "cccc",
+      "explicacion": ""
+    },
+    {
+      "entrada": "caption = \"xyz\"",
+      "salida": "yyy",
+      "explicacion": ""
+    },
+    {
+      "entrada": "caption = \"aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz\"",
+      "salida": "aaaaccceeefffhhhiiikkklllnnnoooqqqrrrtttuuuwwwxxxzzz",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3441: LC-3320 - Count The Number of Winning Sequences. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'WFWFWFWFWFWFWFWFWFWF'",
+      "salida": "730500",
+      "explicacion": "Relación con LC-3441: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def countWinningSequences(self, s: str) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def dp(i: int, prev: int, bob: int) -> int:\n      \"\"\"\n      Returns the number of distinct sequences Bob can use to beat Alice for\n      s[i..n), where the previous character is `prev` (0: F, 1: W, 2: E) and the\n      number of points that Bob is having is `bob`.\n      \"\"\"\n      if i == len(s):\n        return int(bob > 0)\n\n      f = 0  # If Bob summons a Fire Dragon at i.\n      w = 0  # If Bob summons a Water Serpent at i.\n      e = 0  # If Bob summons a Earth Golem at i.\n\n      match s[i]:\n        case 'F':\n          if prev != 0:\n            f = dp(i + 1, 0, bob) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob + 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob - 1) % MOD\n        case 'W':\n          if prev != 0:\n            f = dp(i + 1, 0, bob - 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob + 1) % MOD\n        case 'E':\n          if prev != 0:\n            f = dp(i + 1, 0, bob + 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob - 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob) % MOD\n\n      return f + w + e\n\n    return (dp(0, 0, 0) + dp(0, 1, 0) + dp(0, 2, 0)) // 2 % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minCostGoodCaption('cdcd') == 'cccc'"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minCostGoodCaption('xyz') == 'yyy'"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minCostGoodCaption('aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz') == 'aaaaccceeefffhhhiiikkklllnnnoooqqqrrrtttuuuwwwxxxzzz'"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minCostGoodCaption('aabbbccc') == 'bbbbbccc'"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minCostGoodCaption('abcdefghijklmnopqrstuvwxyz') == 'bbbbffffjjjmmmpppsssvvvyyy'"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minCostGoodCaption('cccccc') == 'cccccc'"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minCostGoodCaption('abcdefg') == 'bbbbfff'"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minCostGoodCaption('aaabbbccc') == 'aaabbbccc'"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minCostGoodCaption('aaa') == 'aaa'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minCostGoodCaption('aabbaa') == 'aaaaaa'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minCostGoodCaption('abca') == 'aaaa'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minCostGoodCaption('aabbcc') == 'aaaccc'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3441",
+    "fecha-estimada-2025-01-26",
+    "String",
+    "Dynamic Programming"
+  ]
+}

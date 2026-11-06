@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3501",
+  "titulo": "Maximize Active Section with Trade II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-active-section-with-trade-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Sparse Table / Range Maximum Query / Cadenas",
+  "enunciado": "You are given a binary string s of length n, where:\n\n'1' represents an active section.\n'0' represents an inactive section.\n\nYou can perform at most one trade to maximize the number of active sections in s. In a trade, you:\n\nConvert a contiguous block of '1's that is surrounded by '0's to all '0's.\nAfterward, convert a contiguous block of '0's that is surrounded by '1's to all '1's.\n\nAdditionally, you are given a 2D array queries, where queries[i] = [li, ri] represents a substring s[li...ri].\nFor each query, determine the maximum possible number of active sections in s after making the optimal trade on the substring s[li...ri].\nReturn an array answer, where answer[i] is the result for queries[i].\nNote\n\nFor each query, treat s[li...ri] as if it is augmented with a '1' at both ends, forming t = '1' + s[li...ri] + '1'. The augmented '1's do not contribute to the final count.\nThe queries are independent of each other.\n\n \nExample 1:\n\nInput: s = \"01\", queries = [[0,1]]\nOutput: [1]\nExplanation:\nBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1.\n\nExample 2:\n\nInput: s = \"0100\", queries = [[0,3],[0,2],[1,3],[2,3]]\nOutput: [4,3,1,1]\nExplanation:\n\n\nQuery [0, 3] → Substring \"0100\" → Augmented to \"101001\"\n\tChoose \"0100\", convert \"0100\" → \"0000\" → \"1111\".\n\tThe final string without augmentation is \"1111\". The maximum number of active sections is 4.\n\n\nQuery [0, 2] → Substring \"010\" → Augmented to \"10101\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"1110\". The maximum number of active sections is 3.\n\n\nQuery [1, 3] → Substring \"100\" → Augmented to \"11001\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1.\n\n\nQuery [2, 3] → Substring \"00\" → Augmented to \"1001\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1.\n\n\n\nExample 3:\n\nInput: s = \"1000100\", queries = [[1,5],[0,6],[0,4]]\nOutput: [6,7,2]\nExplanation:\n\n\nQuery [1, 5] → Substring \"00010\" → Augmented to \"1000101\"\n\tChoose \"00010\", convert \"00010\" → \"00000\" → \"11111\".\n\tThe final string without augmentation is \"1111110\". The maximum number of active sections is 6.\n\n\nQuery [0, 6] → Substring \"1000100\" → Augmented to \"110001001\"\n\tChoose \"000100\", convert \"000100\" → \"000000\" → \"111111\".\n\tThe final string without augmentation is \"1111111\". The maximum number of active sections is 7.\n\n\nQuery [0, 4] → Substring \"10001\" → Augmented to \"1100011\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 2.\n\n\n\nExample 4:\n\nInput: s = \"01010\", queries = [[0,3],[1,4],[1,3]]\nOutput: [4,4,2]\nExplanation:\n\n\nQuery [0, 3] → Substring \"0101\" → Augmented to \"101011\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"11110\". The maximum number of active sections is 4.\n\n\nQuery [1, 4] → Substring \"1010\" → Augmented to \"110101\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"01111\". The maximum number of active sections is 4.\n\n\nQuery [1, 3] → Substring \"101\" → Augmented to \"11011\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 2.\n\n\n\n \nConstraints:\n\n1 <= n == s.length <= 105\n1 <= queries.length <= 105\ns[i] is either '0' or '1'.\nqueries[i] = [li, ri]\n0 <= li <= ri < n\n\n",
+  "especificacion_entrada": "s: string, queries: integer[][]",
+  "especificacion_salida": "integer[]",
+  "restricciones": "1 <= n == s.length <= 105\n1 <= queries.length <= 105\ns[i] is either '0' or '1'.\nqueries[i] = [li, ri]\n0 <= li <= ri < n",
+  "solucion_referencia": "import itertools\nfrom itertools import pairwise\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Group:\n  start: int\n  length: int\n\n\nclass SparseTable:\n  def __init__(self, nums: list[int]):\n    self.n = len(nums)\n    # st[i][j] := max(nums[j..j + 2^i - 1])\n    self.st = [[0] * (self.n + 1) for _ in range(self.n.bit_length() + 1)]\n    self.st[0] = nums.copy()\n    for i in range(1, self.n.bit_length() + 1):\n      for j in range(self.n - (1 << i) + 1):\n        self.st[i][j] = max(\n            self.st[i - 1][j],\n            self.st[i - 1][j + (1 << (i - 1))])\n\n  def query(self, l: int, r: int) -> int:\n    \"\"\"Returns max(nums[l..r]).\"\"\"\n    i = (r - l + 1).bit_length() - 1\n    return max(self.st[i][l], self.st[i][r - (1 << i) + 1])\n\n\nclass Solution:\n  def maxActiveSectionsAfterTrade(\n      self,\n      s: str,\n      queries: list[list[int]]\n  ) -> list[int]:\n    ones = s.count('1')\n    zeroGroups, zeroGroupIndex = self._getZeroGroups(s)\n    if not zeroGroups:\n      return [ones] * len(queries)\n\n    st = SparseTable(self._getZeroMergeLengths(zeroGroups))\n\n    def getMaxActiveSections(l: int, r: int) -> int:\n      left = (-1 if zeroGroupIndex[l] == -1\n              else (zeroGroups[zeroGroupIndex[l]].length -\n                    (l - zeroGroups[zeroGroupIndex[l]].start)))\n      right = (-1 if zeroGroupIndex[r] == -1\n               else (r - zeroGroups[zeroGroupIndex[r]].start + 1))\n      startAdjacentGroupIndex, endAdjacentGroupIndex = self._mapToAdjacentGroupIndices(\n          zeroGroupIndex[l] + 1, zeroGroupIndex[r] if s[r] == '1' else zeroGroupIndex[r] - 1)\n      activeSections = ones\n      if (s[l] == '0' and s[r] == '0' and\n              zeroGroupIndex[l] + 1 == zeroGroupIndex[r]):\n        activeSections = max(activeSections, ones + left + right)\n      elif startAdjacentGroupIndex <= endAdjacentGroupIndex:\n        activeSections = max(\n            activeSections,\n            ones + st.query(startAdjacentGroupIndex, endAdjacentGroupIndex))\n      if (s[l] == '0' and\n          zeroGroupIndex[l] + 1 <= (zeroGroupIndex[r]\n                                    if s[r] == '1' else zeroGroupIndex[r] - 1)):\n        activeSections = max(activeSections, ones + left +\n                             zeroGroups[zeroGroupIndex[l] + 1].length)\n      if (s[r] == '0' and zeroGroupIndex[l] < zeroGroupIndex[r] - 1):\n        activeSections = max(activeSections, ones + right +\n                             zeroGroups[zeroGroupIndex[r] - 1].length)\n      return activeSections\n\n    return [getMaxActiveSections(l, r) for l, r in queries]\n\n  def _getZeroGroups(self, s: str) -> tuple[list[Group], list[int]]:\n    \"\"\"\n    Returns the zero groups and the index of the zero group that contains the\n    i-th character.\n    \"\"\"\n    zeroGroups = []\n    zeroGroupIndex = []\n    for i in range(len(s)):\n      if s[i] == '0':\n        if i > 0 and s[i - 1] == '0':\n          zeroGroups[-1].length += 1\n        else:\n          zeroGroups.append(Group(i, 1))\n      zeroGroupIndex.append(len(zeroGroups) - 1)\n    return zeroGroups, zeroGroupIndex\n\n  def _getZeroMergeLengths(self, zeroGroups: list[Group]) -> list[int]:\n    \"\"\"Returns the sums of the lengths of the adjacent groups.\"\"\"\n    return [a.length + b.length for a, b in itertools.pairwise(zeroGroups)]\n\n  def _mapToAdjacentGroupIndices(\n      self,\n      startGroupIndex: int,\n      endGroupIndex: int\n  ) -> tuple[int, int]:\n    \"\"\"\n    Returns the indices of the adjacent groups that contain l and r completely.\n\n    e.g.    groupIndices = [0, 1, 2, 3]\n    adjacentGroupIndices = [0 (0, 1), 1 (1, 2), 2 (2, 3)]\n    map(startGroupIndex = 1, endGroupIndex = 3) -> (1, 2)\n    \"\"\"\n    return startGroupIndex, endGroupIndex - 1",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"01\", queries = [[0,1]]",
+      "salida": "[1]",
+      "explicacion": "Because there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1."
+    },
+    {
+      "entrada": "s = \"0100\", queries = [[0,3],[0,2],[1,3],[2,3]]",
+      "salida": "[4,3,1,1]",
+      "explicacion": "Query [0, 3] → Substring \"0100\" → Augmented to \"101001\"\n\tChoose \"0100\", convert \"0100\" → \"0000\" → \"1111\".\n\tThe final string without augmentation is \"1111\". The maximum number of active sections is 4.\n\n\nQuery [0, 2] → Substring \"010\" → Augmented to \"10101\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"1110\". The maximum number of active sections is 3.\n\n\nQuery [1, 3] → Substring \"100\" → Augmented to \"11001\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1.\n\n\nQuery [2, 3] → Substring \"00\" → Augmented to \"1001\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1."
+    },
+    {
+      "entrada": "s = \"1000100\", queries = [[1,5],[0,6],[0,4]]",
+      "salida": "[6,7,2]",
+      "explicacion": "Query [1, 5] → Substring \"00010\" → Augmented to \"1000101\"\n\tChoose \"00010\", convert \"00010\" → \"00000\" → \"11111\".\n\tThe final string without augmentation is \"1111110\". The maximum number of active sections is 6.\n\n\nQuery [0, 6] → Substring \"1000100\" → Augmented to \"110001001\"\n\tChoose \"000100\", convert \"000100\" → \"000000\" → \"111111\".\n\tThe final string without augmentation is \"1111111\". The maximum number of active sections is 7.\n\n\nQuery [0, 4] → Substring \"10001\" → Augmented to \"1100011\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 2."
+    },
+    {
+      "entrada": "s = \"01010\", queries = [[0,3],[1,4],[1,3]]",
+      "salida": "[4,4,2]",
+      "explicacion": "Query [0, 3] → Substring \"0101\" → Augmented to \"101011\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"11110\". The maximum number of active sections is 4.\n\n\nQuery [1, 4] → Substring \"1010\" → Augmented to \"110101\"\n\tChoose \"010\", convert \"010\" → \"000\" → \"111\".\n\tThe final string without augmentation is \"01111\". The maximum number of active sections is 4.\n\n\nQuery [1, 3] → Substring \"101\" → Augmented to \"11011\"\n\tBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 2."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3501: LC-3499 - Maximize Active Section with Trade I. Ambos problemas comparten el tema de active, maximize, section, aunque plantean una variante distinta.",
+      "entrada": "s = '01010'",
+      "salida": "4",
+      "explicacion": "Relación con LC-3501: Ambos problemas comparten el tema de active, maximize, section, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import itertools\nfrom itertools import pairwise\n\nclass Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        zeroGroups = [len(list(g)) for c, g in itertools.groupby(s) if c == '0']\n        return s.count('1') + max(map(sum, pairwise(zeroGroups)), default=0)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('0100', [[0, 3], [0, 2], [1, 3], [2, 3]]) == [4, 3, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('01', [[0, 1]]) == [1]"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('01010', [[0, 3], [1, 4], [1, 3]]) == [4, 4, 2]"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('1000100', [[1, 5], [0, 6], [0, 4]]) == [6, 7, 2]"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('111111111111111111111111111111111111111111111111', [[0, 39], [1, 38], [2, 37], [3, 36], [4, 35], [5, 34], [6, 33], [7, 32], [8, 31], [9, 30]]) == [48, 48, 48, 48, 48, 48, 48, 48, 48, 48]"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('11111111111111111', [[0, 16], [1, 15], [2, 14], [5, 11], [3, 12]]) == [17, 17, 17, 17, 17]"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('10000000010000000001000000001', [[0, 20], [5, 15], [10, 19]]) == [21, 14, 4]"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('000000000000000000000000000000000000000000000000', [[0, 39], [1, 38], [2, 37], [3, 36], [4, 35], [5, 34], [6, 33], [7, 32], [8, 31], [9, 30]]) == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('11001100110011001100110011', [[0, 20], [5, 15], [0, 9], [10, 19], [15, 25]]) == [18, 18, 18, 18, 18]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('111100001111000011110000', [[0, 23], [4, 19], [5, 18], [6, 17], [7, 16], [8, 15], [9, 14], [10, 13], [11, 12]]) == [20, 20, 19, 18, 17, 12, 12, 12, 12]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('1001001001001001001001001', [[0, 24], [2, 22], [3, 21], [4, 20], [5, 19], [6, 18], [7, 17], [8, 16], [9, 15], [10, 14], [11, 13]]) == [13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 11]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('00101010101010101010', [[0, 9], [5, 15], [10, 19]]) == [12, 11, 11]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3501",
+    "seleccion-reciente-2026-11"
+  ]
+}

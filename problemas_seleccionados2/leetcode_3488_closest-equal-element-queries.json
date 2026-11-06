@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3488",
+  "titulo": "Closest Equal Element Queries",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/closest-equal-element-queries/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Arreglos / Hash Table / Búsqueda Binaria / Arreglos Circulares",
+  "enunciado": "You are given a circular array nums and an array queries.\nFor each query i, you have to find the following:\n\nThe minimum distance between the element at index queries[i] and any other index j in the circular array, where nums[j] == nums[queries[i]]. If no such index exists, the answer for that query should be -1.\n\nReturn an array answer of the same size as queries, where answer[i] represents the result for query i.\n \nExample 1:\n\nInput: nums = [1,3,1,4,1,3,2], queries = [0,3,5]\nOutput: [2,-1,3]\nExplanation:\n\nQuery 0: The element at queries[0] = 0 is nums[0] = 1. The nearest index with the same value is 2, and the distance between them is 2.\nQuery 1: The element at queries[1] = 3 is nums[3] = 4. No other index contains 4, so the result is -1.\nQuery 2: The element at queries[2] = 5 is nums[5] = 3. The nearest index with the same value is 1, and the distance between them is 3 (following the circular path: 5 -> 6 -> 0 -> 1).\n\n\nExample 2:\n\nInput: nums = [1,2,3,4], queries = [0,1,2,3]\nOutput: [-1,-1,-1,-1]\nExplanation:\nEach value in nums is unique, so no index shares the same value as the queried element. This results in -1 for all queries.\n\n \nConstraints:\n\n1 <= queries.length <= nums.length <= 105\n1 <= nums[i] <= 106\n0 <= queries[i] < nums.length\n\n",
+  "especificacion_entrada": "nums: integer[], queries: integer[]",
+  "especificacion_salida": "integer[]",
+  "restricciones": "1 <= queries.length <= nums.length <= 105\n1 <= nums[i] <= 106\n0 <= queries[i] < nums.length",
+  "solucion_referencia": "class Solution:\n  def solveQueries(self, nums: list[int], queries: list[int]) -> list[int]:\n    n = len(nums)\n    # minDist[i] := the minimum distance between nums[i], and any other index j\n    # in the circular array, where nums[j] == nums[i]\n    minDist = [n] * n\n    lastSeen = {}\n\n    for i in range(n * 2):\n      index = i % n\n      num = nums[index]\n      if num in lastSeen:\n        prevIndex = lastSeen[num] % n\n        d = i - prevIndex\n        minDist[index] = min(minDist[index], d)\n        minDist[prevIndex] = min(minDist[prevIndex], d)\n      lastSeen[num] = i\n\n    return [-1 if minDist[query] == n\n            else minDist[query]\n            for query in queries]",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,3,1,4,1,3,2], queries = [0,3,5]",
+      "salida": "[2,-1,3]",
+      "explicacion": "Query 0: The element at queries[0] = 0 is nums[0] = 1. The nearest index with the same value is 2, and the distance between them is 2.\nQuery 1: The element at queries[1] = 3 is nums[3] = 4. No other index contains 4, so the result is -1.\nQuery 2: The element at queries[2] = 5 is nums[5] = 3. The nearest index with the same value is 1, and the distance between them is 3 (following the circular path: 5 -> 6 -> 0 -> 1)."
+    },
+    {
+      "entrada": "nums = [1,2,3,4], queries = [0,1,2,3]",
+      "salida": "[-1,-1,-1,-1]",
+      "explicacion": "Each value in nums is unique, so no index shares the same value as the queried element. This results in -1 for all queries."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3488: LC-3312 - Sorted GCD Pair Queries. Ambos contestan consultas sobre posiciones de elementos mediante índices ordenados y búsqueda del candidato más cercano.",
+      "entrada": "nums = [5, 10, 15, 20], queries = [0, 1, 2, 3, 4, 5, 6, 8]",
+      "salida": "[5, 5, 5, 5, 5, 10, 21, 21]",
+      "explicacion": "Relación con LC-3488: Ambos contestan consultas sobre posiciones de elementos mediante índices ordenados y búsqueda del candidato más cercano.",
+      "codigo_ilustrativo": "import bisect\nimport itertools\nimport math\n\nclass Solution:\n  def gcdValues(self, nums: list[int], queries: list[int]) -> list[int]:\n    maxNum = max(nums)\n    # countDivisor[d] := the number of `nums` having `num % d == 0`\n    countDivisor = [0] * (maxNum + 1)\n    # countGcdPair[g] := the number of pairs having gcd == g\n    countGcdPair = [0] * (maxNum + 1)\n\n    for num in nums:\n      for i in range(1, math.isqrt(num) + 1):\n        if num % i == 0:\n          countDivisor[i] += 1\n          if i != num // i:\n            countDivisor[num // i] += 1\n\n    for gcd in range(maxNum, 0, -1):\n      # There are C(countDivisor[gcd], 2) pairs that have a common divisor\n      # that's a multiple of `gcd` (including the one that equals to `gcd`).\n      # So, substract the multiples of `gcd` to have the number of pairs with a\n      # gcd that's exactly `gcd`.\n      countGcdPair[gcd] = countDivisor[gcd] * (countDivisor[gcd] - 1) // 2\n      for largerGcd in range(2 * gcd, maxNum + 1, gcd):\n        countGcdPair[gcd] -= countGcdPair[largerGcd]\n\n    # prefixCountGcdPair[g] := the number of pairs having gcd <= g\n    prefixCountGcdPair = list(itertools.accumulate(countGcdPair))\n    return [bisect.bisect_left(prefixCountGcdPair, query + 1)\n            for query in queries]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().solveQueries([1, 3, 1, 4, 1, 3, 2], [0, 3, 5]) == [2, -1, 3]"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().solveQueries([1, 2, 3, 4], [0, 1, 2, 3]) == [-1, -1, -1, -1]"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().solveQueries([1000000, 1000000, 1000000], [0, 1, 2]) == [1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().solveQueries([5, 1, 5, 2, 5, 3, 5, 4], [2, 4, 6, 0]) == [2, 2, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().solveQueries([10, 20, 30, 40, 50, 10, 20], [0, 1, 2, 3, 4, 5, 6]) == [2, 2, -1, -1, -1, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().solveQueries([6, 5, 4, 3, 2, 1], [0, 1, 2, 3, 4, 5]) == [-1, -1, -1, -1, -1, -1]"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().solveQueries([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [0, 9, 5]) == [-1, -1, -1]"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().solveQueries([10, 10, 10, 10], [0, 1, 2, 3]) == [1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().solveQueries([2, 1, 3, 1, 2], [0, 1, 2, 3, 4]) == [1, 2, -1, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().solveQueries([5, 1, 5, 1, 5, 1], [2, 4, 1, 3]) == [2, 2, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().solveQueries([5, 5, 5, 5, 5], [0, 1, 2, 3, 4]) == [1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().solveQueries([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3488",
+    "seleccion-reciente-2026-11"
+  ]
+}

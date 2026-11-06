@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3378",
+  "titulo": "Count Connected Components in LCM Graph",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-connected-components-in-lcm-graph/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Union Find / Array / Hash Table / Math / Number Theory",
+  "enunciado": "You are given an array of integers nums of size n and a positive integer threshold.\nThere is a graph consisting of n nodes with the ith node having a value of nums[i]. Two nodes i and j in the graph are connected via an undirected edge if lcm(nums[i], nums[j]) <= threshold.\nReturn the number of connected components in this graph.\nA connected component is a subgraph of a graph in which there exists a path between any two vertices, and no vertex of the subgraph shares an edge with a vertex outside of the subgraph.\nThe term lcm(a, b) denotes the least common multiple of a and b.\n \nExample 1:\n\nInput: nums = [2,4,8,3,9], threshold = 5\nOutput: 4\nExplanation: \n\n \nThe four connected components are (2, 4), (3), (8), (9).\n\nExample 2:\n\nInput: nums = [2,4,8,3,9,12], threshold = 10\nOutput: 2\nExplanation: \n\nThe two connected components are (2, 3, 4, 8, 9), and (12).\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 109\nAll elements of nums are unique.\n1 <= threshold <= 2 * 105\n\n",
+  "especificacion_entrada": "nums: list[int], threshold: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class UnionFind:\n  def __init__(self):\n    self.id = {}\n    self.rank = collections.Counter()\n\n  def unionByRank(self, u: int, v: int) -> None:\n    i = self.find(u)\n    j = self.find(v)\n    if i == j:\n      return\n    if self.rank[i] < self.rank[j]:\n      self.id[i] = j\n    elif self.rank[i] > self.rank[j]:\n      self.id[j] = i\n    else:\n      self.id[i] = j\n      self.rank[j] += 1\n\n  def find(self, u: int) -> int:\n    if u not in self.id:\n      self.id[u] = u\n    if self.id[u] != u:\n      self.id[u] = self.find(self.id[u])\n    return self.id[u]\n\n\nclass Solution:\n  def countComponents(self, nums: list[int], threshold: int) -> int:\n    uf = UnionFind()\n\n    for num in nums:\n      for multiple in range(2 * num, threshold + 1, num):\n        uf.unionByRank(num, multiple)\n\n    return len(set(uf.find(num) for num in nums))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,3,4,5], threshold = 4",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5], threshold = 3",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [6,12,18,24,30], threshold = 30",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3378: LC-3493 - Properties Graph. Ambos construyen componentes conexas entre elementos que cumplen una condición de compatibilidad y usan conectividad de grafos.",
+      "entrada": "properties = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6], [4, 5, 6, 7]], k = 3",
+      "salida": "1",
+      "explicacion": "Relación con LC-3378: Ambos construyen componentes conexas entre elementos que cumplen una condición de compatibilidad y usan conectividad de grafos.",
+      "codigo_ilustrativo": "import itertools\n\nclass UnionFind:\n  def __init__(self, n: int):\n    self.count = n\n    self.id = list(range(n))\n    self.rank = [0] * n\n\n  def unionByRank(self, u: int, v: int) -> None:\n    i = self._find(u)\n    j = self._find(v)\n    if i == j:\n      return\n    if self.rank[i] < self.rank[j]:\n      self.id[i] = j\n    elif self.rank[i] > self.rank[j]:\n      self.id[j] = i\n    else:\n      self.id[i] = j\n      self.rank[j] += 1\n    self.count -= 1\n\n  def getCount(self) -> int:\n    return self.count\n\n  def _find(self, u: int) -> int:\n    if self.id[u] != u:\n      self.id[u] = self._find(self.id[u])\n    return self.id[u]\n\n\nclass Solution:\n  def numberOfComponents(self, properties: list[list[int]], k: int) -> int:\n    n = len(properties)\n    uf = UnionFind(n)\n    propertySets = [set(property) for property in properties]\n\n    for i, j in itertools.combinations(range(n), 2):\n      if len(propertySets[i] & propertySets[j]) >= k:\n        uf.unionByRank(i, j)\n\n    return uf.getCount()"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countComponents([1, 2, 3, 4, 5], 4) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countComponents([1, 2, 3, 4, 5], 3) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countComponents([6, 12, 18, 24, 30], 30) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countComponents([100, 200, 300, 400, 500], 250) == 4"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countComponents([2, 4, 8, 3, 9, 12], 10) == 2"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countComponents([2, 3, 5, 7, 11, 13, 17, 19, 23, 29], 30) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countComponents([6, 12, 18, 24, 30], 15) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countComponents([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 15) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countComponents([30, 25, 20, 15, 10, 5], 30) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countComponents([1, 2, 3, 4, 5], 1) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countComponents([5, 10, 15, 20, 25, 30], 20) == 3"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countComponents([7, 14, 21, 28, 35], 20) == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3378",
+    "fecha-estimada-2024-12-01",
+    "Union Find",
+    "Array",
+    "Hash Table",
+    "Math",
+    "Number Theory"
+  ]
+}

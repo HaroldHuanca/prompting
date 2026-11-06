@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3450",
+  "titulo": "Maximum Students on a Single Bench",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-students-on-a-single-bench/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Hash Table",
+  "enunciado": "You are given a 2D integer array of student data students, where students[i] = [student_id, bench_id] represents that student student_id is sitting on the bench bench_id.\nReturn the maximum number of unique students sitting on any single bench. If no students are present, return 0.\nNote: A student can appear multiple times on the same bench in the input, but they should be counted only once per bench.\n \nExample 1:\n\nInput: students = [[1,2],[2,2],[3,3],[1,3],[2,3]]\nOutput: 3\nExplanation:\n\nBench 2 has two unique students: [1, 2].\nBench 3 has three unique students: [1, 2, 3].\nThe maximum number of unique students on a single bench is 3.\n\n\nExample 2:\n\nInput: students = [[1,1],[2,1],[3,1],[4,2],[5,2]]\nOutput: 3\nExplanation:\n\nBench 1 has three unique students: [1, 2, 3].\nBench 2 has two unique students: [4, 5].\nThe maximum number of unique students on a single bench is 3.\n\n\nExample 3:\n\nInput: students = [[1,1],[1,1]]\nOutput: 1\nExplanation:\n\nThe maximum number of unique students on a single bench is 1.\n\n\nExample 4:\n\nInput: students = []\nOutput: 0\nExplanation:\n\nSince no students are present, the output is 0.\n\n\n \nConstraints:\n\n0 <= students.length <= 100\nstudents[i] = [student_id, bench_id]\n1 <= student_id <= 100\n1 <= bench_id <= 100\n\n",
+  "especificacion_entrada": "students: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxStudentsOnBench(self, students: list[list[int]]) -> int:\n    benchToStudents = collections.defaultdict(set)\n    for studentId, benchId in students:\n      benchToStudents[benchId].add(studentId)\n    return max(map(len, benchToStudents.values()), default=0)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "students = [[1,1],[2,1],[3,1],[4,2],[5,2]]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "students = [[1,2],[2,2],[3,3],[1,3],[2,3]]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "students = []",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3450: LC-3396 - Minimum Number of Operations to Make Elements in Array Distinct. Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [4, 5, 6, 4, 4]",
+      "salida": "2",
+      "explicacion": "Relación con LC-3450: Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minimumOperations(self, nums: list[int]) -> int:\n    seen = set()\n    for i, num in reversed(list(enumerate(nums))):\n      if num in seen:\n        return (i + 1 + 2) // 3  # ceil((i + 1) / 3)\n      seen.add(num)\n    return 0\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 1], [3, 1], [4, 2], [5, 2]]) == 3"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 2], [2, 2], [3, 3], [1, 3], [2, 3]]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxStudentsOnBench([]) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1], [13, 1]]) == 13"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 11], [12, 12], [13, 13], [14, 14], [15, 15], [16, 16], [17, 17], [18, 18], [19, 19], [20, 20]]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 1], [3, 2], [4, 2], [5, 3], [6, 3], [7, 4], [8, 4], [9, 5], [10, 5], [11, 6], [12, 6], [13, 7], [14, 7], [15, 8], [16, 8], [17, 9], [18, 9], [19, 10], [20, 10], [21, 11], [22, 11], [23, 12], [24, 12], [25, 13], [26, 13], [27, 14], [28, 14], [29, 15], [30, 15]]) == 2"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [3, 1], [3, 2], [3, 3], [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10]]) == 3"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [1, 6], [2, 7], [3, 8], [4, 9], [5, 10], [6, 1], [7, 2], [8, 3], [9, 4], [10, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]) == 2"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxStudentsOnBench([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10], [11, 1], [12, 2], [13, 3], [14, 4], [15, 5], [16, 6], [17, 7], [18, 8], [19, 9], [20, 10]]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3450",
+    "fecha-estimada-2025-02-09",
+    "Array",
+    "Hash Table"
+  ]
+}

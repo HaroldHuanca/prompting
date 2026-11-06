@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3496",
+  "titulo": "Maximize Score After Pair Deletions",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-score-after-pair-deletions/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Arreglos / Greedy / Paridad",
+  "enunciado": "You are given an array of integers nums. You must repeatedly perform one of the following operations while the array has more than two elements:\n\nRemove the first two elements.\nRemove the last two elements.\nRemove the first and last element.\n\nFor each operation, add the sum of the removed elements to your total score.\nReturn the maximum possible score you can achieve.\n \nExample 1:\n\nInput: nums = [2,4,1]\nOutput: 6\nExplanation:\nThe possible operations are:\n\nRemove the first two elements (2 + 4) = 6. The remaining array is [1].\nRemove the last two elements (4 + 1) = 5. The remaining array is [2].\nRemove the first and last elements (2 + 1) = 3. The remaining array is [4].\n\nThe maximum score is obtained by removing the first two elements, resulting in a final score of 6.\n\nExample 2:\n\nInput: nums = [5,-1,4,2]\nOutput: 7\nExplanation:\nThe possible operations are:\n\nRemove the first and last elements (5 + 2) = 7. The remaining array is [-1, 4].\nRemove the first two elements (5 + -1) = 4. The remaining array is [4, 2].\nRemove the last two elements (4 + 2) = 6. The remaining array is [5, -1].\n\nThe maximum score is obtained by removing the first and last elements, resulting in a total score of 7.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n-104 <= nums[i] <= 104\n\n",
+  "especificacion_entrada": "nums: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= nums.length <= 105\n-104 <= nums[i] <= 104",
+  "solucion_referencia": "import itertools\nfrom itertools import pairwise\n\nclass Solution:\n  def maxScore(self, nums: list[int]) -> int:\n    summ = sum(nums)\n    if len(nums) % 2 == 1:\n      return summ - min(nums)\n    return summ - min(a + b for a, b in itertools.pairwise(nums))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,4,1]",
+      "salida": "6",
+      "explicacion": "The possible operations are:\n\nRemove the first two elements (2 + 4) = 6. The remaining array is [1].\nRemove the last two elements (4 + 1) = 5. The remaining array is [2].\nRemove the first and last elements (2 + 1) = 3. The remaining array is [4].\n\nThe maximum score is obtained by removing the first two elements, resulting in a final score of 6."
+    },
+    {
+      "entrada": "nums = [5,-1,4,2]",
+      "salida": "7",
+      "explicacion": "The possible operations are:\n\nRemove the first and last elements (5 + 2) = 7. The remaining array is [-1, 4].\nRemove the first two elements (5 + -1) = 4. The remaining array is [4, 2].\nRemove the last two elements (4 + 2) = 6. The remaining array is [5, -1].\n\nThe maximum score is obtained by removing the first and last elements, resulting in a total score of 7."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3496: LC-3472 - Longest Palindromic Subsequence After at Most K Operations. Ambos resuelven decisiones sobre extremos de un arreglo o intervalo con programación dinámica y subproblemas que se reducen por los bordes.",
+      "entrada": "s = 'zxy', k = 1",
+      "salida": "3",
+      "explicacion": "Relación con LC-3496: Ambos resuelven decisiones sobre extremos de un arreglo o intervalo con programación dinámica y subproblemas que se reducen por los bordes.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  # Similar to 516. Longest Palindromic Subsequence\n  def longestPalindromicSubsequence(self, s: str, k: int) -> int:\n    @functools.lru_cache(None)\n    def dp(i: int, j: int, op: int) -> int:\n      \"\"\"Returns the length of LPS(s[i..j]) with at most `op` operations.\"\"\"\n      if i > j:\n        return 0\n      if i == j:\n        return 1\n      if s[i] == s[j]:\n        return 2 + dp(i + 1, j - 1, op)\n      res = max(dp(i + 1, j, op), dp(i, j - 1, op))\n      cost = self._getCost(s[i], s[j])\n      if cost <= op:\n        res = max(res, 2 + dp(i + 1, j - 1, op - cost))\n      return res\n\n    return dp(0, len(s) - 1, k)\n\n  def _getCost(self, a: str, b: str) -> int:\n    dist = abs(ord(a) - ord(b))\n    return min(dist, 26 - dist)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == 8"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxScore([5, -1, 4, 2]) == 7"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxScore([10000, -10000, 10000, -10000, 10000]) == 20000"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxScore([1, 2, 3]) == 5"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxScore([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 52"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxScore([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 52"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxScore([1]) == 0"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxScore([-5, 5, -5, 5, -5, 5]) == 0"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxScore([1, 2]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore([10, -10, 20, -20, 30, -30, 40, -40, 50]) == 90"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore([5, 1, 5, 1, 5, 1, 5, 1, 5, 1]) == 24"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore([2, 4, 1]) == 6"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3496",
+    "seleccion-reciente-2026-11"
+  ]
+}

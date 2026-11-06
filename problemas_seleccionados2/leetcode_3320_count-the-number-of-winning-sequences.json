@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3320",
+  "titulo": "Count The Number of Winning Sequences",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-the-number-of-winning-sequences/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "String / Dynamic Programming",
+  "enunciado": "Alice and Bob are playing a fantasy battle game consisting of n rounds where they summon one of three magical creatures each round: a Fire Dragon, a Water Serpent, or an Earth Golem. In each round, players simultaneously summon their creature and are awarded points as follows:\n\nIf one player summons a Fire Dragon and the other summons an Earth Golem, the player who summoned the Fire Dragon is awarded a point.\nIf one player summons a Water Serpent and the other summons a Fire Dragon, the player who summoned the Water Serpent is awarded a point.\nIf one player summons an Earth Golem and the other summons a Water Serpent, the player who summoned the Earth Golem is awarded a point.\nIf both players summon the same creature, no player is awarded a point.\n\nYou are given a string s consisting of n characters 'F', 'W', and 'E', representing the sequence of creatures Alice will summon in each round:\n\nIf s[i] == 'F', Alice summons a Fire Dragon.\nIf s[i] == 'W', Alice summons a Water Serpent.\nIf s[i] == 'E', Alice summons an Earth Golem.\n\nBob’s sequence of moves is unknown, but it is guaranteed that Bob will never summon the same creature in two consecutive rounds. Bob beats Alice if the total number of points awarded to Bob after n rounds is strictly greater than the points awarded to Alice.\nReturn the number of distinct sequences Bob can use to beat Alice.\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: s = \"FFF\"\nOutput: 3\nExplanation:\nBob can beat Alice by making one of the following sequences of moves: \"WFW\", \"FWF\", or \"WEW\". Note that other winning sequences like \"WWE\" or \"EWW\" are invalid since Bob cannot make the same move twice in a row.\n\nExample 2:\n\nInput: s = \"FWEFW\"\nOutput: 18\nExplanation:\nBob can beat Alice by making one of the following sequences of moves: \"FWFWF\", \"FWFWE\", \"FWEFE\", \"FWEWE\", \"FEFWF\", \"FEFWE\", \"FEFEW\", \"FEWFE\", \"WFEFE\", \"WFEWE\", \"WEFWF\", \"WEFWE\", \"WEFEF\", \"WEFEW\", \"WEWFW\", \"WEWFE\", \"EWFWE\", or \"EWEWE\".\n\n \nConstraints:\n\n1 <= s.length <= 1000\ns[i] is one of 'F', 'W', or 'E'.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countWinningSequences(self, s: str) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def dp(i: int, prev: int, bob: int) -> int:\n      \"\"\"\n      Returns the number of distinct sequences Bob can use to beat Alice for\n      s[i..n), where the previous character is `prev` (0: F, 1: W, 2: E) and the\n      number of points that Bob is having is `bob`.\n      \"\"\"\n      if i == len(s):\n        return int(bob > 0)\n\n      f = 0  # If Bob summons a Fire Dragon at i.\n      w = 0  # If Bob summons a Water Serpent at i.\n      e = 0  # If Bob summons a Earth Golem at i.\n\n      match s[i]:\n        case 'F':\n          if prev != 0:\n            f = dp(i + 1, 0, bob) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob + 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob - 1) % MOD\n        case 'W':\n          if prev != 0:\n            f = dp(i + 1, 0, bob - 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob + 1) % MOD\n        case 'E':\n          if prev != 0:\n            f = dp(i + 1, 0, bob + 1) % MOD\n          if prev != 1:\n            w = dp(i + 1, 1, bob - 1) % MOD\n          if prev != 2:\n            e = dp(i + 1, 2, bob) % MOD\n\n      return f + w + e\n\n    return (dp(0, 0, 0) + dp(0, 1, 0) + dp(0, 2, 0)) // 2 % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"WFWFWFWFWFWFWFWFWFWF\"",
+      "salida": "730500",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"WFW\"",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"FWEFWEFW\"",
+      "salida": "157",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3320: LC-3441 - Minimum Cost Good Caption. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "caption = 'cdcd'",
+      "salida": "cccc",
+      "explicacion": "Relación con LC-3320: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import string\n\nclass Solution:\n\n  def minCostGoodCaption(self, caption: str) -> str:\n    n = len(caption)\n    if n < 3:\n      return ''\n\n    MAX_COST = 1_000_000_000\n    # dp[i][j][k] := the minimum cost of caption[i..n - 1], where j is the last\n    # letter used, and k is the count of consecutive letters\n    dp = [[[MAX_COST] * 3 for _ in range(26)] for _ in range(n)]\n\n    for c in range(26):\n      dp[-1][c][0] = abs(string.ascii_lowercase.index(caption[-1]) - c)\n\n    minCost = MAX_COST\n\n    for i in range(n - 2, -1, -1):\n      newMinCost = MAX_COST\n      for c in range(26):\n        changeCost = abs(string.ascii_lowercase.index(caption[i]) - c)\n        dp[i][c][0] = changeCost + minCost\n        dp[i][c][1] = changeCost + dp[i + 1][c][0]\n        dp[i][c][2] = changeCost + min(dp[i + 1][c][1], dp[i + 1][c][2])\n        newMinCost = min(newMinCost, dp[i][c][2])\n      minCost = newMinCost\n\n    # Reconstruct the string.\n    ans = []\n    cost = MAX_COST\n    letter = -1\n\n    # Find the initial best letter.\n    for c in range(25, -1, -1):\n      if dp[0][c][2] <= cost:\n        letter = c\n        cost = dp[0][c][2]\n\n    # Add the initial triplet.\n    cost -= self._appendLetter(caption, 0, chr(ord('a') + letter), ans)\n    cost -= self._appendLetter(caption, 1, chr(ord('a') + letter), ans)\n    cost -= self._appendLetter(caption, 2, chr(ord('a') + letter), ans)\n\n    # Build the rest of the string.\n    i = 3\n    while i < n:\n      nextLetter = self._getNextLetter(dp, i, cost)\n      if nextLetter < letter or min(dp[i][letter]) > cost:\n        letter = nextLetter\n        cost -= self._appendLetter(caption, i, chr(ord('a') + letter), ans)\n        cost -= self._appendLetter(caption, i + 1, chr(ord('a') + letter), ans)\n        cost -= self._appendLetter(caption, i + 2, chr(ord('a') + letter), ans)\n        i += 3\n      else:\n        cost -= self._appendLetter(caption, i, chr(ord('a') + letter), ans)\n        i += 1\n\n    return ''.join(ans)\n\n  def _getNextLetter(self, dp: list[list[list[int]]], i: int, cost: int) -> int:\n    nextLetter = 26\n    for c in range(25, -1, -1):\n      if cost == dp[i][c][2]:\n        nextLetter = c\n    return nextLetter\n\n  def _appendLetter(\n      self,\n      caption: str,\n      i: int,\n      letter: str,\n      ans: list[str]\n  ) -> int:\n    ans.append(letter)\n    return abs(ord(caption[i]) - ord(letter))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countWinningSequences('WFWFWFWFWFWFWFWFWFWF') == 730500"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countWinningSequences('WFW') == 6"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countWinningSequences('FWEFWEFW') == 157"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countWinningSequences('FWFWFWFWFWFWFWFWFWFW') == 730500"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countWinningSequences('EWE') == 6"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countWinningSequences('WFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF') == 377759202"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countWinningSequences('EEEEEEEEEEEE') == 2364"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countWinningSequences('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFWE') == 697784136"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countWinningSequences('FWEFWFWFEF') == 671"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countWinningSequences('EFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF') == 942021245"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countWinningSequences('EWFEWFWEWFWEWFWEWFWE') == 723067"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countWinningSequences('FFFFFFFFFFFF') == 2364"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3320",
+    "fecha-estimada-2024-10-13",
+    "String",
+    "Dynamic Programming"
+  ]
+}

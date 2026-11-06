@@ -1,0 +1,103 @@
+{
+  "codigo": "LC-3420",
+  "titulo": "Count Non-Decreasing Subarrays After K Operations",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-non-decreasing-subarrays-after-k-operations/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Stack / Segment Tree / Queue / Array / Sliding Window / Monotonic Queue / Monotonic Stack",
+  "enunciado": "You are given an array nums of n integers and an integer k.\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\nReturn the number of subarrays that you can make non-decreasing ​​​​​after performing at most k operations.\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\n \nExample 1:\n\nInput: nums = [6,3,1,2,4,4], k = 7\nOutput: 17\nExplanation:\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\n\nExample 2:\n\nInput: nums = [6,3,1,3,6], k = 4\nOutput: 12\nExplanation:\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 109\n1 <= k <= 109\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countNonDecreasingSubarrays(self, nums: list[int], k: int) -> int:\n    ans = 0\n    cost = 0\n    # Store (number, count) pairs in non-increasing order. The numbers in the\n    # queue represent what nums[i..j] look like after adjustments.\n    dq = collections.deque()\n\n    j = len(nums) - 1\n    for i, num in reversed(list(enumerate(nums))):\n      count = 1\n      while dq and dq[-1][0] < num:\n        nextNum, nextCount = dq.pop()\n        count += nextCount\n        cost += (num - nextNum) * nextCount  # Adjust `nextNum`s to `num`.\n      dq.append((num, count))\n      while cost > k:  # Remove the rightmost number.\n        rightmostNum, rightmostCount = dq.popleft()\n        cost -= (rightmostNum - nums[j])\n        j -= 1\n        if rightmostCount > 1:\n          dq.appendleft((rightmostNum, rightmostCount - 1))\n      ans += j - i + 1\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,4,3,2,1], k = 10",
+      "salida": "15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,10,20,10], k = 15",
+      "salida": "13",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 1",
+      "salida": "55",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3420: LC-3480 - Maximize Subarrays After Removing One Conflicting Pair. Ambos cuentan subarreglos bajo una condición de validez que cambia al mover los límites de la ventana.",
+      "entrada": "n = 7, conflictingPairs = [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]",
+      "salida": "8",
+      "explicacion": "Relación con LC-3420: Ambos cuentan subarreglos bajo una condición de validez que cambia al mover los límites de la ventana.",
+      "codigo_ilustrativo": "class Solution:\n  def maxSubarrays(self, n: int, conflictingPairs: list[list[int]]) -> int:\n    validSubarrays = 0\n    maxLeft = 0\n    secondMaxLeft = 0\n    # gains[i] := the number of additional valid subarrays we can gain if the\n    # restriction at index `i` is removed\n    gains = [0] * (n + 1)\n    # conflicts[r] := left endpoints that conflict with subarrays ending in r\n    conflicts = [[] for _ in range(n + 1)]\n\n    for a, b in conflictingPairs:\n      conflicts[max(a, b)].append(min(a, b))\n\n    for right in range(1, n + 1):\n      for left in conflicts[right]:\n        if left > maxLeft:\n          secondMaxLeft = maxLeft\n          maxLeft = left\n        elif left > secondMaxLeft:\n          secondMaxLeft = left\n      # Subarrays [maxLeft + 1..right],\n      #           [maxLeft + 2..right],\n      #           ...\n      #           [right..right] are valid.\n      validSubarrays += right - maxLeft\n      # If we remove `maxLeft` (the most restrictive conflict), we gain\n      # `maxLeft - secondMaxLeft` new subarrays:\n      # [secondMaxLeft + 1..right],\n      # [secondMaxLeft + 2..right],\n      # ...\n      # [maxLeft..right].\n      gains[maxLeft] += maxLeft - secondMaxLeft\n\n    return validSubarrays + max(gains)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([5, 4, 3, 2, 1], 10) == 15"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([10, 20, 10, 20, 10], 15) == 13"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 1) == 55"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 100, 2, 99, 3, 98], 100) == 17"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([100, 50, 25, 12, 6, 3, 1], 50) == 17"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 7) == 17"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 3, 2, 4, 3, 5], 5) == 21"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 2, 3, 4, 5], 3) == 15"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 2, 2, 3, 4, 4, 5], 6) == 28"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([3, 2, 1, 4, 5, 6], 3) == 21"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([1, 10, 3, 4, 2, 5], 8) == 15"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countNonDecreasingSubarrays([10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 15) == 45"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3420",
+    "fecha-estimada-2025-01-12",
+    "Stack",
+    "Segment Tree",
+    "Queue",
+    "Array",
+    "Sliding Window",
+    "Monotonic Queue",
+    "Monotonic Stack"
+  ]
+}

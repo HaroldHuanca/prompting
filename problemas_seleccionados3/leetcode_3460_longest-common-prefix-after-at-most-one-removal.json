@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3460",
+  "titulo": "Longest Common Prefix After at Most One Removal",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-common-prefix-after-at-most-one-removal/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Two Pointers / String",
+  "enunciado": "You are given two strings s and t.\nReturn the length of the longest common prefix between s and t after removing at most one character from s.\nNote: s can be left without any removal.\n \nExample 1:\n\nInput: s = \"madxa\", t = \"madam\"\nOutput: 4\nExplanation:\nRemoving s[3] from s results in \"mada\", which has a longest common prefix of length 4 with t.\n\nExample 2:\n\nInput: s = \"leetcode\", t = \"eetcode\"\nOutput: 7\nExplanation:\nRemoving s[0] from s results in \"eetcode\", which matches t.\n\nExample 3:\n\nInput: s = \"one\", t = \"one\"\nOutput: 3\nExplanation:\nNo removal is needed.\n\nExample 4:\n\nInput: s = \"a\", t = \"b\"\nOutput: 0\nExplanation:\ns and t cannot have a common prefix.\n\n \nConstraints:\n\n1 <= s.length <= 105\n1 <= t.length <= 105\ns and t contain only lowercase English letters.\n\n",
+  "especificacion_entrada": "s: str, t: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def longestCommonPrefix(self, s: str, t: str) -> int:\n    i = 0  # s's index\n    j = 0  # t's index\n    canSkip = True\n\n    while i < len(s) and j < len(t):\n      if s[i] == t[j]:\n        i += 1\n        j += 1\n      elif canSkip:\n        i += 1\n        canSkip = False\n      else:\n        return j\n\n    return j\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"one\", t = \"one\"",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"abcde\", t = \"bcdef\"",
+      "salida": "4",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"abcde\", t = \"fbcde\"",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3460: LC-3403 - Find the Lexicographically Largest String From the Box I. Ambos problemas comparten las técnicas de dos punteros, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "word = 'aabbcc', numFriends = 2",
+      "salida": "cc",
+      "explicacion": "Relación con LC-3460: Ambos problemas comparten las técnicas de dos punteros, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def answerString(self, word: str, numFriends: int) -> str:\n    if numFriends == 1:\n      return word\n    s = self._lastSubstring(word)\n    sz = len(word) - numFriends + 1\n    return s[:min(len(s), sz)]\n\n  # Same as 1163. Last Substring in Lexicographical Order\n  def _lastSubstring(self, s: str) -> str:\n    i = 0\n    j = 1\n    k = 0  # the number of the same letters of s[i..n) and s[j..n)\n\n    while j + k < len(s):\n      if s[i + k] == s[j + k]:\n        k += 1\n      elif s[i + k] > s[j + k]:\n        # Skip s[j..j + k) and advance to s[j + k + 1] to find a possible\n        # lexicographically larger substring since s[i..i + k) == s[j..j + k)\n        # and s[i + k] > s[j + k).\n        j = j + k + 1\n        k = 0\n      else:\n        # Skip s[i..i + k) and advance to s[i + k + 1] or s[j] to find a\n        # possible lexicographically larger substring since\n        # s[i..i + k) == s[j..j + k) and s[i + k] < s[j + k).\n        # Note that it's unnecessary to explore s[i + k + 1..j) if\n        # i + k + 1 < j since they are already explored by j.\n        i = max(i + k + 1, j)\n        j = i + 1\n        k = 0\n\n    return s[i:]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().longestCommonPrefix('one', 'one') == 3"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().longestCommonPrefix('abcde', 'bcdef') == 4"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().longestCommonPrefix('abcde', 'fbcde') == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().longestCommonPrefix('xyz', 'xya') == 2"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().longestCommonPrefix('ababc', 'abcab') == 2"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().longestCommonPrefix('abcdef', 'abcdfg') == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().longestCommonPrefix('pqr', 'pqs') == 2"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().longestCommonPrefix('abcdef', 'fedcba') == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().longestCommonPrefix('abcdefg', 'xyzabcdefg') == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().longestCommonPrefix('abcd', 'abcf') == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().longestCommonPrefix('abcdefg', 'gfedcba') == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().longestCommonPrefix('ababab', 'bababa') == 5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3460",
+    "fecha-estimada-2025-02-16",
+    "Two Pointers",
+    "String"
+  ]
+}

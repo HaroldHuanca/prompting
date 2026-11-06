@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3418",
+  "titulo": "Maximum Amount of Money Robot Can Earn",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-amount-of-money-robot-can-earn/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming / Matrix",
+  "enunciado": "You are given an m x n grid. A robot starts at the top-left corner of the grid (0, 0) and wants to reach the bottom-right corner (m - 1, n - 1). The robot can move either right or down at any point in time.\nThe grid contains a value coins[i][j] in each cell:\n\nIf coins[i][j] >= 0, the robot gains that many coins.\nIf coins[i][j] < 0, the robot encounters a robber, and the robber steals the absolute value of coins[i][j] coins.\n\nThe robot has a special ability to neutralize robbers in at most 2 cells on its path, preventing them from stealing coins in those cells.\nNote: The robot's total coins can be negative.\nReturn the maximum profit the robot can gain on the route.\n \nExample 1:\n\nInput: coins = [[0,1,-1],[1,-2,3],[2,-3,4]]\nOutput: 8\nExplanation:\nAn optimal path for maximum coins is:\n\nStart at (0, 0) with 0 coins (total coins = 0).\nMove to (0, 1), gaining 1 coin (total coins = 0 + 1 = 1).\nMove to (1, 1), where there's a robber stealing 2 coins. The robot uses one neutralization here, avoiding the robbery (total coins = 1).\nMove to (1, 2), gaining 3 coins (total coins = 1 + 3 = 4).\nMove to (2, 2), gaining 4 coins (total coins = 4 + 4 = 8).\n\n\nExample 2:\n\nInput: coins = [[10,10,10],[10,10,10]]\nOutput: 40\nExplanation:\nAn optimal path for maximum coins is:\n\nStart at (0, 0) with 10 coins (total coins = 10).\nMove to (0, 1), gaining 10 coins (total coins = 10 + 10 = 20).\nMove to (0, 2), gaining another 10 coins (total coins = 20 + 10 = 30).\nMove to (1, 2), gaining the final 10 coins (total coins = 30 + 10 = 40).\n\n\n \nConstraints:\n\nm == coins.length\nn == coins[i].length\n1 <= m, n <= 500\n-1000 <= coins[i][j] <= 1000\n\n",
+  "especificacion_entrada": "coins: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maximumAmount(self, coins: list[list[int]]) -> int:\n    m = len(coins)\n    n = len(coins[0])\n    # dp[i][j][k] := the maximum profit at position (i, j) with k remaining\n    # neutralizations\n    dp = [[[-math.inf] * 4 for _ in range(n)] for _ in range(m)]\n\n    # Base case: the robot starts at the top-left corner.\n    dp[0][0][2] = coins[0][0]\n    if coins[0][0] < 0:\n      dp[0][0][1] = 0  # Neutralize the robber.\n\n    for i in range(m):\n      for j in range(n):\n        for k in range(3):  # for each number of remaining neutralizations\n          if i > 0:\n            dp[i][j][k] = max(dp[i][j][k],\n                              dp[i - 1][j][k] + coins[i][j],\n                              dp[i - 1][j][k + 1])\n          if j > 0:\n            dp[i][j][k] = max(dp[i][j][k],\n                              dp[i][j - 1][k] + coins[i][j],\n                              dp[i][j - 1][k + 1])\n\n    return max(dp[-1][-1])\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "coins = [[0,1,-1],[1,-2,3],[2,-3,4]]",
+      "salida": "8",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coins = [[1,2,3,4,5],[5,4,3,2,1],[1,3,5,7,9]]",
+      "salida": "34",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coins = [[1000, -1000, 1000, -1000], [-1000, 1000, -1000, 1000], [1000, -1000, 1000, -1000], [-1000, 1000, -1000, 1000]]",
+      "salida": "3000",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3418: LC-3332 - Maximum Points Tourist Can Earn. Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "n = 5, k = 5, stayScore = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7], [4, 5, 6, 7, 8], [5, 6, 7, 8, 9]], travelScore = [[0, 1, 2, 3, 4], [1, 0, 1, 2, 3], [2, 1, 0, 1, 2], [3, 2, 1, 0, 1], [4, 3, 2, 1, 0]]",
+      "salida": "35",
+      "explicacion": "Relación con LC-3418: Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxScore(\n      self,\n      n: int,\n      k: int,\n      stayScore: list[list[int]],\n      travelScore: list[list[int]]\n  ) -> int:\n    # dp[i][j] := the maximum score after i days being at city j\n    dp = [[0] * n for _ in range(k + 1)]\n\n    for i in range(1, k + 1):\n      for dest in range(n):\n        # 1. Stay at the current city.\n        dp[i][dest] = dp[i - 1][dest] + stayScore[i - 1][dest]\n        # 2. Travel from any other city.\n        for curr in range(n):\n          if curr != dest:\n            dp[i][dest] = max(dp[i][dest],\n                              dp[i - 1][curr] + travelScore[curr][dest])\n\n    return max(dp[k])\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maximumAmount([[0, 1, -1], [1, -2, 3], [2, -3, 4]]) == 8"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maximumAmount([[1, 2, 3, 4, 5], [5, 4, 3, 2, 1], [1, 3, 5, 7, 9]]) == 34"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maximumAmount([[1000, -1000, 1000, -1000], [-1000, 1000, -1000, 1000], [1000, -1000, 1000, -1000], [-1000, 1000, -1000, 1000]]) == 3000"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maximumAmount([[10, 10, 10], [10, 10, 10]]) == 40"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maximumAmount([[1, 2, 3, 4, 5], [5, 4, 3, 2, 1], [1, 3, 5, 7, 9], [9, 7, 5, 3, 1]]) == 35"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maximumAmount([[-1, -2, -3], [-4, -5, -6], [-7, -8, -9]]) == -6"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maximumAmount([[-1, 0, 1], [-2, 0, 2], [-3, 0, 3]]) == 6"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maximumAmount([[100, -100, 50], [-50, 200, -300], [400, -500, 600]]) == 1100"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maximumAmount([[1, -1, 1, -1], [1, -1, 1, -1], [-1, 1, -1, 1]]) == 4"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maximumAmount([[100, -50, 200], [-300, 400, 50], [-600, 700, -800]]) == 1200"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maximumAmount([[1, -1, 2], [2, -2, 3], [3, -3, 4]]) == 10"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maximumAmount([[100, -50, 200], [-300, 400, -500], [600, -700, 800]]) == 1500"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3418",
+    "fecha-estimada-2025-01-12",
+    "Array",
+    "Dynamic Programming",
+    "Matrix"
+  ]
+}

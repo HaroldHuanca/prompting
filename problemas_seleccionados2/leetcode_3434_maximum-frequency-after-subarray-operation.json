@@ -1,0 +1,102 @@
+{
+  "codigo": "LC-3434",
+  "titulo": "Maximum Frequency After Subarray Operation",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-frequency-after-subarray-operation/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Hash Table / Dynamic Programming / Enumeration / Prefix Sum",
+  "enunciado": "You are given an array nums of length n. You are also given an integer k.\nYou perform the following operation on nums once:\n\nSelect a subarray nums[i..j] where 0 <= i <= j <= n - 1.\nSelect an integer x and add x to all the elements in nums[i..j].\n\nFind the maximum frequency of the value k after the operation.\n \nExample 1:\n\nInput: nums = [1,2,3,4,5,6], k = 1\nOutput: 2\nExplanation:\nAfter adding -5 to nums[2..5], 1 has a frequency of 2 in [1, 2, -2, -1, 0, 1].\n\nExample 2:\n\nInput: nums = [10,2,3,4,5,5,4,3,2,2], k = 10\nOutput: 4\nExplanation:\nAfter adding 8 to nums[1..9], 10 has a frequency of 4 in [10, 10, 11, 12, 13, 13, 12, 11, 10, 10].\n\n \nConstraints:\n\n1 <= n == nums.length <= 105\n1 <= nums[i] <= 50\n1 <= k <= 50\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxFrequency(self, nums: list[int], k: int) -> int:\n    return nums.count(k) + max(self._kadane(nums, target, k)\n                               for target in range(1, 51)\n                               if target != k)\n\n  def _kadane(self, nums: list[int], target: int, k: int) -> int:\n    \"\"\"\n    Returns the maximum achievable frequency of `k` by Kakane's algorithm,\n    where each `target` in subarrays is transformed to `k`.\n    \"\"\"\n    maxSum = 0\n    sum = 0\n    for num in nums:\n      if num == target:\n        sum += 1\n      elif num == k:\n        sum -= 1\n      if sum < 0:  # Reset sum if it becomes negative (Kadane's spirit).\n        sum = 0\n      maxSum = max(maxSum, sum)\n    return maxSum\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,5,5,5,5], k = 5",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30,40,50], k = 50",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,50,1,50,1], k = 50",
+      "salida": "3",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3434: LC-3381 - Maximum Subarray Sum With Length Divisible by K. Ambos problemas comparten las técnicas de tabla hash, sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1000000000, -1000000000, 1000000000, -1000000000, 1000000000], k = 2",
+      "salida": "0",
+      "explicacion": "Relación con LC-3434: Ambos problemas comparten las técnicas de tabla hash, sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxSubarraySum(self, nums: list[int], k: int) -> int:\n    ans = -math.inf\n    prefix = 0\n    # minPrefix[i % k] := the minimum prefix sum of the first i numbers\n    minPrefix = [math.inf] * k\n    minPrefix[k - 1] = 0\n\n    for i, num in enumerate(nums):\n      prefix += num\n      ans = max(ans, prefix - minPrefix[i % k])\n      minPrefix[i % k] = min(minPrefix[i % k], prefix)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxFrequency([5, 5, 5, 5, 5], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxFrequency([10, 20, 30, 40, 50], 50) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxFrequency([1, 50, 1, 50, 1], 50) == 3"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxFrequency([25, 25, 25, 25, 25, 25, 25, 25, 25, 25], 25) == 10"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxFrequency([50, 1, 50, 1, 50], 50) == 4"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxFrequency([25, 25, 25, 25, 25], 1) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxFrequency([1, 2, 3, 4, 5], 5) == 2"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxFrequency([1, 2, 3, 4, 5], 3) == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxFrequency([30, 30, 30, 30, 30], 20) == 5"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxFrequency([1, 2, 2, 3, 3, 3, 4, 4, 4, 4], 4) == 7"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxFrequency([5, 4, 3, 2, 1], 1) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxFrequency([10, 2, 3, 4, 5, 5, 4, 3, 2, 2], 10) == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3434",
+    "fecha-estimada-2025-01-26",
+    "Greedy",
+    "Array",
+    "Hash Table",
+    "Dynamic Programming",
+    "Enumeration",
+    "Prefix Sum"
+  ]
+}

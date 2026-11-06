@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3310",
+  "titulo": "Remove Methods From Project",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/remove-methods-from-project/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Depth-First Search / Breadth-First Search / Graph",
+  "enunciado": "You are maintaining a project that has n methods numbered from 0 to n - 1.\nYou are given two integers n and k, and a 2D integer array invocations, where invocations[i] = [ai, bi] indicates that method ai invokes method bi.\nThere is a known bug in method k. Method k, along with any method invoked by it, either directly or indirectly, are considered suspicious and we aim to remove them.\nA group of methods can only be removed if no method outside the group invokes any methods within it.\nReturn an array containing all the remaining methods after removing all the suspicious methods. You may return the answer in any order. If it is not possible to remove all the suspicious methods, none should be removed.\n \nExample 1:\n\nInput: n = 4, k = 1, invocations = [[1,2],[0,1],[3,2]]\nOutput: [0,1,2,3]\nExplanation:\n\nMethod 2 and method 1 are suspicious, but they are directly invoked by methods 3 and 0, which are not suspicious. We return all elements without removing anything.\n\nExample 2:\n\nInput: n = 5, k = 0, invocations = [[1,2],[0,2],[0,1],[3,4]]\nOutput: [3,4]\nExplanation:\n\nMethods 0, 1, and 2 are suspicious and they are not directly invoked by any other method. We can remove them.\n\nExample 3:\n\nInput: n = 3, k = 2, invocations = [[1,2],[0,1],[2,0]]\nOutput: []\nExplanation:\n\nAll methods are suspicious. We can remove them.\n\n \nConstraints:\n\n1 <= n <= 105\n0 <= k <= n - 1\n0 <= invocations.length <= 2 * 105\ninvocations[i] == [ai, bi]\n0 <= ai, bi <= n - 1\nai != bi\ninvocations[i] != invocations[j]\n\n",
+  "especificacion_entrada": "n: int, k: int, invocations: list[list[int]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def remainingMethods(\n      self,\n      n: int,\n      k: int,\n      invocations: list[list[int]]\n  ) -> list[int]:\n    ans = []\n    graph = [[] for _ in range(n)]\n\n    for u, v in invocations:\n      graph[u].append(v)\n\n    q = collections.deque([k])\n    seen = {k}\n\n    while q:\n      for _ in range(len(q)):\n        for v in graph[q.popleft()]:\n          if v not in seen:\n            q.append(v)\n            seen.add(v)\n\n    for u in range(n):\n      if u in seen:\n        continue\n      for v in graph[u]:\n        if v in seen:\n          return list(range(n))\n      ans.append(u)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 1, k = 0, invocations = []",
+      "salida": "[]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 6, k = 2, invocations = [[0,1],[1,2],[2,3],[3,4],[4,5]]",
+      "salida": "[0, 1, 2, 3, 4, 5]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 4, k = 1, invocations = [[1,2],[0,1],[3,2]]",
+      "salida": "[0, 1, 2, 3]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3310: LC-3372 - Maximize the Number of Target Nodes After Connecting Trees I. Ambos problemas comparten las técnicas de breadth-first search, depth-first search, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "edges1 = [[0, 1], [0, 2], [0, 3], [0, 4]], edges2 = [[0, 1], [1, 2], [2, 3]], k = 1",
+      "salida": "[6, 3, 3, 3, 3]",
+      "explicacion": "Relación con LC-3310: Ambos problemas comparten las técnicas de breadth-first search, depth-first search, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxTargetNodes(\n      self,\n      edges1: list[list[int]],\n      edges2: list[list[int]],\n      k: int\n  ) -> list[int]:\n    graph1 = self._buildGraph(edges1)\n    graph2 = self._buildGraph(edges2)\n    maxReachableInGraph2 = 0\n\n    if k > 0:\n      for i in range(len(edges2) + 1):\n        maxReachableInGraph2 = max(maxReachableInGraph2,\n                                   self._dfs(graph2, i, -1, k - 1))\n\n    return [maxReachableInGraph2 + self._dfs(graph1, i, -1, k)\n            for i in range(len(edges1) + 1)]\n\n  def _dfs(self, graph: list[list[int]], u: int, prev: int, k: int) -> int:\n    \"\"\"Returns the number of nodes that can be reached from u with k steps.\"\"\"\n    if k == 0:\n      return 1\n    res = 0\n    for v in graph[u]:\n      if v != prev:\n        res += self._dfs(graph, v, u, k - 1)\n    return 1 + res\n\n  def _buildGraph(self, edges: list[list[int]]) -> list[list[int]]:\n    graph = [[] for _ in range(len(edges) + 1)]\n    for u, v in edges:\n      graph[u].append(v)\n      graph[v].append(u)\n    return graph\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().remainingMethods(1, 0, []) == []"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().remainingMethods(6, 2, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5]]) == [0, 1, 2, 3, 4, 5]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().remainingMethods(4, 1, [[1, 2], [0, 1], [3, 2]]) == [0, 1, 2, 3]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().remainingMethods(3, 2, [[1, 2], [0, 1], [2, 0]]) == []"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().remainingMethods(5, 0, [[1, 2], [0, 2], [0, 1], [3, 4]]) == [3, 4]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().remainingMethods(6, 2, [[0, 2], [1, 2], [3, 4], [4, 5]]) == [0, 1, 2, 3, 4, 5]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().remainingMethods(3, 0, []) == [1, 2]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().remainingMethods(2, 0, [[0, 1]]) == []"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().remainingMethods(7, 3, [[0, 1], [0, 2], [1, 3], [2, 4], [3, 5], [4, 6]]) == [0, 1, 2, 3, 4, 5, 6]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().remainingMethods(12, 6, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [0, 6], [1, 7], [2, 8], [3, 9], [4, 10], [5, 11]]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().remainingMethods(12, 6, [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 0]]) == []"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().remainingMethods(20, 0, [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18], [18, 19]]) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3310",
+    "fecha-estimada-2024-10-06",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Graph"
+  ]
+}

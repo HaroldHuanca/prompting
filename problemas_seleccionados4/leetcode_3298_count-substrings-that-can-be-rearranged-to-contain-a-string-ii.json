@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3298",
+  "titulo": "Count Substrings That Can Be Rearranged to Contain a String II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Hash Table / String / Sliding Window",
+  "enunciado": "You are given two strings word1 and word2.\nA string x is called valid if x can be rearranged to have word2 as a prefix.\nReturn the total number of valid substrings of word1.\nNote that the memory limits in this problem are smaller than usual, so you must implement a solution with a linear runtime complexity.\n \nExample 1:\n\nInput: word1 = \"bcca\", word2 = \"abc\"\nOutput: 1\nExplanation:\nThe only valid substring is \"bcca\" which can be rearranged to \"abcc\" having \"abc\" as a prefix.\n\nExample 2:\n\nInput: word1 = \"abcabc\", word2 = \"abc\"\nOutput: 10\nExplanation:\nAll the substrings except substrings of size 1 and size 2 are valid.\n\nExample 3:\n\nInput: word1 = \"abcabc\", word2 = \"aaabc\"\nOutput: 0\n\n \nConstraints:\n\n1 <= word1.length <= 106\n1 <= word2.length <= 104\nword1 and word2 consist only of lowercase English letters.\n\n",
+  "especificacion_entrada": "word1: str, word2: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  # Same as 3297. Count Substrings That Can Be Rearranged to Contain a String I\n  def validSubstringCount(self, word1: str, word2: str) -> int:\n    ans = 0\n    count = collections.Counter(word2)\n    required = len(word2)\n\n    l = 0\n    for r, c in enumerate(word1):\n      count[c] -= 1\n      if count[c] >= 0:\n        required -= 1\n      while required == 0:\n        # Add valid substrings containing word1[l..r] to the answer. They are\n        # word1[l..r], word1[l..r + 1], ..., word1[l..n - 1].\n        ans += len(word1) - r\n        count[word1[l]] += 1\n        if count[word1[l]] > 0:\n          required += 1\n        l += 1\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "word1 = \"bcca\", word2 = \"abc\"",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word1 = \"abcdefghijklmnopqrstuvwxyz\", word2 = \"zyxwvutsrqponmlkjihgfedcba\"",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word1 = \"aabbcc\", word2 = \"abc\"",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3298: LC-3297 - Count Substrings That Can Be Rearranged to Contain a String I. Ambos problemas comparten las técnicas de tabla hash, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "word1 = 'banana', word2 = 'ban'",
+      "salida": "4",
+      "explicacion": "Relación con LC-3298: Ambos problemas comparten las técnicas de tabla hash, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def validSubstringCount(self, word1: str, word2: str) -> int:\n    ans = 0\n    count = collections.Counter(word2)\n    required = len(word2)\n\n    l = 0\n    for r, c in enumerate(word1):\n      count[c] -= 1\n      if count[c] >= 0:\n        required -= 1\n      while required == 0:\n        # Add valid substrings containing word1[l..r] to the answer. They are\n        # word1[l..r], word1[l..r + 1], ..., word1[l..n - 1].\n        ans += len(word1) - r\n        count[word1[l]] += 1\n        if count[word1[l]] > 0:\n          required += 1\n        l += 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().validSubstringCount('bcca', 'abc') == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().validSubstringCount('abcdefghijklmnopqrstuvwxyz', 'zyxwvutsrqponmlkjihgfedcba') == 1"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().validSubstringCount('aabbcc', 'abc') == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().validSubstringCount('abcabcabcabc', 'abcabc') == 28"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().validSubstringCount('hellothere', 'oth') == 21"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().validSubstringCount('abcabc', 'aaabc') == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().validSubstringCount('aaaaaaa', 'a') == 28"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().validSubstringCount('abcabc', 'abc') == 10"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().validSubstringCount('mississippi', 'issi') == 27"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().validSubstringCount('teststring', 'ttt') == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().validSubstringCount('abcabcabcabcabcabcabcabcabcabc', 'abcabc') == 325"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().validSubstringCount('abacabadabacabadabacabadabacabad', 'abacabad') == 325"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3298",
+    "fecha-estimada-2024-09-22",
+    "Hash Table",
+    "String",
+    "Sliding Window"
+  ]
+}

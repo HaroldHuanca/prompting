@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3440",
+  "titulo": "Reschedule Meetings for Maximum Free Time II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/reschedule-meetings-for-maximum-free-time-ii/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Enumeration",
+  "enunciado": "You are given an integer eventTime denoting the duration of an event. You are also given two integer arrays startTime and endTime, each of length n.\nThese represent the start and end times of n non-overlapping meetings that occur during the event between time t = 0 and time t = eventTime, where the ith meeting occurs during the time [startTime[i], endTime[i]].\nYou can reschedule at most one meeting by moving its start time while maintaining the same duration, such that the meetings remain non-overlapping, to maximize the longest continuous period of free time during the event.\nReturn the maximum amount of free time possible after rearranging the meetings.\nNote that the meetings can not be rescheduled to a time outside the event and they should remain non-overlapping.\nNote: In this version, it is valid for the relative ordering of the meetings to change after rescheduling one meeting.\n \nExample 1:\n\nInput: eventTime = 5, startTime = [1,3], endTime = [2,5]\nOutput: 2\nExplanation:\n\nReschedule the meeting at [1, 2] to [2, 3], leaving no meetings during the time [0, 2].\n\nExample 2:\n\nInput: eventTime = 10, startTime = [0,7,9], endTime = [1,8,10]\nOutput: 7\nExplanation:\n\nReschedule the meeting at [0, 1] to [8, 9], leaving no meetings during the time [0, 7].\n\nExample 3:\n\nInput: eventTime = 10, startTime = [0,3,7,9], endTime = [1,4,8,10]\nOutput: 6\nExplanation:\n\nReschedule the meeting at [3, 4] to [8, 9], leaving no meetings during the time [1, 7].\n\nExample 4:\n\nInput: eventTime = 5, startTime = [0,1,2,3,4], endTime = [1,2,3,4,5]\nOutput: 0\nExplanation:\nThere is no time during the event not occupied by meetings.\n\n \nConstraints:\n\n1 <= eventTime <= 109\nn == startTime.length == endTime.length\n2 <= n <= 105\n0 <= startTime[i] < endTime[i] <= eventTime\nendTime[i] <= startTime[i + 1] where i lies in the range [0, n - 2].\n\n",
+  "especificacion_entrada": "eventTime: int, startTime: list[int], endTime: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxFreeTime(\n      self,\n      eventTime: int,\n      startTime: list[int],\n      endTime: list[int]\n  ) -> int:\n    n = len(startTime)\n    gaps = ([startTime[0]] +\n            [startTime[i] - endTime[i - 1] for i in range(1, len(startTime))] +\n            [eventTime - endTime[-1]])\n    ans = 0\n    maxLeft = [gaps[0]] + [0] * n  # maxLeft[i] := max(gaps[0..i])\n    maxRight = [0] * n + [gaps[n]]  # maxRight[i] := max(gaps[i..n])\n\n    for i in range(1, n + 1):\n      maxLeft[i] = max(gaps[i], maxLeft[i - 1])\n\n    for i in range(n - 1, -1, -1):\n      maxRight[i] = max(gaps[i], maxRight[i + 1])\n\n    for i, (start, end) in enumerate(zip(startTime, endTime)):\n      currMeetingTime = end - start\n      adjacentGapsSum = gaps[i] + gaps[i + 1]\n      canMoveMeeting = currMeetingTime <= max(\n          maxLeft[i - 1] if i > 0 else 0,\n          maxRight[i + 2] if i + 2 < n + 1 else 0\n      )\n      ans = max(ans, adjacentGapsSum +\n                (currMeetingTime if canMoveMeeting else 0))\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "eventTime = 50, startTime = [0, 5, 10, 15, 20], endTime = [3, 8, 13, 18, 23]",
+      "salida": "29",
+      "explicacion": ""
+    },
+    {
+      "entrada": "eventTime = 50, startTime = [5,15,25,35], endTime = [10,20,30,40]",
+      "salida": "20",
+      "explicacion": ""
+    },
+    {
+      "entrada": "eventTime = 20, startTime = [0, 5, 10, 15], endTime = [3, 8, 13, 18]",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3440: LC-3439 - Reschedule Meetings for Maximum Free Time I. Ambos problemas comparten las técnicas de estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "eventTime = 15, k = 3, startTime = [1, 5, 9], endTime = [3, 7, 12]",
+      "salida": "8",
+      "explicacion": "Relación con LC-3440: Ambos problemas comparten las técnicas de estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxFreeTime(\n      self,\n      eventTime: int,\n      k: int,\n      startTime: list[int],\n      endTime: list[int]\n  ) -> int:\n    gaps = ([startTime[0]] +\n            [startTime[i] - endTime[i - 1] for i in range(1, len(startTime))] +\n            [eventTime - endTime[-1]])\n    windowSum = sum(gaps[:k + 1])\n    ans = windowSum\n\n    for i in range(k + 1, len(gaps)):\n      windowSum += gaps[i] - gaps[i - k - 1]\n      ans = max(ans, windowSum)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxFreeTime(50, [0, 5, 10, 15, 20], [3, 8, 13, 18, 23]) == 29"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxFreeTime(50, [5, 15, 25, 35], [10, 20, 30, 40]) == 20"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxFreeTime(20, [0, 5, 10, 15], [3, 8, 13, 18]) == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxFreeTime(100, [10, 30, 50], [20, 40, 60]) == 60"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxFreeTime(20, [1, 5, 10, 15], [3, 8, 13, 18]) == 5"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxFreeTime(1000, [500, 600, 700, 800], [550, 650, 750, 850]) == 600"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxFreeTime(100, [5, 25, 45, 65, 85], [15, 35, 55, 75, 95]) == 30"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxFreeTime(20, [0, 5, 10], [3, 8, 15]) == 7"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxFreeTime(1000, [100, 300, 500, 700], [200, 400, 600, 800]) == 400"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxFreeTime(100, [10, 30, 50, 70, 90], [20, 40, 60, 80, 100]) == 30"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxFreeTime(15, [1, 4, 8, 12], [3, 7, 11, 15]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxFreeTime(20, [0, 5, 10, 15], [2, 7, 12, 17]) == 8"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3440",
+    "fecha-estimada-2025-01-26",
+    "Greedy",
+    "Array",
+    "Enumeration"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3406",
+  "titulo": "Find the Lexicographically Largest String From the Box II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-lexicographically-largest-string-from-the-box-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Two Pointers / String",
+  "enunciado": "You are given a string word, and an integer numFriends.\nAlice is organizing a game for her numFriends friends. There are multiple rounds in the game, where in each round:\n\nword is split into numFriends non-empty strings, such that no previous round has had the exact same split.\nAll the split words are put into a box.\n\nFind the lexicographically largest string from the box after all the rounds are finished.\nA string a is lexicographically smaller than a string b if in the first position where a and b differ, string a has a letter that appears earlier in the alphabet than the corresponding letter in b.\nIf the first min(a.length, b.length) characters do not differ, then the shorter string is the lexicographically smaller one.\n \nExample 1:\n\nInput: word = \"dbca\", numFriends = 2\nOutput: \"dbc\"\nExplanation:\nAll possible splits are:\n\n\"d\" and \"bca\".\n\"db\" and \"ca\".\n\"dbc\" and \"a\".\n\n\nExample 2:\n\nInput: word = \"gggg\", numFriends = 4\nOutput: \"g\"\nExplanation:\nThe only possible split is: \"g\", \"g\", \"g\", and \"g\".\n\n \nConstraints:\n\n1 <= word.length <= 2 * 105\nword consists only of lowercase English letters.\n1 <= numFriends <= word.length\n\n",
+  "especificacion_entrada": "word: str, numFriends: int",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def answerString(self, word: str, numFriends: int) -> str:\n    if numFriends == 1:\n      return word\n    s = self._lastSubstring(word)\n    sz = len(word) - numFriends + 1\n    return s[:min(len(s), sz)]\n\n  # Same as 1163. Last Substring in Lexicographical Order\n  def _lastSubstring(self, s: str) -> str:\n    i = 0\n    j = 1\n    k = 0  # the number of the same letters of s[i..n) and s[j..n)\n\n    while j + k < len(s):\n      if s[i + k] == s[j + k]:\n        k += 1\n      elif s[i + k] > s[j + k]:\n        # Skip s[j..j + k) and advance to s[j + k + 1] to find a possible\n        # lexicographically larger substring since s[i..i + k) == s[j..j + k)\n        # and s[i + k] > s[j + k).\n        j = j + k + 1\n        k = 0\n      else:\n        # Skip s[i..i + k) and advance to s[i + k + 1] or s[j] to find a\n        # possible lexicographically larger substring since\n        # s[i..i + k) == s[j..j + k) and s[i + k] < s[j + k).\n        # Note that it's unnecessary to explore s[i + k + 1..j) if\n        # i + k + 1 < j since they are already explored by j.\n        i = max(i + k + 1, j)\n        j = i + 1\n        k = 0\n\n    return s[i:]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "word = \"aabbcc\", numFriends = 2",
+      "salida": "cc",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"aabbccddeeff\", numFriends = 3",
+      "salida": "ff",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"zzzzzzzzz\", numFriends = 5",
+      "salida": "zzzzz",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3406: LC-3403 - Find the Lexicographically Largest String From the Box I. Ambos problemas comparten las técnicas de dos punteros, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "word = 'aabbcc', numFriends = 2",
+      "salida": "cc",
+      "explicacion": "Relación con LC-3406: Ambos problemas comparten las técnicas de dos punteros, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def answerString(self, word: str, numFriends: int) -> str:\n    if numFriends == 1:\n      return word\n    s = self._lastSubstring(word)\n    sz = len(word) - numFriends + 1\n    return s[:min(len(s), sz)]\n\n  # Same as 1163. Last Substring in Lexicographical Order\n  def _lastSubstring(self, s: str) -> str:\n    i = 0\n    j = 1\n    k = 0  # the number of the same letters of s[i..n) and s[j..n)\n\n    while j + k < len(s):\n      if s[i + k] == s[j + k]:\n        k += 1\n      elif s[i + k] > s[j + k]:\n        # Skip s[j..j + k) and advance to s[j + k + 1] to find a possible\n        # lexicographically larger substring since s[i..i + k) == s[j..j + k)\n        # and s[i + k] > s[j + k).\n        j = j + k + 1\n        k = 0\n      else:\n        # Skip s[i..i + k) and advance to s[i + k + 1] or s[j] to find a\n        # possible lexicographically larger substring since\n        # s[i..i + k) == s[j..j + k) and s[i + k] < s[j + k).\n        # Note that it's unnecessary to explore s[i + k + 1..j) if\n        # i + k + 1 < j since they are already explored by j.\n        i = max(i + k + 1, j)\n        j = i + 1\n        k = 0\n\n    return s[i:]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().answerString('aabbcc', 2) == 'cc'"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().answerString('aabbccddeeff', 3) == 'ff'"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().answerString('zzzzzzzzz', 5) == 'zzzzz'"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().answerString('zyxwvutsrqponmlkjihgfedcba', 5) == 'zyxwvutsrqponmlkjihgfe'"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().answerString('abcdefg', 3) == 'g'"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().answerString('aabbccddeeff', 6) == 'ff'"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().answerString('gggg', 4) == 'g'"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().answerString('zyxwvutsrqponmlkjihgfedcba', 26) == 'z'"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().answerString('aabbccddeeffgghhiijj', 5) == 'jj'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().answerString('abcdef', 3) == 'f'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().answerString('aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz', 10) == 'zz'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().answerString('abcde', 3) == 'e'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3406",
+    "fecha-estimada-2024-12-29",
+    "Two Pointers",
+    "String"
+  ]
+}

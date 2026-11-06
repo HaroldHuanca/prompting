@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3397",
+  "titulo": "Maximum Number of Distinct Elements After Operations",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-number-of-distinct-elements-after-operations/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Sorting",
+  "enunciado": "You are given an integer array nums and an integer k.\nYou are allowed to perform the following operation on each element of the array at most once:\n\nAdd an integer in the range [-k, k] to the element.\n\nReturn the maximum possible number of distinct elements in nums after performing the operations.\n \nExample 1:\n\nInput: nums = [1,2,2,3,3,4], k = 2\nOutput: 6\nExplanation:\nnums changes to [-1, 0, 1, 2, 3, 4] after performing operations on the first four elements.\n\nExample 2:\n\nInput: nums = [4,4,4,4], k = 1\nOutput: 3\nExplanation:\nBy adding -1 to nums[0] and 1 to nums[1], nums changes to [3, 5, 4, 4].\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 109\n0 <= k <= 109\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxDistinctElements(self, nums: list[int], k: int) -> int:\n    ans = 0\n    occupied = -math.inf\n\n    for num in sorted(nums):\n      if occupied < num + k:\n        occupied = max(occupied + 1, num - k)\n        ans += 1\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,1000000000,1,1000000000], k = 1000000000",
+      "salida": "4",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5], k = 3",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,10,10,10,10], k = 5",
+      "salida": "5",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3397: LC-3424 - Minimum Cost to Make Arrays Identical. Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "arr = [0, 0, 0], brr = [0, 0, 0], k = 10",
+      "salida": "0",
+      "explicacion": "Relación con LC-3397: Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minCost(self, arr: list[int], brr: list[int], k: int) -> int:\n    def cost(arr: list[int], brr: list[int]) -> int:\n      return sum(abs(a - b) for a, b in zip(arr, brr))\n    return min(cost(arr, brr), cost(sorted(arr), sorted(brr)) + k)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxDistinctElements([1, 1000000000, 1, 1000000000], 1000000000) == 4"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxDistinctElements([1, 2, 3, 4, 5], 3) == 5"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxDistinctElements([10, 10, 10, 10, 10], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxDistinctElements([1, 1, 1, 1, 1], 0) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxDistinctElements([4, 4, 4, 4], 1) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxDistinctElements([1, 1, 1, 1, 1], 2) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxDistinctElements([10, 20, 30, 40, 50], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxDistinctElements([5, 5, 5, 5, 5, 5, 5, 5, 5, 5], 2) == 5"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxDistinctElements([1, 2, 3, 4, 5], 0) == 5"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxDistinctElements([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 1) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxDistinctElements([10, 10, 20, 20, 30], 5) == 5"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxDistinctElements([1, 2, 2, 3, 3, 4], 2) == 6"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3397",
+    "fecha-estimada-2024-12-22",
+    "Greedy",
+    "Array",
+    "Sorting"
+  ]
+}

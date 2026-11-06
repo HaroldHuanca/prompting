@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3492",
+  "titulo": "Maximum Containers on a Ship",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-containers-on-a-ship/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Matemáticas / Geometría / Optimización",
+  "enunciado": "You are given a positive integer n representing an n x n cargo deck on a ship. Each cell on the deck can hold one container with a weight of exactly w.\nHowever, the total weight of all containers, if loaded onto the deck, must not exceed the ship's maximum weight capacity, maxWeight.\nReturn the maximum number of containers that can be loaded onto the ship.\n \nExample 1:\n\nInput: n = 2, w = 3, maxWeight = 15\nOutput: 4\nExplanation: \nThe deck has 4 cells, and each container weighs 3. The total weight of loading all containers is 12, which does not exceed maxWeight.\n\nExample 2:\n\nInput: n = 3, w = 5, maxWeight = 20\nOutput: 4\nExplanation: \nThe deck has 9 cells, and each container weighs 5. The maximum number of containers that can be loaded without exceeding maxWeight is 4.\n\n \nConstraints:\n\n1 <= n <= 1000\n1 <= w <= 1000\n1 <= maxWeight <= 109\n\n",
+  "especificacion_entrada": "n: integer, w: integer, maxWeight: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= n <= 1000\n1 <= w <= 1000\n1 <= maxWeight <= 109",
+  "solucion_referencia": "class Solution:\n  def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n    return min(n * n, maxWeight // w)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 2, w = 3, maxWeight = 15",
+      "salida": "4",
+      "explicacion": "The deck has 4 cells, and each container weighs 3. The total weight of loading all containers is 12, which does not exceed maxWeight."
+    },
+    {
+      "entrada": "n = 3, w = 5, maxWeight = 20",
+      "salida": "4",
+      "explicacion": "The deck has 9 cells, and each container weighs 5. The maximum number of containers that can be loaded without exceeding maxWeight is 4."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3492: LC-3344 - Maximum Sized Array. Ambos buscan la capacidad máxima de un contenedor o arreglo sujeto a restricciones de dimensiones y recursos.",
+      "entrada": "s = 100000000000000",
+      "salida": "756",
+      "explicacion": "Relación con LC-3492: Ambos buscan la capacidad máxima de un contenedor o arreglo sujeto a restricciones de dimensiones y recursos.",
+      "codigo_ilustrativo": "import bisect\n\nclass Solution:\n  def maxSizedArray(self, s: int) -> int:\n    def getNumbersWithBitSet(n: int, i: int) -> int:\n      \"\"\"\n      Returns the number of integers in [0, n - 1] with the i-th bit set.\n\n      For the i-th bit, numbers in the range [0, n - 1] can be divided into\n      groups of 2^(i + 1) numbers. In each group, exactly half of the numbers\n      have the i-th bit set.\n      \"\"\"\n      groupSize = 1 << (i + 1)\n      halfGroupSize = 1 << i\n      fullGroups = n // groupSize\n      remaining = max(0, (n % groupSize) - halfGroupSize)\n      return fullGroups * halfGroupSize + remaining\n\n    def getArraySum(n: int) -> int:\n      \"\"\"\n      Returns the sum of all i * (j OR k) values in 3D arrays of size n^3.\n\n        sum(i * (j OR k)), where 0 <= i, j, k < n\n      = 0 * (j OR k) + 1 * (j OR k) + ... + (n - 1) * (j OR k)\n      = (0 + 1 + ... + n - 1) * sum(j OR k)\n      = (n * (n - 1) / 2) * sum(j OR k)\n      \"\"\"\n      arithmeticSum = n * (n - 1) // 2  # 0 + 1 + ... + n - 1\n      orSum = 0  # the sum of (j OR k) values in 2D arrays of size n^2\n      for i in range(n.bit_length()):\n        numbersWithoutBit = n - getNumbersWithBitSet(n, i)\n        pairsWithBit = n**2 - numbersWithoutBit**2\n        orSum += pairsWithBit * (1 << i)  # Add contribution of this bit.\n      return arithmeticSum * orSum\n\n    if s == 0:\n      return 1\n    l = 0\n    r = 1196  # when s = 10^15, n = 1196\n    return bisect.bisect_right(range(l, r + 1), s, key=getArraySum) - 1 + l\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxContainers(10, 5, 25) == 5"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxContainers(10, 1, 10) == 10"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxContainers(5, 2, 20) == 10"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxContainers(5, 10, 50) == 5"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxContainers(5, 10, 100) == 10"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxContainers(1000, 1000, 1000000000) == 1000000"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxContainers(2, 3, 15) == 4"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxContainers(7, 10, 50) == 5"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxContainers(1, 1, 1) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxContainers(7, 3, 60) == 20"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxContainers(4, 5, 10) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxContainers(7, 2, 50) == 25"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3492",
+    "seleccion-reciente-2026-11"
+  ]
+}

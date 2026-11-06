@@ -1,0 +1,105 @@
+{
+  "codigo": "LC-3291",
+  "titulo": "Minimum Number of Valid Strings to Form Target I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-number-of-valid-strings-to-form-target-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Trie / Segment Tree / Array / String / Binary Search / Dynamic Programming / String Matching / Hash Function / Rolling Hash",
+  "enunciado": "You are given an array of strings words and a string target.\nA string x is called valid if x is a prefix of any string in words.\nReturn the minimum number of valid strings that can be concatenated to form target. If it is not possible to form target, return -1.\n \nExample 1:\n\nInput: words = [\"abc\",\"aaaaa\",\"bcdef\"], target = \"aabcdabc\"\nOutput: 3\nExplanation:\nThe target string can be formed by concatenating:\n\nPrefix of length 2 of words[1], i.e. \"aa\".\nPrefix of length 3 of words[2], i.e. \"bcd\".\nPrefix of length 3 of words[0], i.e. \"abc\".\n\n\nExample 2:\n\nInput: words = [\"abababab\",\"ab\"], target = \"ababaababa\"\nOutput: 2\nExplanation:\nThe target string can be formed by concatenating:\n\nPrefix of length 5 of words[0], i.e. \"ababa\".\nPrefix of length 5 of words[0], i.e. \"ababa\".\n\n\nExample 3:\n\nInput: words = [\"abcdef\"], target = \"xyz\"\nOutput: -1\n\n \nConstraints:\n\n1 <= words.length <= 100\n1 <= words[i].length <= 5 * 103\nThe input is generated such that sum(words[i].length) <= 105.\nwords[i] consists only of lowercase English letters.\n1 <= target.length <= 5 * 103\ntarget consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "words: list[str], target: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minValidStrings(self, words: list[str], target: str) -> int:\n    ans = 0\n    unmatchedPrefix = len(target)\n    lpsList = [self._getLPS(word + '#' + target) for word in words]\n\n    while unmatchedPrefix > 0:\n      # Greedily choose the word that has the longest suffix match with the\n      # remaining unmatched prefix.\n      maxMatchSuffix = 0\n      for lps, word in zip(lpsList, words):\n        maxMatchSuffix = max(maxMatchSuffix, lps[len(word) + unmatchedPrefix])\n      if maxMatchSuffix == 0:\n        return -1\n      ans += 1\n      unmatchedPrefix -= maxMatchSuffix\n\n    return ans\n\n  def _getLPS(self, pattern: str) -> list[int]:\n    \"\"\"\n    Returns the lps array, where lps[i] is the length of the longest prefix of\n    pattern[0..i] which is also a suffix of this substring.\n    \"\"\"\n    lps = [0] * len(pattern)\n    j = 0\n    for i in range(1, len(pattern)):\n      while j > 0 and pattern[j] != pattern[i]:\n        j = lps[j - 1]\n      if pattern[i] == pattern[j]:\n        lps[i] = j + 1\n        j += 1\n    return lps\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "words = [\"abc\"], target = \"abcabc\"",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "words = [\"ab\", \"ba\"], target = \"abab\"",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "words = [\"a\",\"b\",\"c\",\"d\"], target = \"abcdabcdabcd\"",
+      "salida": "12",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3291: LC-3292 - Minimum Number of Valid Strings to Form Target II. Ambos problemas comparten las técnicas de búsqueda binaria, programación dinámica, hash function, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "words = ['abc'], target = 'abcabc'",
+      "salida": "2",
+      "explicacion": "Relación con LC-3291: Ambos problemas comparten las técnicas de búsqueda binaria, programación dinámica, hash function, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  # 3291. Minimum Number of Valid Strings to Form Target I\n  def minValidStrings(self, words: list[str], target: str) -> int:\n    ans = 0\n    unmatchedPrefix = len(target)\n    lpsList = [self._getLPS(word + '#' + target) for word in words]\n\n    while unmatchedPrefix > 0:\n      # Greedily choose the word that has the longest suffix match with the\n      # remaining unmatched prefix.\n      maxMatchSuffix = 0\n      for lps, word in zip(lpsList, words):\n        maxMatchSuffix = max(maxMatchSuffix, lps[len(word) + unmatchedPrefix])\n      if maxMatchSuffix == 0:\n        return -1\n      ans += 1\n      unmatchedPrefix -= maxMatchSuffix\n\n    return ans\n\n  def _getLPS(self, pattern: str) -> list[int]:\n    \"\"\"\n    Returns the lps array, where lps[i] is the length of the longest prefix of\n    pattern[0..i] which is also a suffix of this substring.\n    \"\"\"\n    lps = [0] * len(pattern)\n    j = 0\n    for i in range(1, len(pattern)):\n      while j > 0 and pattern[j] != pattern[i]:\n        j = lps[j - 1]\n      if pattern[i] == pattern[j]:\n        lps[i] = j + 1\n        j += 1\n    return lps\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minValidStrings(['abc'], 'abcabc') == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minValidStrings(['ab', 'ba'], 'abab') == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minValidStrings(['a', 'b', 'c', 'd'], 'abcdabcdabcd') == 12"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minValidStrings(['abcde', 'fghij', 'klmno'], 'abcdefghijklmno') == 3"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minValidStrings(['z'], 'zzzzzzzzzz') == 10"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minValidStrings(['abababab', 'ab'], 'ababaababa') == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minValidStrings(['abc', 'abc', 'abc'], 'abcabcabc') == 3"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minValidStrings(['a', 'aa', 'aaa'], 'aaaaaa') == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minValidStrings(['hello', 'world'], 'hello') == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minValidStrings(['abcdef'], 'xyz') == -1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minValidStrings(['prefix', 'pre', 'fix'], 'prefixfix') == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minValidStrings(['a', 'aa', 'aaa'], 'aaaaaaaaaa') == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3291",
+    "fecha-estimada-2024-09-15",
+    "Trie",
+    "Segment Tree",
+    "Array",
+    "String",
+    "Binary Search",
+    "Dynamic Programming",
+    "String Matching",
+    "Hash Function",
+    "Rolling Hash"
+  ]
+}

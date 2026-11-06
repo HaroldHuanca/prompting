@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3371",
+  "titulo": "Identify the Largest Outlier in an Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/identify-the-largest-outlier-in-an-array/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / Counting / Enumeration",
+  "enunciado": "You are given an integer array nums. This array contains n elements, where exactly n - 2 elements are special numbers. One of the remaining two elements is the sum of these special numbers, and the other is an outlier.\nAn outlier is defined as a number that is neither one of the original special numbers nor the element representing the sum of those numbers.\nNote that special numbers, the sum element, and the outlier must have distinct indices, but may share the same value.\nReturn the largest potential outlier in nums.\n \nExample 1:\n\nInput: nums = [2,3,5,10]\nOutput: 10\nExplanation:\nThe special numbers could be 2 and 3, thus making their sum 5 and the outlier 10.\n\nExample 2:\n\nInput: nums = [-2,-1,-3,-6,4]\nOutput: 4\nExplanation:\nThe special numbers could be -2, -1, and -3, thus making their sum -6 and the outlier 4.\n\nExample 3:\n\nInput: nums = [1,1,1,1,1,5,5]\nOutput: 5\nExplanation:\nThe special numbers could be 1, 1, 1, 1, and 1, thus making their sum 5 and the other 5 as the outlier.\n\n \nConstraints:\n\n3 <= nums.length <= 105\n-1000 <= nums[i] <= 1000\nThe input is generated such that at least one potential outlier exists in nums.\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def getLargestOutlier(self, nums: list[int]) -> int:\n    ans = -math.inf\n    summ = sum(nums)\n    count = collections.Counter(nums)\n\n    for num in nums:\n      withoutNum = summ - num\n      if withoutNum % 2 == 0:\n        specialSum = withoutNum // 2  # the sum of special numbers\n        if count[specialSum] > (1 if num == specialSum else 0):\n          ans = max(ans, num)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1000,-1000,0,500,-500]",
+      "salida": "1000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [0,0,0,0,0,0,0,0,0,1]",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [5,5,5,5,5,25,30]",
+      "salida": "30",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3371: LC-3265 - Count Almost Equal Pairs I. Ambos problemas comparten las técnicas de counting, enumeración, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [111, 222, 333, 444, 555, 666, 777, 888, 999]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3371: Ambos problemas comparten las técnicas de counting, enumeración, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport itertools\n\nclass Solution:\n  def countPairs(self, nums: list[int]) -> int:\n    ans = 0\n    count = collections.Counter()\n    maxLen = len(str(max(nums)))\n\n    for num in nums:\n      digits = list(str(num).zfill(maxLen))\n      for swap in self._getSwaps(digits):\n        ans += count[swap]\n      count[num] += 1\n\n    return ans\n\n  def _getSwaps(self, digits: str) -> set[int]:\n    \"\"\"Returns all possible numbers after 1 swap.\"\"\"\n    n = len(digits)\n    swaps = set([int(''.join(digits))])\n\n    for i, j in itertools.combinations(range(n), 2):\n      newDigits = digits[:]\n      newDigits[i], newDigits[j] = newDigits[j], newDigits[i]\n      swaps.add(int(''.join(newDigits)))\n\n    return swaps\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().getLargestOutlier([1000, -1000, 0, 500, -500]) == 1000"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().getLargestOutlier([0, 0, 0, 0, 0, 0, 0, 0, 0, 1]) == 1"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().getLargestOutlier([5, 5, 5, 5, 5, 25, 30]) == 30"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().getLargestOutlier([0, 0, 0, 0, 1]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().getLargestOutlier([-999, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1000]) == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().getLargestOutlier([2, 3, 5, 10]) == 10"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().getLargestOutlier([100, 200, 300, 600, 500]) == 500"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().getLargestOutlier([10, 20, 30, 60, 5]) == 5"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().getLargestOutlier([0, 0, 0, 0, 1, 0]) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().getLargestOutlier([1000, -1000, 0, 1000, -1000, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().getLargestOutlier([-5, -5, -10, 0, 15]) == 15"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().getLargestOutlier([-1, -2, -3, -6, 10]) == 10"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3371",
+    "fecha-estimada-2024-12-01",
+    "Array",
+    "Hash Table",
+    "Counting",
+    "Enumeration"
+  ]
+}

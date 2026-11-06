@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3340",
+  "titulo": "Check Balanced String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/check-balanced-string/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "String",
+  "enunciado": "You are given a string num consisting of only digits. A string of digits is called balanced if the sum of the digits at even indices is equal to the sum of digits at odd indices.\nReturn true if num is balanced, otherwise return false.\n \nExample 1:\n\nInput: num = \"1234\"\nOutput: false\nExplanation:\n\nThe sum of digits at even indices is 1 + 3 == 4, and the sum of digits at odd indices is 2 + 4 == 6.\nSince 4 is not equal to 6, num is not balanced.\n\n\nExample 2:\n\nInput: num = \"24123\"\nOutput: true\nExplanation:\n\nThe sum of digits at even indices is 2 + 1 + 3 == 6, and the sum of digits at odd indices is 4 + 2 == 6.\nSince both are equal the num is balanced.\n\n\n \nConstraints:\n\n2 <= num.length <= 100\nnum consists of digits only\n\n",
+  "especificacion_entrada": "num: str",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def isBalanced(self, num: str) -> bool:\n    nums = list(map(int, num))\n    return sum(nums[::2]) == sum(nums[1::2])\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "num = \"1111\"",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "num = \"4321\"",
+      "salida": "False",
+      "explicacion": ""
+    },
+    {
+      "entrada": "num = \"654321\"",
+      "salida": "False",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3340: LC-3456 - Find Special Substring of Length K. La solución de referencia aporta una demostración cercana de técnicas de String, aplicables como patrón al problema objetivo.",
+      "entrada": "s = 'abc', k = 2",
+      "salida": "False",
+      "explicacion": "Relación con LC-3340: La solución de referencia aporta una demostración cercana de técnicas de String, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "from itertools import groupby\n\nclass Solution:\n  def hasSpecialSubstring(self, s: str, k: int) -> bool:\n    return any(len(list(group)) == k for _, group in groupby(s))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().isBalanced('1111') == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().isBalanced('4321') == False"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().isBalanced('654321') == False"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().isBalanced('55555') == False"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().isBalanced('9876543210') == False"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().isBalanced('98765') == False"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().isBalanced('4321234') == False"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().isBalanced('24123') == True"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().isBalanced('1357924680') == False"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().isBalanced('1234') == False"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().isBalanced('2222') == True"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().isBalanced('5555555555') == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3340",
+    "fecha-estimada-2024-11-03",
+    "String"
+  ]
+}

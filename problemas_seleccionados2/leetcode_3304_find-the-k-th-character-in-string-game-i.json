@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3304",
+  "titulo": "Find the K-th Character in String Game I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Bit Manipulation / Recursion / Math / Simulation",
+  "enunciado": "Alice and Bob are playing a game. Initially, Alice has a string word = \"a\".\nYou are given a positive integer k.\nNow Bob will ask Alice to perform the following operation forever:\n\nGenerate a new string by changing each character in word to its next character in the English alphabet, and append it to the original word.\n\nFor example, performing the operation on \"c\" generates \"cd\" and performing the operation on \"zb\" generates \"zbac\".\nReturn the value of the kth character in word, after enough operations have been done for word to have at least k characters.\nNote that the character 'z' can be changed to 'a' in the operation.\n \nExample 1:\n\nInput: k = 5\nOutput: \"b\"\nExplanation:\nInitially, word = \"a\". We need to do the operation three times:\n\nGenerated string is \"b\", word becomes \"ab\".\nGenerated string is \"bc\", word becomes \"abbc\".\nGenerated string is \"bccd\", word becomes \"abbcbccd\".\n\n\nExample 2:\n\nInput: k = 10\nOutput: \"c\"\n\n \nConstraints:\n\n1 <= k <= 500\n\n",
+  "especificacion_entrada": "k: int",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def kthCharacter(self, k: int) -> str:\n    return string.ascii_lowercase[(k - 1).bit_count()]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "k = 27",
+      "salida": "d",
+      "explicacion": ""
+    },
+    {
+      "entrada": "k = 1",
+      "salida": "a",
+      "explicacion": ""
+    },
+    {
+      "entrada": "k = 7",
+      "salida": "c",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3304: LC-3307 - Find the K-th Character in String Game II. Ambos problemas comparten las técnicas de manipulación de bits, recursion, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "k = 20, operations = [1, 0, 1, 0, 1]",
+      "salida": "c",
+      "explicacion": "Relación con LC-3304: Ambos problemas comparten las técnicas de manipulación de bits, recursion, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\nimport string\n\nclass Solution:\n  def kthCharacter(self, k: int, operations: list[int]) -> str:\n    operationsCount = math.ceil(math.log2(k))\n    increases = 0\n\n    for i in range(operationsCount - 1, -1, -1):\n      halfSize = 2**i\n      if k > halfSize:\n        k -= halfSize  # Move k from the right half to the left half.\n        increases += operations[i]\n\n    return string.ascii_lowercase[increases % 26]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().kthCharacter(27) == 'd'"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().kthCharacter(1) == 'a'"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().kthCharacter(7) == 'c'"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().kthCharacter(500) == 'h'"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().kthCharacter(26) == 'd'"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().kthCharacter(5) == 'b'"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().kthCharacter(10) == 'c'"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().kthCharacter(175) == 'f'"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().kthCharacter(400) == 'g'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().kthCharacter(20) == 'd'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().kthCharacter(325) == 'd'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().kthCharacter(15) == 'd'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3304",
+    "fecha-estimada-2024-09-29",
+    "Bit Manipulation",
+    "Recursion",
+    "Math",
+    "Simulation"
+  ]
+}

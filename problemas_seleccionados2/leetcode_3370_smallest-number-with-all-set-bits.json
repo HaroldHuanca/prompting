@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3370",
+  "titulo": "Smallest Number With All Set Bits",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/smallest-number-with-all-set-bits/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Bit Manipulation / Math",
+  "enunciado": "You are given a positive number n.\nReturn the smallest number x greater than or equal to n, such that the binary representation of x contains only set bits\n \nExample 1:\n\nInput: n = 5\nOutput: 7\nExplanation:\nThe binary representation of 7 is \"111\".\n\nExample 2:\n\nInput: n = 10\nOutput: 15\nExplanation:\nThe binary representation of 15 is \"1111\".\n\nExample 3:\n\nInput: n = 3\nOutput: 3\nExplanation:\nThe binary representation of 3 is \"11\".\n\n \nConstraints:\n\n1 <= n <= 1000\n\n",
+  "especificacion_entrada": "n: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def smallestNumber(self, n: int) -> int:\n    return (1 << n.bit_length()) - 1\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 3",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 12",
+      "salida": "15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 100",
+      "salida": "127",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3370: LC-3314 - Construct the Minimum Bitwise Array I. Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [3, 7, 11, 13]",
+      "salida": "[1, 3, 9, 12]",
+      "explicacion": "Relación con LC-3370: Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minBitwiseArray(self, nums: list[int]) -> list[int]:\n    return [-1 if num == 2 else num - self._getLeadingOneOfLastGroupOfOnes(num)\n            for num in nums]\n\n  def _getLeadingOneOfLastGroupOfOnes(self, num: int) -> int:\n    \"\"\"\n    Returns the leading one of the last group of 1s in the binary\n    representation of num. For example, if num = 0b10111, the leading one of\n    the last group of 1s is 0b100.\n    \"\"\"\n    leadingOne = 1\n    while (num & leadingOne) > 0:\n      leadingOne <<= 1\n    return leadingOne >> 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().smallestNumber(3) == 3"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().smallestNumber(12) == 15"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().smallestNumber(100) == 127"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().smallestNumber(1000) == 1023"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().smallestNumber(5) == 7"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().smallestNumber(64) == 127"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().smallestNumber(16) == 31"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().smallestNumber(2) == 3"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().smallestNumber(1024) == 2047"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().smallestNumber(8) == 15"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().smallestNumber(255) == 255"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().smallestNumber(999) == 1023"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3370",
+    "fecha-estimada-2024-12-01",
+    "Bit Manipulation",
+    "Math"
+  ]
+}

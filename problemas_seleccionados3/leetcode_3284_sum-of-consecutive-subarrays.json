@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3284",
+  "titulo": "Sum of Consecutive Subarrays",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-consecutive-subarrays/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Two Pointers / Dynamic Programming",
+  "enunciado": "We call an array arr of length n consecutive if one of the following holds:\n\narr[i] - arr[i - 1] == 1 for all 1 <= i < n.\narr[i] - arr[i - 1] == -1 for all 1 <= i < n.\n\nThe value of an array is the sum of its elements.\nFor example, [3, 4, 5] is a consecutive array of value 12 and [9, 8] is another of value 17. While [3, 4, 3] and [8, 6] are not consecutive.\nGiven an array of integers nums, return the sum of the values of all consecutive subarrays.\nSince the answer may be very large, return it modulo 109 + 7.\nNote that an array of length 1 is also considered consecutive.\n \nExample 1:\n\nInput: nums = [1,2,3]\nOutput: 20\nExplanation:\nThe consecutive subarrays are: [1], [2], [3], [1, 2], [2, 3], [1, 2, 3].\nSum of their values would be: 1 + 2 + 3 + 3 + 5 + 6 = 20.\n\nExample 2:\n\nInput: nums = [1,3,5,7]\nOutput: 16\nExplanation:\nThe consecutive subarrays are: [1], [3], [5], [7].\nSum of their values would be: 1 + 3 + 5 + 7 = 16.\n\nExample 3:\n\nInput: nums = [7,6,1,2]\nOutput: 32\nExplanation:\nThe consecutive subarrays are: [7], [6], [1], [2], [7, 6], [1, 2].\nSum of their values would be: 7 + 6 + 1 + 2 + 13 + 3 = 32.\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 105\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def getSum(self, nums: list[int]) -> int:\n    def getSum(diff: int) -> int:\n      \"\"\"Returns the sum of all subarrays with a difference of `diff`.\"\"\"\n      res = nums[0]\n      summ = nums[0]\n      count = 1\n      for prev, num in itertools.pairwise(nums):\n        if num == prev + diff:\n          count += 1\n          summ += count * num\n        else:\n          count = 1\n          summ = num\n        res += summ\n      return res\n\n    return (getSum(1) + getSum(-1) - sum(nums)) % 1_000_000_007\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,3,2,4,3,5,4,6,5,7]",
+      "salida": "72",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [7,6,1,2]",
+      "salida": "32",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,3,2,4,5,7,6,8,9,10]",
+      "salida": "145",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3284: LC-3299 - Sum of Consecutive Subsequences. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 3, 2, 4, 3, 5, 4, 6, 5, 7]",
+      "salida": "352",
+      "explicacion": "Relación con LC-3284: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def getSum(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    n = len(nums)\n\n    def getSequenceSum(nums: list[int], direction: int) -> int:\n      \"\"\"\n      Returns the sum of all sequences in the array that are in consecutive\n      increasing order if `direction` is 1, or in consecutive decreasing order\n      if `direction` is -1.\"\"\"\n      sequenceSum = 0\n      # {num: the number of subsequences ending in `num` so far}\n      prefixCount = collections.Counter()\n      # {num: the number of subsequences starting from `num` so far}\n      suffixCount = collections.Counter()\n      # prefixSubseqs[i] := the number of subsequences ending in nums[i]\n      prefixSubseqs = [0] * n\n      # suffixSubseqs[i] := the number of subsequences starting from nums[i]\n      suffixSubseqs = [0] * n\n\n      for i, num in enumerate(nums):\n        prevNum = num - direction\n        freq = prefixCount[prevNum] + 1\n        prefixSubseqs[i] = freq\n        prefixCount[num] += freq\n        prefixCount[num] %= MOD\n\n      for i, num in reversed(list(enumerate(nums))):\n        nextNum = num + direction\n        freq = suffixCount[nextNum] + 1\n        suffixSubseqs[i] = freq\n        suffixCount[num] += freq\n        suffixCount[num] %= MOD\n\n      for num, prefixSubseq, suffixSubseq in zip(\n              nums, prefixSubseqs, suffixSubseqs):\n        sequenceSum += num * prefixSubseq * suffixSubseq\n        sequenceSum %= MOD\n\n      return sequenceSum\n\n    increasingSequenceSum = getSequenceSum(nums, 1)\n    decreasingSequenceSum = getSequenceSum(nums, -1)\n    return (increasingSequenceSum + decreasingSequenceSum - sum(nums) + MOD) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().getSum([1, 3, 2, 4, 3, 5, 4, 6, 5, 7]) == 72"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().getSum([7, 6, 1, 2]) == 32"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().getSum([1, 3, 2, 4, 5, 7, 6, 8, 9, 10]) == 145"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().getSum([1, 2, 4, 5, 6, 8, 9]) == 90"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().getSum([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 1210"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().getSum([10, 11, 12, 13, 14]) == 420"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().getSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 1210"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().getSum([10]) == 10"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().getSum([1]) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().getSum([3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 1]) == 224"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().getSum([5, 5, 5, 5, 5]) == 25"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().getSum([1, 2, 4, 5, 7, 8, 10, 11]) == 96"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3284",
+    "fecha-estimada-2024-09-08",
+    "Array",
+    "Two Pointers",
+    "Dynamic Programming"
+  ]
+}

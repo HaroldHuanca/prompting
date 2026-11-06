@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3318",
+  "titulo": "Find X-Sum of All K-Long Subarrays I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-x-sum-of-all-k-long-subarrays-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Hash Table / Sliding Window / Heap (Priority Queue)",
+  "enunciado": "You are given an array nums of n integers and two integers k and x.\nThe x-sum of an array is calculated by the following procedure:\n\nCount the occurrences of all elements in the array.\nKeep only the occurrences of the top x most frequent elements. If two elements have the same number of occurrences, the element with the bigger value is considered more frequent.\nCalculate the sum of the resulting array.\n\nNote that if an array has less than x distinct elements, its x-sum is the sum of the array.\nReturn an integer array answer of length n - k + 1 where answer[i] is the x-sum of the subarray nums[i..i + k - 1].\n \nExample 1:\n\nInput: nums = [1,1,2,2,3,4,2,3], k = 6, x = 2\nOutput: [6,10,12]\nExplanation:\n\nFor subarray [1, 1, 2, 2, 3, 4], only elements 1 and 2 will be kept in the resulting array. Hence, answer[0] = 1 + 1 + 2 + 2.\nFor subarray [1, 2, 2, 3, 4, 2], only elements 2 and 4 will be kept in the resulting array. Hence, answer[1] = 2 + 2 + 2 + 4. Note that 4 is kept in the array since it is bigger than 3 and 1 which occur the same number of times.\nFor subarray [2, 2, 3, 4, 2, 3], only elements 2 and 3 are kept in the resulting array. Hence, answer[2] = 2 + 2 + 2 + 3 + 3.\n\n\nExample 2:\n\nInput: nums = [3,8,7,8,7,5], k = 2, x = 2\nOutput: [11,15,15,15,12]\nExplanation:\nSince k == x, answer[i] is equal to the sum of the subarray nums[i..i + k - 1].\n\n \nConstraints:\n\n1 <= n == nums.length <= 50\n1 <= nums[i] <= 50\n1 <= x <= k <= nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], k: int, x: int",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "from sortedcontainers import SortedList\n\n\nclass Solution:\n  def findXSum(self, nums: list[int], k: int, x: int) -> list[int]:\n    ans = []\n    windowSum = 0\n    count = collections.Counter()\n    top = SortedList()\n    bot = SortedList()\n\n    def update(num: int, freq: int) -> None:\n      \"\"\"Updates the count of num by freq and the window sum accordingly.\"\"\"\n      nonlocal windowSum\n      if count[num] > 0:  # Clean up old values.\n        if [count[num], num] in bot:\n          bot.remove([count[num], num])\n        else:\n          top.remove([count[num], num])\n          windowSum -= num * count[num]\n      count[num] += freq\n      if count[num] > 0:\n        bot.add([count[num], num])\n\n    for i, num in enumerate(nums):\n      update(num, 1)\n      if i >= k:\n        update(nums[i - k], -1)\n      # Move the bottom element to the top if needed.\n      while bot and len(top) < x:\n        countB, b = bot.pop()\n        top.add([countB, b])\n        windowSum += b * countB\n      # Swap the bottom and top elements if needed.\n      while bot and bot[-1] > top[0]:\n        countB, b = bot.pop()\n        countT, t = top.pop(0)\n        bot.add([countT, t])\n        windowSum -= t * countT\n        top.add([countB, b])\n        windowSum += b * countB\n      if i >= k - 1:\n        ans.append(windowSum)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 4, x = 4",
+      "salida": "[10, 14, 18, 22, 26, 30, 34]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30,40,50], k = 1, x = 1",
+      "salida": "[10, 20, 30, 40, 50]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,2,2,3,4,2,3], k = 6, x = 2",
+      "salida": "[6, 10, 12]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3318: LC-3321 - Find X-Sum of All K-Long Subarrays II. Ambos problemas comparten las técnicas de tabla hash, heap, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], k = 4, x = 2",
+      "salida": "[70, 90, 110, 130, 150, 170, 190]",
+      "explicacion": "Relación con LC-3318: Ambos problemas comparten las técnicas de tabla hash, heap, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from collections import Counter\n\nclass Solution:\n  def findXSum(self, nums: list[int], k: int, x: int) -> list[int]:\n    counts = Counter()\n    answer = []\n    for i, value in enumerate(nums):\n      counts[value] += 1\n      if i >= k:\n        outgoing = nums[i - k]\n        counts[outgoing] -= 1\n        if counts[outgoing] == 0:\n          del counts[outgoing]\n      if i >= k - 1:\n        top = sorted(counts.items(), key=lambda item: (item[1], item[0]), reverse=True)[:x]\n        answer.append(sum(value * frequency for value, frequency in top))\n    return answer\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().findXSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 4, 4) == [10, 14, 18, 22, 26, 30, 34]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().findXSum([10, 20, 30, 40, 50], 1, 1) == [10, 20, 30, 40, 50]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().findXSum([1, 1, 2, 2, 3, 4, 2, 3], 6, 2) == [6, 10, 12]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().findXSum([3, 8, 7, 8, 7, 5], 2, 2) == [11, 15, 15, 15, 12]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().findXSum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5, 3) == [12, 15, 18, 21, 24, 27]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().findXSum([10, 20, 30, 40, 50], 5, 5) == [150]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().findXSum([10, 20, 30, 40, 50, 10, 20, 30, 40, 50], 4, 2) == [70, 90, 90, 90, 80, 70, 90]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().findXSum([5, 5, 5, 5, 5], 3, 1) == [15, 15, 15]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().findXSum([1, 2, 3, 4, 5], 5, 3) == [12]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().findXSum([10, 20, 30, 40, 50], 5, 3) == [120]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().findXSum([5, 5, 5, 4, 4, 3, 3, 2, 1, 1, 1, 1], 5, 2) == [23, 18, 14, 14, 10, 8, 6, 6]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().findXSum([1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5], 15, 4) == [38, 41, 44, 47, 49, 52, 55, 58, 60, 62, 64, 66, 68]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3318",
+    "fecha-estimada-2024-10-06",
+    "Array",
+    "Hash Table",
+    "Sliding Window",
+    "Heap (Priority Queue)"
+  ]
+}

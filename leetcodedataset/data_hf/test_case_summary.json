@@ -1,0 +1,40 @@
+{
+  "dataset": "data_hf/problems_after_reference_estimated.json",
+  "record_count": 225,
+  "test_case_count": {
+    "minimum": 10,
+    "maximum": 266,
+    "mean": 106.72,
+    "median": 104,
+    "total": 24013,
+    "quartiles_inclusive": {
+      "q1": 85.0,
+      "q3": 122.0
+    }
+  },
+  "by_difficulty": {
+    "Easy": {
+      "problems": 48,
+      "minimum": 29,
+      "maximum": 209,
+      "mean": 107.29,
+      "median": 110.0
+    },
+    "Hard": {
+      "problems": 78,
+      "minimum": 30,
+      "maximum": 266,
+      "mean": 105,
+      "median": 102.5
+    },
+    "Medium": {
+      "problems": 99,
+      "minimum": 10,
+      "maximum": 258,
+      "mean": 107.81,
+      "median": 103
+    }
+  },
+  "records_without_cases": 0,
+  "interpretation": "These are public input/output pairs in the downloaded dataset, not LeetCode private/hidden judge tests and not a statistical guarantee of correctness."
+}

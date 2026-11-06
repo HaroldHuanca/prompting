@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3498",
+  "titulo": "Reverse Degree of a String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/reverse-degree-of-a-string/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Cadenas / Matemáticas / Simulación",
+  "enunciado": "Given a string s, calculate its reverse degree.\nThe reverse degree is calculated as follows:\n\nFor each character, multiply its position in the reversed alphabet ('a' = 26, 'b' = 25, ..., 'z' = 1) with its position in the string (1-indexed).\nSum these products for all characters in the string.\n\nReturn the reverse degree of s.\n \nExample 1:\n\nInput: s = \"abc\"\nOutput: 148\nExplanation:\n\n\n\nLetter\nIndex in Reversed Alphabet\nIndex in String\nProduct\n\n\n'a'\n26\n1\n26\n\n\n'b'\n25\n2\n50\n\n\n'c'\n24\n3\n72\n\n\n\nThe reversed degree is 26 + 50 + 72 = 148.\n\nExample 2:\n\nInput: s = \"zaza\"\nOutput: 160\nExplanation:\n\n\n\nLetter\nIndex in Reversed Alphabet\nIndex in String\nProduct\n\n\n'z'\n1\n1\n1\n\n\n'a'\n26\n2\n52\n\n\n'z'\n1\n3\n3\n\n\n'a'\n26\n4\n104\n\n\n\nThe reverse degree is 1 + 52 + 3 + 104 = 160.\n\n \nConstraints:\n\n1 <= s.length <= 1000\ns contains only lowercase English letters.\n\n",
+  "especificacion_entrada": "s: string",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= s.length <= 1000\ns contains only lowercase English letters.",
+  "solucion_referencia": "class Solution:\n  def reverseDegree(self, s: str) -> int:\n    return sum((26 - (ord(c) - ord('a'))) * (i + 1)\n               for i, c in enumerate(s))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"abc\"",
+      "salida": "148",
+      "explicacion": "Letter\nIndex in Reversed Alphabet\nIndex in String\nProduct\n\n\n'a'\n26\n1\n26\n\n\n'b'\n25\n2\n50\n\n\n'c'\n24\n3\n72\n\n\n\nThe reversed degree is 26 + 50 + 72 = 148."
+    },
+    {
+      "entrada": "s = \"zaza\"",
+      "salida": "160",
+      "explicacion": "Letter\nIndex in Reversed Alphabet\nIndex in String\nProduct\n\n\n'z'\n1\n1\n1\n\n\n'a'\n26\n2\n52\n\n\n'z'\n1\n3\n3\n\n\n'a'\n26\n4\n104\n\n\n\nThe reverse degree is 1 + 52 + 3 + 104 = 160."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3498: LC-3412 - Find Mirror Score of a String. Ambos asignan puntajes a caracteres según su posición o carácter espejo y acumulan el resultado de la cadena.",
+      "entrada": "s = 'b'",
+      "salida": "0",
+      "explicacion": "Relación con LC-3498: Ambos asignan puntajes a caracteres según su posición o carácter espejo y acumulan el resultado de la cadena.",
+      "codigo_ilustrativo": "class Solution:\n  def calculateScore(self, s: str) -> int:\n    ans = 0\n    indices = [[] for _ in range(26)]\n\n    for i, c in enumerate(s):\n      index = ord(c) - ord('a')\n      oppositeIndex = 25 - index\n      if indices[oppositeIndex]:\n        ans += i - indices[oppositeIndex].pop()\n      else:\n        indices[index].append(i)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().reverseDegree('zzzz') == 10"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().reverseDegree('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz') == 15678"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().reverseDegree('world') == 230"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().reverseDegree('abcdefghijklmnopqrstuvwxyz') == 3276"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().reverseDegree('z') == 1"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().reverseDegree('degree') == 405"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().reverseDegree('abc') == 148"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().reverseDegree('reverse') == 403"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().reverseDegree('aaa') == 156"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().reverseDegree('zzz') == 6"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().reverseDegree('zyxwvutsrqponmlkjihgfedcba') == 6201"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().reverseDegree('a') == 26"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3498",
+    "seleccion-reciente-2026-11"
+  ]
+}

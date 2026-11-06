@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3381",
+  "titulo": "Maximum Subarray Sum With Length Divisible by K",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-subarray-sum-with-length-divisible-by-k/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / Prefix Sum",
+  "enunciado": "You are given an array of integers nums and an integer k.\nReturn the maximum sum of a subarray of nums, such that the size of the subarray is divisible by k.\n \nExample 1:\n\nInput: nums = [1,2], k = 1\nOutput: 3\nExplanation:\nThe subarray [1, 2] with sum 3 has length equal to 2 which is divisible by 1.\n\nExample 2:\n\nInput: nums = [-1,-2,-3,-4,-5], k = 4\nOutput: -10\nExplanation:\nThe maximum sum subarray is [-1, -2, -3, -4] which has length equal to 4 which is divisible by 4.\n\nExample 3:\n\nInput: nums = [-5,1,2,-3,4], k = 2\nOutput: 4\nExplanation:\nThe maximum sum subarray is [1, 2, -3, 4] which has length equal to 4 which is divisible by 2.\n\n \nConstraints:\n\n1 <= k <= nums.length <= 2 * 105\n-109 <= nums[i] <= 109\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxSubarraySum(self, nums: list[int], k: int) -> int:\n    ans = -math.inf\n    prefix = 0\n    # minPrefix[i % k] := the minimum prefix sum of the first i numbers\n    minPrefix = [math.inf] * k\n    minPrefix[k - 1] = 0\n\n    for i, num in enumerate(nums):\n      prefix += num\n      ans = max(ans, prefix - minPrefix[i % k])\n      minPrefix[i % k] = min(minPrefix[i % k], prefix)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1000000000,-1000000000,1000000000,-1000000000,1000000000], k = 2",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1000000000,-1000000000,1000000000,-1000000000], k = 2",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 10",
+      "salida": "55",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3381: LC-3427 - Sum of Variable Length Subarrays. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [5, 4, 3, 2, 1]",
+      "salida": "38",
+      "explicacion": "Relación con LC-3381: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def subarraySum(self, nums: list[int]) -> int:\n    prefix = list(itertools.accumulate(nums, initial=0))\n    return sum(prefix[i + 1] - prefix[max(0, i - num)]\n               for i, num in enumerate((nums)))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxSubarraySum([1000000000, -1000000000, 1000000000, -1000000000, 1000000000], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxSubarraySum([1000000000, -1000000000, 1000000000, -1000000000], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxSubarraySum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10) == 55"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxSubarraySum([1000000000, 1000000000, 1000000000, 1000000000, 1000000000, 1000000000, 1000000000, 1000000000, 1000000000, 1000000000], 10) == 10000000000"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxSubarraySum([10, 20, 30, 40, 50, 60], 5) == 200"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxSubarraySum([-1000000000, -1000000000, -1000000000, -1000000000], 3) == -3000000000"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxSubarraySum([-5, 1, 2, -3, 4], 2) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxSubarraySum([-1, -2, -3, -4, -5, -6, -7, -8, -9, -10], 3) == -6"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxSubarraySum([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 5) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSubarraySum([1, 2], 1) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSubarraySum([1000000000, 1000000000, 1000000000, 1000000000], 2) == 4000000000"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSubarraySum([1, -1, 1, -1, 1, -1, 1, -1, 1, -1], 2) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3381",
+    "fecha-estimada-2024-12-08",
+    "Array",
+    "Hash Table",
+    "Prefix Sum"
+  ]
+}

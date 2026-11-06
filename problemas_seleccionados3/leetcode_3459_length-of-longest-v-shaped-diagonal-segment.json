@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3459",
+  "titulo": "Length of Longest V-Shaped Diagonal Segment",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/length-of-longest-v-shaped-diagonal-segment/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Memoization / Array / Dynamic Programming / Matrix",
+  "enunciado": "You are given a 2D integer matrix grid of size n x m, where each element is either 0, 1, or 2.\nA V-shaped diagonal segment is defined as:\n\nThe segment starts with 1.\nThe subsequent elements follow this infinite sequence: 2, 0, 2, 0, ....\nThe segment:\n\t\nStarts along a diagonal direction (top-left to bottom-right, bottom-right to top-left, top-right to bottom-left, or bottom-left to top-right).\nContinues the sequence in the same diagonal direction.\nMakes at most one clockwise 90-degree turn to another diagonal direction while maintaining the sequence.\n\n\n\n\nReturn the length of the longest V-shaped diagonal segment. If no valid segment exists, return 0.\n \nExample 1:\n\nInput: grid = [[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]\nOutput: 5\nExplanation:\n\nThe longest V-shaped diagonal segment has a length of 5 and follows these coordinates: (0,2) → (1,3) → (2,4), takes a 90-degree clockwise turn at (2,4), and continues as (3,3) → (4,2).\n\nExample 2:\n\nInput: grid = [[2,2,2,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]\nOutput: 4\nExplanation:\n\nThe longest V-shaped diagonal segment has a length of 4 and follows these coordinates: (2,3) → (3,2), takes a 90-degree clockwise turn at (3,2), and continues as (2,1) → (1,0).\n\nExample 3:\n\nInput: grid = [[1,2,2,2,2],[2,2,2,2,0],[2,0,0,0,0],[0,0,2,2,2],[2,0,0,2,0]]\nOutput: 5\nExplanation:\n\nThe longest V-shaped diagonal segment has a length of 5 and follows these coordinates: (0,0) → (1,1) → (2,2) → (3,3) → (4,4).\n\nExample 4:\n\nInput: grid = [[1]]\nOutput: 1\nExplanation:\nThe longest V-shaped diagonal segment has a length of 1 and follows these coordinates: (0,0).\n\n \nConstraints:\n\nn == grid.length\nm == grid[i].length\n1 <= n, m <= 500\ngrid[i][j] is either 0, 1 or 2.\n\n",
+  "especificacion_entrada": "grid: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def lenOfVDiagonal(self, grid: list[list[int]]) -> int:\n    DIRS = ((-1, 1), (1, 1), (1, -1), (-1, -1))\n\n    @functools.lru_cache(None)\n    def dfs(i: int, j: int, turned: bool, num: int, dir: int) -> int:\n      if i < 0 or i == len(grid) or j < 0 or j == len(grid[0]):\n        return 0\n      if grid[i][j] != num:\n        return 0\n\n      nextNum = 0 if num == 2 else 2\n      dx, dy = DIRS[dir]\n      res = 1 + dfs(i + dx, j + dy, turned, nextNum, dir)\n\n      if not turned:\n        nextDir = (dir + 1) % 4\n        nextDx, nextDy = DIRS[nextDir]\n        res = max(res, 1 + dfs(i + nextDx, j + nextDy, 1, nextNum, nextDir))\n\n      return res\n\n    return max((1 + dfs(i + dx, j + dy, 0, 2, d)\n                for i, row in enumerate(grid)\n                for j, num in enumerate(row)\n                if num == 1\n                for d, (dx, dy) in enumerate(DIRS)),\n               default=0)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "grid = [[1,1,1],[1,1,1],[1,1,1]]",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[1,2,0,2,0,1,2],[0,2,1,2,1,2,2],[0,0,2,1,2,1,2],[2,0,2,1,2,1,0]]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[2,0,0,0],[1,2,2,2],[0,2,1,2],[0,0,2,1]]",
+      "salida": "3",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3459: LC-3363 - Find the Maximum Number of Fruits Collected. Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "fruits = [[10, 20, 30, 40], [50, 60, 70, 80], [90, 100, 110, 120], [130, 140, 150, 160]]",
+      "salida": "1000",
+      "explicacion": "Relación con LC-3459: Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxCollectedFruits(self, fruits: list[list[int]]) -> int:\n    n = len(fruits)\n\n    def getTopLeft() -> int:\n      return sum(fruits[i][i] for i in range(n))\n\n    def getTopRight() -> int:\n      # dp[i][j] := the number of fruits collected from (0, n - 1) to (i, j)\n      dp = [[0] * n for _ in range(n)]\n      dp[0][-1] = fruits[0][-1]\n      for x in range(n):\n        for y in range(n):\n          if x >= y and (x, y) != (n - 1, n - 1):\n            continue\n          for dx, dy in [(1, -1), (1, 0), (1, 1)]:\n            i = x - dx\n            j = y - dy\n            if i < 0 or i == n or j < 0 or j == n:\n              continue\n            if i < j < n - 1 - i:\n              continue\n            dp[x][y] = max(dp[x][y], dp[i][j] + fruits[x][y])\n      return dp[-1][-1]\n\n    def getBottomLeft() -> int:\n      # dp[i][j] := the number of fruits collected from (n - 1, 0) to (i, j)\n      dp = [[0] * n for _ in range(n)]\n      dp[-1][0] = fruits[-1][0]\n      for y in range(n):\n        for x in range(n):\n          if x <= y and (x, y) != (n - 1, n - 1):\n            continue\n          for dx, dy in [(-1, 1), (0, 1), (1, 1)]:\n            i = x - dx\n            j = y - dy\n            if i < 0 or i == n or j < 0 or j == n:\n              continue\n            if j < i < n - 1 - j:\n              continue\n            dp[x][y] = max(dp[x][y], dp[i][j] + fruits[x][y])\n      return dp[-1][-1]\n\n    return getTopLeft() + getTopRight() + getBottomLeft() - 2 * fruits[-1][-1]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().lenOfVDiagonal([[1, 1, 1], [1, 1, 1], [1, 1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().lenOfVDiagonal([[1, 2, 0, 2, 0, 1, 2], [0, 2, 1, 2, 1, 2, 2], [0, 0, 2, 1, 2, 1, 2], [2, 0, 2, 1, 2, 1, 0]]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().lenOfVDiagonal([[2, 0, 0, 0], [1, 2, 2, 2], [0, 2, 1, 2], [0, 0, 2, 1]]) == 3"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().lenOfVDiagonal([[0, 0, 0], [0, 1, 0], [0, 0, 0]]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().lenOfVDiagonal([[2, 2, 2, 2, 2], [2, 0, 2, 2, 0], [2, 0, 1, 1, 0], [1, 0, 2, 2, 2], [2, 0, 0, 2, 2]]) == 4"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().lenOfVDiagonal([[1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().lenOfVDiagonal([[2, 1, 2], [0, 2, 0], [1, 0, 2]]) == 2"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().lenOfVDiagonal([[1, 0, 2, 0, 2], [2, 2, 0, 2, 0], [0, 1, 0, 2, 0], [2, 0, 2, 0, 2]]) == 3"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().lenOfVDiagonal([[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 2, 0, 0], [0, 0, 0, 0, 0]]) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().lenOfVDiagonal([[2, 2, 1, 2, 2, 1], [2, 0, 2, 2, 0, 2], [2, 0, 1, 1, 0, 0], [1, 0, 2, 2, 2, 0], [2, 0, 0, 2, 2, 2]]) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().lenOfVDiagonal([[1, 0, 2, 0, 1], [0, 2, 0, 2, 0], [2, 0, 1, 0, 2], [0, 2, 0, 2, 0], [1, 0, 2, 0, 1]]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().lenOfVDiagonal([[2, 2, 1, 2, 2], [2, 0, 2, 2, 0], [2, 0, 1, 1, 0], [1, 0, 2, 2, 2], [2, 0, 0, 2, 2]]) == 5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3459",
+    "fecha-estimada-2025-02-16",
+    "Memoization",
+    "Array",
+    "Dynamic Programming",
+    "Matrix"
+  ]
+}

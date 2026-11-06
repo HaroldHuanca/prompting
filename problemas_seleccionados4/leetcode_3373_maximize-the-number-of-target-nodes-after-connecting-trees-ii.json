@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3373",
+  "titulo": "Maximize the Number of Target Nodes After Connecting Trees II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Tree / Depth-First Search / Breadth-First Search",
+  "enunciado": "There exist two undirected trees with n and m nodes, labeled from [0, n - 1] and [0, m - 1], respectively.\nYou are given two 2D integer arrays edges1 and edges2 of lengths n - 1 and m - 1, respectively, where edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the first tree and edges2[i] = [ui, vi] indicates that there is an edge between nodes ui and vi in the second tree.\nNode u is target to node v if the number of edges on the path from u to v is even. Note that a node is always target to itself.\nReturn an array of n integers answer, where answer[i] is the maximum possible number of nodes that are target to node i of the first tree if you had to connect one node from the first tree to another node in the second tree.\nNote that queries are independent from each other. That is, for every query you will remove the added edge before proceeding to the next query.\n \nExample 1:\n\nInput: edges1 = [[0,1],[0,2],[2,3],[2,4]], edges2 = [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]]\nOutput: [8,7,7,8,8]\nExplanation:\n\nFor i = 0, connect node 0 from the first tree to node 0 from the second tree.\nFor i = 1, connect node 1 from the first tree to node 4 from the second tree.\nFor i = 2, connect node 2 from the first tree to node 7 from the second tree.\nFor i = 3, connect node 3 from the first tree to node 0 from the second tree.\nFor i = 4, connect node 4 from the first tree to node 4 from the second tree.\n\n\nExample 2:\n\nInput: edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]]\nOutput: [3,6,6,6,6]\nExplanation:\nFor every i, connect node i of the first tree with any node of the second tree.\n\n \nConstraints:\n\n2 <= n, m <= 105\nedges1.length == n - 1\nedges2.length == m - 1\nedges1[i].length == edges2[i].length == 2\nedges1[i] = [ai, bi]\n0 <= ai, bi < n\nedges2[i] = [ui, vi]\n0 <= ui, vi < m\nThe input is generated such that edges1 and edges2 represent valid trees.\n\n",
+  "especificacion_entrada": "edges1: list[list[int]], edges2: list[list[int]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxTargetNodes(\n      self,\n      edges1: list[list[int]],\n      edges2: list[list[int]]\n  ) -> list[int]:\n    n = len(edges1) + 1\n    m = len(edges2) + 1\n    graph1 = self._buildGraph(edges1)\n    graph2 = self._buildGraph(edges2)\n    parity1 = [False] * n\n    parity2 = [False] * m  # placeholder (parity2 is not used)\n    even1 = self._dfs(graph1, 0, -1, parity1, True)\n    even2 = self._dfs(graph2, 0, -1, parity2, True)\n    odd1 = n - even1\n    odd2 = m - even2\n\n    # Can connect the current node in tree1 to either an even node or an odd\n    # node in tree2.\n    return [(even1 if parity1[i] else odd1) + max(even2, odd2)\n            for i in range(n)]\n\n  def _dfs(\n      self,\n      graph: list[list[int]],\n      u: int,\n      prev: int,\n      parity: list[bool],\n      isEven: bool\n  ) -> int:\n    \"\"\"\n    Returns the number of nodes that can be reached from u with even steps.\n    \"\"\"\n    res = 1 if isEven else 0\n    parity[u] = isEven\n    for v in graph[u]:\n      if v != prev:\n        res += self._dfs(graph, v, u, parity, not isEven)\n    return res\n\n  def _buildGraph(self, edges: list[list[int]]) -> list[list[int]]:\n    graph = [[] for _ in range(len(edges) + 1)]\n    for u, v in edges:\n      graph[u].append(v)\n      graph[v].append(u)\n    return graph\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "edges1 = [[0,1],[0,2],[1,3],[1,4]], edges2 = [[0,1],[0,2],[1,3],[1,4],[2,5],[3,6]]",
+      "salida": "[7, 6, 6, 7, 7]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]]",
+      "salida": "[3, 6, 6, 6, 6]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "edges1 = [[0,1],[1,2],[2,3]], edges2 = [[0,1],[1,2],[2,3],[3,4]]",
+      "salida": "[5, 5, 5, 5]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3373: LC-3372 - Maximize the Number of Target Nodes After Connecting Trees I. Ambos problemas comparten las técnicas de breadth-first search, depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "edges1 = [[0, 1], [0, 2], [0, 3], [0, 4]], edges2 = [[0, 1], [1, 2], [2, 3]], k = 1",
+      "salida": "[6, 3, 3, 3, 3]",
+      "explicacion": "Relación con LC-3373: Ambos problemas comparten las técnicas de breadth-first search, depth-first search, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxTargetNodes(\n      self,\n      edges1: list[list[int]],\n      edges2: list[list[int]],\n      k: int\n  ) -> list[int]:\n    graph1 = self._buildGraph(edges1)\n    graph2 = self._buildGraph(edges2)\n    maxReachableInGraph2 = 0\n\n    if k > 0:\n      for i in range(len(edges2) + 1):\n        maxReachableInGraph2 = max(maxReachableInGraph2,\n                                   self._dfs(graph2, i, -1, k - 1))\n\n    return [maxReachableInGraph2 + self._dfs(graph1, i, -1, k)\n            for i in range(len(edges1) + 1)]\n\n  def _dfs(self, graph: list[list[int]], u: int, prev: int, k: int) -> int:\n    \"\"\"Returns the number of nodes that can be reached from u with k steps.\"\"\"\n    if k == 0:\n      return 1\n    res = 0\n    for v in graph[u]:\n      if v != prev:\n        res += self._dfs(graph, v, u, k - 1)\n    return 1 + res\n\n  def _buildGraph(self, edges: list[list[int]]) -> list[list[int]]:\n    graph = [[] for _ in range(len(edges) + 1)]\n    for u, v in edges:\n      graph[u].append(v)\n      graph[v].append(u)\n    return graph\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4]], [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [3, 6]]) == [7, 6, 6, 7, 7]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [0, 3], [0, 4]], [[0, 1], [1, 2], [2, 3]]) == [3, 6, 6, 6, 6]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [1, 2], [2, 3]], [[0, 1], [1, 2], [2, 3], [3, 4]]) == [5, 5, 5, 5]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2]], [[0, 1], [1, 2], [2, 3], [3, 4]]) == [4, 5, 5]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [2, 3], [2, 4]], [[0, 1], [0, 2], [0, 3], [2, 7], [1, 4], [4, 5], [4, 6]]) == [8, 7, 7, 8, 8]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18]]) == [15, 16, 16, 15, 15, 15, 15, 16, 16, 16, 16]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10]]) == [11, 11, 11, 11, 11, 11, 11, 11, 11, 11]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10], [5, 11], [5, 12], [6, 13], [6, 14]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18], [18, 19]]) == [15, 20, 20, 15, 15, 15, 15, 20, 20, 20, 20, 20, 20, 20, 20]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10]], [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10], [5, 11], [6, 12], [7, 13], [8, 14], [9, 15], [10, 16]]) == [14, 15, 15, 14, 14, 14, 14, 15, 15, 15, 15]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13], [13, 14]], [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [3, 8], [4, 9], [4, 10], [5, 11], [5, 12], [6, 13], [6, 14], [7, 15], [7, 16], [8, 17], [8, 18], [9, 19], [9, 20], [10, 21], [10, 22], [11, 23], [11, 24], [12, 25], [12, 26], [13, 27], [13, 28], [14, 29], [14, 30]]) == [29, 28, 29, 28, 29, 28, 29, 28, 29, 28, 29, 28, 29, 28, 29]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 13]]) == [12, 9, 9, 12, 12, 12, 12]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxTargetNodes([[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]], [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6], [3, 7], [4, 8], [5, 9], [6, 10], [7, 11], [8, 12], [9, 13], [10, 14]]) == [14, 11, 11, 14, 14, 14, 14]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3373",
+    "fecha-estimada-2024-12-01",
+    "Tree",
+    "Depth-First Search",
+    "Breadth-First Search"
+  ]
+}

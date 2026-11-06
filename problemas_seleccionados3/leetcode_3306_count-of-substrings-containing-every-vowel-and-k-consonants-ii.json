@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3306",
+  "titulo": "Count of Substrings Containing Every Vowel and K Consonants II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-of-substrings-containing-every-vowel-and-k-consonants-ii/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Hash Table / String / Sliding Window",
+  "enunciado": "You are given a string word and a non-negative integer k.\nReturn the total number of substrings of word that contain every vowel ('a', 'e', 'i', 'o', and 'u') at least once and exactly k consonants.\n \nExample 1:\n\nInput: word = \"aeioqq\", k = 1\nOutput: 0\nExplanation:\nThere is no substring with every vowel.\n\nExample 2:\n\nInput: word = \"aeiou\", k = 0\nOutput: 1\nExplanation:\nThe only substring with every vowel and zero consonants is word[0..4], which is \"aeiou\".\n\nExample 3:\n\nInput: word = \"ieaouqqieaouqq\", k = 1\nOutput: 3\nExplanation:\nThe substrings with every vowel and one consonant are:\n\nword[0..5], which is \"ieaouq\".\nword[6..11], which is \"qieaou\".\nword[7..12], which is \"ieaouq\".\n\n\n \nConstraints:\n\n5 <= word.length <= 2 * 105\nword consists only of lowercase English letters.\n0 <= k <= word.length - 5\n\n",
+  "especificacion_entrada": "word: str, k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  # Same as 3305. Count of Substrings Containing Every Vowel and K Consonants I\n  def countOfSubstrings(self, word: str, k: int) -> int:\n    VOWELS = 'aeiou'\n\n    def substringsWithAtMost(k: int) -> int:\n      \"\"\"\n      Return the number of substrings containing every vowel with at most k\n      consonants.\n      \"\"\"\n      if k < 0:\n        return 0\n\n      res = 0\n      vowels = 0\n      uniqueVowels = 0\n      vowelLastSeen = {}\n\n      l = 0\n      for r, c in enumerate(word):\n        if c in VOWELS:\n          vowels += 1\n          if c not in vowelLastSeen or vowelLastSeen[c] < l:\n            uniqueVowels += 1\n          vowelLastSeen[c] = r\n        while r - l + 1 - vowels > k:\n          if word[l] in VOWELS:\n            vowels -= 1\n            if vowelLastSeen[word[l]] == l:\n              uniqueVowels -= 1\n          l += 1\n        if uniqueVowels == 5:\n          # Add substrings containing every vowel with at most k consonants to\n          # the answer. They are\n          # word[l..r], word[l + 1..r], ..., word[min(vowelLastSeen[vowel])..r]\n          res += min(vowelLastSeen[vowel] for vowel in VOWELS) - l + 1\n\n      return res\n\n    return substringsWithAtMost(k) - substringsWithAtMost(k - 1)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "word = \"qwertyuiopasdfghjklzxcvbnmaeiou\", k = 10",
+      "salida": "4",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"uoieaouoieaouoieaouoieaoiueaouieaouieaouieao\", k = 4",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"aeiouzzzzz\", k = 5",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3306: LC-3305 - Count of Substrings Containing Every Vowel and K Consonants I. Ambos problemas comparten las técnicas de tabla hash, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "word = 'uuuaaeiooouueiiaaoou', k = 3",
+      "salida": "0",
+      "explicacion": "Relación con LC-3306: Ambos problemas comparten las técnicas de tabla hash, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def countOfSubstrings(self, word: str, k: int) -> int:\n    VOWELS = 'aeiou'\n\n    def substringsWithAtMost(k: int) -> int:\n      \"\"\"\n      Return the number of substrings containing every vowel with at most k\n      consonants.\n      \"\"\"\n      if k == -1:\n        return 0\n\n      res = 0\n      vowels = 0\n      uniqueVowels = 0\n      vowelLastSeen = {}\n\n      l = 0\n      for r, c in enumerate(word):\n        if c in VOWELS:\n          vowels += 1\n          if c not in vowelLastSeen or vowelLastSeen[c] < l:\n            uniqueVowels += 1\n          vowelLastSeen[c] = r\n        while r - l + 1 - vowels > k:\n          if word[l] in VOWELS:\n            vowels -= 1\n            if vowelLastSeen[word[l]] == l:\n              uniqueVowels -= 1\n          l += 1\n        if uniqueVowels == 5:\n          # Add substrings containing every vowel with at most k consonants to\n          # the answer. They are\n          # word[l..r], word[l + 1..r], ..., word[min(vowelLastSeen[vowel])..r]\n          res += min(vowelLastSeen[vowel] for vowel in VOWELS) - l + 1\n\n      return res\n\n    return substringsWithAtMost(k) - substringsWithAtMost(k - 1)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countOfSubstrings('qwertyuiopasdfghjklzxcvbnmaeiou', 10) == 4"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countOfSubstrings('uoieaouoieaouoieaouoieaoiueaouieaouieaouieao', 4) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countOfSubstrings('aeiouzzzzz', 5) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countOfSubstrings('aeioqq', 1) == 0"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countOfSubstrings('abcdefghijklmnopqrstuvwxyz', 5) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countOfSubstrings('aaaaaeeeeiiioooouuuu', 0) == 20"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countOfSubstrings('aeiou', 0) == 1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countOfSubstrings('abcdefghijklmnopqrstuvwxyz', 2) == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countOfSubstrings('uuuuuaeiouuuuuu', 3) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countOfSubstrings('abcdefghijklmnopqrstuvwxyz', 3) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countOfSubstrings('uuiiooeaa', 2) == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countOfSubstrings('aeiouaeiou', 1) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3306",
+    "fecha-estimada-2024-09-29",
+    "Hash Table",
+    "String",
+    "Sliding Window"
+  ]
+}

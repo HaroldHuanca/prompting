@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3359",
+  "titulo": "Find Sorted Submatrices With Maximum Element at Most K",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-sorted-submatrices-with-maximum-element-at-most-k/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Stack / Array / Matrix / Monotonic Stack",
+  "enunciado": "You are given a 2D matrix grid of size m x n. You are also given a non-negative integer k.\nReturn the number of submatrices of grid that satisfy the following conditions:\n\nThe maximum element in the submatrix less than or equal to k.\nEach row in the submatrix is sorted in non-increasing order.\n\nA submatrix (x1, y1, x2, y2) is a matrix that forms by choosing all cells grid[x][y] where x1 <= x <= x2 and y1 <= y <= y2.\n \nExample 1:\n\nInput: grid = [[4,3,2,1],[8,7,6,1]], k = 3\nOutput: 8\nExplanation:\n\nThe 8 submatrices are:\n\n[[1]]\n[[1]]\n[[2,1]]\n[[3,2,1]]\n[[1],[1]]\n[[2]]\n[[3]]\n[[3,2]]\n\n\nExample 2:\n\nInput: grid = [[1,1,1],[1,1,1],[1,1,1]], k = 1\nOutput: 36\nExplanation:\nThere are 36 submatrices of grid. All submatrices have their maximum element equal to 1.\n\nExample 3:\n\nInput: grid = [[1]], k = 1\nOutput: 1\n\n \nConstraints:\n\n1 <= m == grid.length <= 103\n1 <= n == grid[i].length <= 103\n1 <= grid[i][j] <= 109\n1 <= k <= 109\n\n \n​​​​​​",
+  "especificacion_entrada": "grid: list[list[int]], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass T:\n  subarrayWidth: int\n  rowIndex: int\n  accumulatedSubmatrices: int\n\n\nclass Solution:\n  def countSubmatrices(self, grid: list[list[int]], k: int) -> int:\n    m = len(grid)\n    n = len(grid[0])\n    ans = 0\n    # dp[i][j] := the number of valid subarrays ending in grid[i][j]\n    dp = [[0] * n for _ in range(m)]\n    # stacks[j] := the stack of valid\n    # (subarray width, row index, number of accumulated submatrices) ending in\n    # column j\n    stacks: list[T] = [[T(0, -1, 0)] for _ in range(n)]\n\n    for i, row in enumerate(grid):\n      for j, num in enumerate(row):\n        if num > k:\n          stacks[j] = [T(0, i, 0)]\n        else:\n          dp[i][j] = 1\n          if j > 0 and row[j - 1] <= k and row[j - 1] >= row[j]:\n            # Extend the valid subarrays to the current number.\n            dp[i][j] += dp[i][j - 1]\n          width = dp[i][j]\n          # Remove subarray widths greater than the current count since they\n          # will become invalid.\n          while stacks[j] and width < stacks[j][-1].subarrayWidth:\n            stacks[j].pop()\n          height = i - stacks[j][-1].rowIndex\n          newSubmatrices = width * height\n          accumulatedSubmatrices = (stacks[j][-1].accumulatedSubmatrices +\n                                    newSubmatrices)\n          ans += accumulatedSubmatrices\n          stacks[j].append(T(width, i, accumulatedSubmatrices))\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "grid = [[2,1,1],[1,1,1],[1,1,1]], k = 2",
+      "salida": "36",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[4,3,2,1],[8,7,6,1]], k = 3",
+      "salida": "8",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[1]], k = 1",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3359: LC-3446 - Sort Matrix by Diagonals. Ambos procesan matrices ordenando valores por regiones o subestructuras de la matriz.",
+      "entrada": "grid = [[5, 2, 9], [8, 3, 6], [1, 4, 7]]",
+      "salida": "[[7, 2, 9], [8, 5, 6], [1, 4, 3]]",
+      "explicacion": "Relación con LC-3359: Ambos procesan matrices ordenando valores por regiones o subestructuras de la matriz.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def sortMatrix(self, grid: list[list[int]]) -> list[list[int]]:\n    n = len(grid)\n    ans = [[0] * n for _ in range(n)]\n    diag = collections.defaultdict(list)\n\n    for i, row in enumerate(grid):\n      for j, num in enumerate(row):\n        diag[i - j].append(num)\n\n    for key in diag:\n      diag[key].sort(reverse=key < 0)\n\n    for i in range(n):\n      for j in range(n):\n        ans[i][j] = diag[i - j].pop()\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countSubmatrices([[2, 1, 1], [1, 1, 1], [1, 1, 1]], 2) == 36"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countSubmatrices([[4, 3, 2, 1], [8, 7, 6, 1]], 3) == 8"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countSubmatrices([[1]], 1) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countSubmatrices([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 9) == 18"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countSubmatrices([[10, 9, 8, 7, 6], [5, 4, 3, 2, 1]], 5) == 15"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countSubmatrices([[5, 4, 3, 2, 1], [10, 9, 8, 7, 6], [15, 14, 13, 12, 11]], 5) == 15"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countSubmatrices([[3, 3, 3, 3], [3, 3, 3, 3], [3, 3, 3, 3]], 3) == 60"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countSubmatrices([[5, 5, 5], [5, 5, 5], [5, 5, 5]], 5) == 36"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countSubmatrices([[9, 8, 7, 6], [6, 5, 4, 3], [3, 2, 1, 0]], 5) == 22"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countSubmatrices([[1, 1, 1], [1, 1, 1], [1, 1, 1]], 1) == 36"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countSubmatrices([[5, 4, 3], [3, 3, 3], [2, 2, 2]], 3) == 21"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countSubmatrices([[10, 9, 8, 7], [6, 5, 4, 3], [2, 1, 0, -1]], 5) == 22"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3359",
+    "fecha-estimada-2024-11-17",
+    "Stack",
+    "Array",
+    "Matrix",
+    "Monotonic Stack"
+  ]
+}

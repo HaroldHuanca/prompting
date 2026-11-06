@@ -1,0 +1,102 @@
+{
+  "codigo": "LC-3279",
+  "titulo": "Maximum Total Area Occupied by Pistons",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-total-area-occupied-by-pistons/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Hash Table / String / Counting / Prefix Sum / Simulation",
+  "enunciado": "There are several pistons in an old car engine, and we want to calculate the maximum possible area under the pistons.\nYou are given:\n\nAn integer height, representing the maximum height a piston can reach.\nAn integer array positions, where positions[i] is the current position of piston i, which is equal to the current area under it.\nA string directions, where directions[i] is the current moving direction of piston i, 'U' for up, and 'D' for down.\n\nEach second:\n\nEvery piston moves in its current direction 1 unit. e.g., if the direction is up, positions[i] is incremented by 1.\nIf a piston has reached one of the ends, i.e., positions[i] == 0 or positions[i] == height, its direction will change.\n\nReturn the maximum possible area under all the pistons.\n \nExample 1:\n\nInput: height = 5, positions = [2,5], directions = \"UD\"\nOutput: 7\nExplanation:\nThe current position of the pistons has the maximum possible area under it.\n\nExample 2:\n\nInput: height = 6, positions = [0,0,6,3], directions = \"UUDU\"\nOutput: 15\nExplanation:\nAfter 3 seconds, the pistons will be in positions [3, 3, 3, 6], which has the maximum possible area under it.\n\n \nConstraints:\n\n1 <= height <= 106\n1 <= positions.length == directions.length <= 105\n0 <= positions[i] <= height\ndirections[i] is either 'U' or 'D'.\n\n",
+  "especificacion_entrada": "height: int, positions: list[int], directions: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "from sortedcontainers import SortedDict\n\n\nclass Solution:\n  def maxArea(self, height: int, positions: list[int], directions: str) -> int:\n    area = sum(positions)\n    ans = area\n    diffPerSecond = 0\n    timeToIndices: SortedDict[int, list[int]] = SortedDict()\n\n    for i, (position, direction) in enumerate(zip(positions, directions)):\n      if direction == 'U':\n        timeToIndices.setdefault(height - position, []).append(i)\n        timeToIndices.setdefault(height - position + height, []).append(i)\n        diffPerSecond += 1\n      else:\n        timeToIndices.setdefault(position, []).append(i)\n        timeToIndices.setdefault(position + height, []).append(i)\n        diffPerSecond -= 1\n\n    prevTime = 0\n    directionsList = list(directions)\n\n    for time, indices in timeToIndices.items():\n      area += (time - prevTime) * diffPerSecond\n      ans = max(ans, area)\n      prevTime = time\n      for i in indices:\n        if directionsList[i] == 'U':\n          directionsList[i] = 'D'\n          diffPerSecond -= 2\n        else:\n          directionsList[i] = 'U'\n          diffPerSecond += 2\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "height = 10, positions = [0,1,5,10], directions = \"UUDD\"",
+      "salida": "24",
+      "explicacion": ""
+    },
+    {
+      "entrada": "height = 100000, positions = [0,0,0,0,0], directions = \"UUUUU\"",
+      "salida": "500000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "height = 20, positions = [10,10,10,10,10,10,10,10,10,10], directions = \"UUUUUUUUUUUUUUUUUUUU\"",
+      "salida": "200",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3279: LC-3492 - Maximum Containers on a Ship. Ambos optimizan un área o capacidad geométrica a partir de dimensiones y restricciones físicas.",
+      "entrada": "n = 10, w = 5, maxWeight = 25",
+      "salida": "5",
+      "explicacion": "Relación con LC-3279: Ambos optimizan un área o capacidad geométrica a partir de dimensiones y restricciones físicas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n    return min(n * n, maxWeight // w)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxArea(10, [0, 1, 5, 10], 'UUDD') == 24"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxArea(100000, [0, 0, 0, 0, 0], 'UUUUU') == 500000"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxArea(20, [10, 10, 10, 10, 10, 10, 10, 10, 10, 10], 'UUUUUUUUUUUUUUUUUUUU') == 200"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxArea(100, [0, 100, 50, 25, 75], 'UDUDU') == 300"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxArea(10, [5, 5, 5, 5], 'UUDD') == 20"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxArea(5, [2, 5], 'UD') == 7"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxArea(1000, [500, 500, 500, 500], 'UUUU') == 4000"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxArea(1, [0, 1], 'UD') == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxArea(100, [50, 50, 50, 50, 50], 'UUUUU') == 500"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxArea(6, [0, 0, 6, 3], 'UUDU') == 15"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxArea(3, [0, 3], 'UD') == 3"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxArea(7, [7, 6, 5, 4, 3, 2, 1], 'DDDDDDD') == 37"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3279",
+    "fecha-estimada-2024-09-01",
+    "Array",
+    "Hash Table",
+    "String",
+    "Counting",
+    "Prefix Sum",
+    "Simulation"
+  ]
+}

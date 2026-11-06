@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3499",
+  "titulo": "Maximize Active Section with Trade I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-active-section-with-trade-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Cadenas / Sliding Window / Groupby",
+  "enunciado": "You are given a binary string s of length n, where:\n\n'1' represents an active section.\n'0' represents an inactive section.\n\nYou can perform at most one trade to maximize the number of active sections in s. In a trade, you:\n\nConvert a contiguous block of '1's that is surrounded by '0's to all '0's.\nAfterward, convert a contiguous block of '0's that is surrounded by '1's to all '1's.\n\nReturn the maximum number of active sections in s after making the optimal trade.\nNote: Treat s as if it is augmented with a '1' at both ends, forming t = '1' + s + '1'. The augmented '1's do not contribute to the final count.\n \nExample 1:\n\nInput: s = \"01\"\nOutput: 1\nExplanation:\nBecause there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1.\n\nExample 2:\n\nInput: s = \"0100\"\nOutput: 4\nExplanation:\n\nString \"0100\" → Augmented to \"101001\".\nChoose \"0100\", convert \"101001\" → \"100001\" → \"111111\".\nThe final string without augmentation is \"1111\". The maximum number of active sections is 4.\n\n\nExample 3:\n\nInput: s = \"1000100\"\nOutput: 7\nExplanation:\n\nString \"1000100\" → Augmented to \"110001001\".\nChoose \"000100\", convert \"110001001\" → \"110000001\" → \"111111111\".\nThe final string without augmentation is \"1111111\". The maximum number of active sections is 7.\n\n\nExample 4:\n\nInput: s = \"01010\"\nOutput: 4\nExplanation:\n\nString \"01010\" → Augmented to \"1010101\".\nChoose \"010\", convert \"1010101\" → \"1000101\" → \"1111101\".\nThe final string without augmentation is \"11110\". The maximum number of active sections is 4.\n\n\n \nConstraints:\n\n1 <= n == s.length <= 105\ns[i] is either '0' or '1'\n\n",
+  "especificacion_entrada": "s: string",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= n == s.length <= 105\ns[i] is either '0' or '1'",
+  "solucion_referencia": "import itertools\nfrom itertools import pairwise\n\nclass Solution:\n    def maxActiveSectionsAfterTrade(self, s: str) -> int:\n        zeroGroups = [len(list(g)) for c, g in itertools.groupby(s) if c == '0']\n        return s.count('1') + max(map(sum, pairwise(zeroGroups)), default=0)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"01\"",
+      "salida": "1",
+      "explicacion": "Because there is no block of '1's surrounded by '0's, no valid trade is possible. The maximum number of active sections is 1."
+    },
+    {
+      "entrada": "s = \"0100\"",
+      "salida": "4",
+      "explicacion": "String \"0100\" → Augmented to \"101001\".\nChoose \"0100\", convert \"101001\" → \"100001\" → \"111111\".\nThe final string without augmentation is \"1111\". The maximum number of active sections is 4."
+    },
+    {
+      "entrada": "s = \"1000100\"",
+      "salida": "7",
+      "explicacion": "String \"1000100\" → Augmented to \"110001001\".\nChoose \"000100\", convert \"110001001\" → \"110000001\" → \"111111111\".\nThe final string without augmentation is \"1111111\". The maximum number of active sections is 7."
+    },
+    {
+      "entrada": "s = \"01010\"",
+      "salida": "4",
+      "explicacion": "String \"01010\" → Augmented to \"1010101\".\nChoose \"010\", convert \"1010101\" → \"1000101\" → \"1111101\".\nThe final string without augmentation is \"11110\". The maximum number of active sections is 4."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3499: LC-3501 - Maximize Active Section with Trade II. Ambos problemas comparten el tema de active, maximize, section, aunque plantean una variante distinta.",
+      "entrada": "s = '0100', queries = [[0, 3], [0, 2], [1, 3], [2, 3]]",
+      "salida": "[4, 3, 1, 1]",
+      "explicacion": "Relación con LC-3499: Ambos problemas comparten el tema de active, maximize, section, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import itertools\nfrom itertools import pairwise\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Group:\n  start: int\n  length: int\n\n\nclass SparseTable:\n  def __init__(self, nums: list[int]):\n    self.n = len(nums)\n    # st[i][j] := max(nums[j..j + 2^i - 1])\n    self.st = [[0] * (self.n + 1) for _ in range(self.n.bit_length() + 1)]\n    self.st[0] = nums.copy()\n    for i in range(1, self.n.bit_length() + 1):\n      for j in range(self.n - (1 << i) + 1):\n        self.st[i][j] = max(\n            self.st[i - 1][j],\n            self.st[i - 1][j + (1 << (i - 1))])\n\n  def query(self, l: int, r: int) -> int:\n    \"\"\"Returns max(nums[l..r]).\"\"\"\n    i = (r - l + 1).bit_length() - 1\n    return max(self.st[i][l], self.st[i][r - (1 << i) + 1])\n\n\nclass Solution:\n  def maxActiveSectionsAfterTrade(\n      self,\n      s: str,\n      queries: list[list[int]]\n  ) -> list[int]:\n    ones = s.count('1')\n    zeroGroups, zeroGroupIndex = self._getZeroGroups(s)\n    if not zeroGroups:\n      return [ones] * len(queries)\n\n    st = SparseTable(self._getZeroMergeLengths(zeroGroups))\n\n    def getMaxActiveSections(l: int, r: int) -> int:\n      left = (-1 if zeroGroupIndex[l] == -1\n              else (zeroGroups[zeroGroupIndex[l]].length -\n                    (l - zeroGroups[zeroGroupIndex[l]].start)))\n      right = (-1 if zeroGroupIndex[r] == -1\n               else (r - zeroGroups[zeroGroupIndex[r]].start + 1))\n      startAdjacentGroupIndex, endAdjacentGroupIndex = self._mapToAdjacentGroupIndices(\n          zeroGroupIndex[l] + 1, zeroGroupIndex[r] if s[r] == '1' else zeroGroupIndex[r] - 1)\n      activeSections = ones\n      if (s[l] == '0' and s[r] == '0' and\n              zeroGroupIndex[l] + 1 == zeroGroupIndex[r]):\n        activeSections = max(activeSections, ones + left + right)\n      elif startAdjacentGroupIndex <= endAdjacentGroupIndex:\n        activeSections = max(\n            activeSections,\n            ones + st.query(startAdjacentGroupIndex, endAdjacentGroupIndex))\n      if (s[l] == '0' and\n          zeroGroupIndex[l] + 1 <= (zeroGroupIndex[r]\n                                    if s[r] == '1' else zeroGroupIndex[r] - 1)):\n        activeSections = max(activeSections, ones + left +\n                             zeroGroups[zeroGroupIndex[l] + 1].length)\n      if (s[r] == '0' and zeroGroupIndex[l] < zeroGroupIndex[r] - 1):\n        activeSections = max(activeSections, ones + right +\n                             zeroGroups[zeroGroupIndex[r] - 1].length)\n      return activeSections\n\n    return [getMaxActiveSections(l, r) for l, r in queries]\n\n  def _getZeroGroups(self, s: str) -> tuple[list[Group], list[int]]:\n    \"\"\"\n    Returns the zero groups and the index of the zero group that contains the\n    i-th character.\n    \"\"\"\n    zeroGroups = []\n    zeroGroupIndex = []\n    for i in range(len(s)):\n      if s[i] == '0':\n        if i > 0 and s[i - 1] == '0':\n          zeroGroups[-1].length += 1\n        else:\n          zeroGroups.append(Group(i, 1))\n      zeroGroupIndex.append(len(zeroGroups) - 1)\n    return zeroGroups, zeroGroupIndex\n\n  def _getZeroMergeLengths(self, zeroGroups: list[Group]) -> list[int]:\n    \"\"\"Returns the sums of the lengths of the adjacent groups.\"\"\"\n    return [a.length + b.length for a, b in itertools.pairwise(zeroGroups)]\n\n  def _mapToAdjacentGroupIndices(\n      self,\n      startGroupIndex: int,\n      endGroupIndex: int\n  ) -> tuple[int, int]:\n    \"\"\"\n    Returns the indices of the adjacent groups that contain l and r completely.\n\n    e.g.    groupIndices = [0, 1, 2, 3]\n    adjacentGroupIndices = [0 (0, 1), 1 (1, 2), 2 (2, 3)]\n    map(startGroupIndex = 1, endGroupIndex = 3) -> (1, 2)\n    \"\"\"\n    return startGroupIndex, endGroupIndex - 1"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('01010') == 4"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('1000100') == 7"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('010101010') == 6"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('1001001001') == 8"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('11111') == 5"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('0011001100') == 8"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('1100110011') == 10"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('000') == 0"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('0101010101') == 7"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('01') == 1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('101010101') == 7"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxActiveSectionsAfterTrade('10101010101') == 8"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3499",
+    "seleccion-reciente-2026-11"
+  ]
+}

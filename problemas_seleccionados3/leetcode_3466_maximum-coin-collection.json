@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3466",
+  "titulo": "Maximum Coin Collection",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-coin-collection/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "Mario drives on a two-lane freeway with coins every mile. You are given two integer arrays, lane1 and lane2, where the value at the ith index represents the number of coins he gains or loses in the ith mile in that lane.\n\nIf Mario is in lane 1 at mile i and lane1[i] > 0, Mario gains lane1[i] coins.\nIf Mario is in lane 1 at mile i and lane1[i] < 0, Mario pays a toll and loses abs(lane1[i]) coins.\nThe same rules apply for lane2.\n\nMario can enter the freeway anywhere and exit anytime after traveling at least one mile. Mario always enters the freeway on lane 1 but can switch lanes at most 2 times.\nA lane switch is when Mario goes from lane 1 to lane 2 or vice versa.\nReturn the maximum number of coins Mario can earn after performing at most 2 lane switches.\nNote: Mario can switch lanes immediately upon entering or just before exiting the freeway.\n \nExample 1:\n\nInput: lane1 = [1,-2,-10,3], lane2 = [-5,10,0,1]\nOutput: 14\nExplanation:\n\nMario drives the first mile on lane 1.\nHe then changes to lane 2 and drives for two miles.\nHe changes back to lane 1 for the last mile.\n\nMario collects 1 + 10 + 0 + 3 = 14 coins.\n\nExample 2:\n\nInput: lane1 = [1,-1,-1,-1], lane2 = [0,3,4,-5]\nOutput: 8\nExplanation:\n\nMario starts at mile 0 in lane 1 and drives one mile.\nHe then changes to lane 2 and drives for two more miles. He exits the freeway before mile 3.\n\nHe collects 1 + 3 + 4 = 8 coins.\n\nExample 3:\n\nInput: lane1 = [-5,-4,-3], lane2 = [-1,2,3]\nOutput: 5\nExplanation:\n\nMario enters at mile 1 and immediately switches to lane 2. He stays here the entire way.\n\nHe collects a total of 2 + 3 = 5 coins.\n\nExample 4:\n\nInput: lane1 = [-3,-3,-3], lane2 = [9,-2,4]\nOutput: 11\nExplanation:\n\nMario starts at the beginning of the freeway and immediately switches to lane 2. He stays here the whole way.\n\nHe collects a total of 9 + (-2) + 4 = 11 coins.\n\nExample 5:\n\nInput: lane1 = [-10], lane2 = [-2]\nOutput: -2\nExplanation:\n\nSince Mario must ride on the freeway for at least one mile, he rides just one mile in lane 2.\n\nHe collects a total of -2 coins.\n\n \nConstraints:\n\n1 <= lane1.length == lane2.length <= 105\n-109 <= lane1[i], lane2[i] <= 109\n\n",
+  "especificacion_entrada": "lane1: list[int], lane2: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxCoins(self, lane1: list[int], lane2: list[int]) -> int:\n    n = len(lane1)\n    # dp[i][k] := the maximum number of coins at i-th mile with k switches\n    dp = [[-math.inf] * 3 for _ in range(n)]\n    dp[0][0] = lane1[0]\n    dp[0][1] = lane2[0]\n\n    for i in range(1, n):\n      dp[i][0] = max(0, dp[i - 1][0]) + lane1[i]\n      dp[i][1] = max(0, dp[i - 1][0], dp[i - 1][1]) + lane2[i]\n      dp[i][2] = max(dp[i - 1][1], dp[i - 1][2]) + lane1[i]\n\n    return max(map(max, dp))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "lane1 = [-1,1,-1,1,-1], lane2 = [1,-1,1,-1,1]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "lane1 = [1,2,3,4,5], lane2 = [5,4,3,2,1]",
+      "salida": "21",
+      "explicacion": ""
+    },
+    {
+      "entrada": "lane1 = [5], lane2 = [-5]",
+      "salida": "5",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3466: LC-3366 - Minimum Array Sum. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [0, 0, 0, 0], k = 0, op1 = 4, op2 = 4",
+      "salida": "0",
+      "explicacion": "Relación con LC-3466: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def minArraySum(self, nums: list[int], k: int, op1: int, op2: int) -> int:\n    @functools.lru_cache(None)\n    def dp(i: int, op1: int, op2: int) -> int:\n      \"\"\"\n      Returns the minimum sum of nums[i..n - 1] with `op1` operations of op1 and\n      `op2` operations of op2.\n      \"\"\"\n      if i == len(nums):\n        return 0\n      res = nums[i] + dp(i + 1, op1, op2)\n      if op1 > 0:\n        res = min(res, (nums[i] + 1) // 2 + dp(i + 1, op1 - 1, op2))\n      if op2 > 0 and nums[i] >= k:\n        res = min(res, nums[i] - k + dp(i + 1, op1, op2 - 1))\n      if op1 > 0 and op2 > 0:\n        if (nums[i] + 1) // 2 >= k:\n          res = min(res, (nums[i] + 1) // 2 - k + dp(i + 1, op1 - 1, op2 - 1))\n        if nums[i] >= k:\n          res = min(res, (nums[i] - k + 1) // 2 + dp(i + 1, op1 - 1, op2 - 1))\n      return res\n\n    return dp(0, op1, op2)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxCoins([-1, 1, -1, 1, -1], [1, -1, 1, -1, 1]) == 3"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxCoins([1, 2, 3, 4, 5], [5, 4, 3, 2, 1]) == 21"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxCoins([5], [-5]) == 5"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxCoins([1, -1, -1, -1], [0, 3, 4, -5]) == 8"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxCoins([1, -2, -10, 3], [-5, 10, 0, 1]) == 14"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxCoins([-5, -4, -3], [-1, 2, 3]) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxCoins([-3, -3, -3], [9, -2, 4]) == 11"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxCoins([1000000000, -1000000000, 1000000000], [-1000000000, 1000000000, -1000000000]) == 3000000000"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxCoins([-10], [-2]) == -2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxCoins([0, 0, 0, 0, 0], [0, 0, 0, 0, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxCoins([1, -2, 3, -4, 5, -6, 7, -8, 9, -10], [-10, 9, -8, 7, -6, 5, -4, 3, -2, 1]) == 19"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxCoins([100, 200, 300, 400, 500], [-100, -200, -300, -400, -500]) == 1500"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3466",
+    "fecha-estimada-2025-02-23",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

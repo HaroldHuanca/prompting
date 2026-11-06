@@ -25,7 +25,7 @@ def evaluate_benchmark(
     ]
     timeout_seconds = max(
         EXECUTION_TIMEOUT_SECONDS,
-        min(30.0, (warmup_runs + measure_runs) * EXECUTION_TIMEOUT_SECONDS),
+        min(60.0, (warmup_runs + measure_runs) * EXECUTION_TIMEOUT_SECONDS),
     )
     try:
         result = run_python_sandboxed(

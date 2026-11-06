@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3273",
+  "titulo": "Minimum Amount of Damage Dealt to Bob",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-amount-of-damage-dealt-to-bob/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Greedy / Array / Sorting",
+  "enunciado": "You are given an integer power and two integer arrays damage and health, both having length n.\nBob has n enemies, where enemy i will deal Bob damage[i] points of damage per second while they are alive (i.e. health[i] > 0).\nEvery second, after the enemies deal damage to Bob, he chooses one of the enemies that is still alive and deals power points of damage to them.\nDetermine the minimum total amount of damage points that will be dealt to Bob before all n enemies are dead.\n \nExample 1:\n\nInput: power = 4, damage = [1,2,3,4], health = [4,5,6,8]\nOutput: 39\nExplanation:\n\nAttack enemy 3 in the first two seconds, after which enemy 3 will go down, the number of damage points dealt to Bob is 10 + 10 = 20 points.\nAttack enemy 2 in the next two seconds, after which enemy 2 will go down, the number of damage points dealt to Bob is 6 + 6 = 12 points.\nAttack enemy 0 in the next second, after which enemy 0 will go down, the number of damage points dealt to Bob is 3 points.\nAttack enemy 1 in the next two seconds, after which enemy 1 will go down, the number of damage points dealt to Bob is 2 + 2 = 4 points.\n\n\nExample 2:\n\nInput: power = 1, damage = [1,1,1,1], health = [1,2,3,4]\nOutput: 20\nExplanation:\n\nAttack enemy 0 in the first second, after which enemy 0 will go down, the number of damage points dealt to Bob is 4 points.\nAttack enemy 1 in the next two seconds, after which enemy 1 will go down, the number of damage points dealt to Bob is 3 + 3 = 6 points.\nAttack enemy 2 in the next three seconds, after which enemy 2 will go down, the number of damage points dealt to Bob is 2 + 2 + 2 = 6 points.\nAttack enemy 3 in the next four seconds, after which enemy 3 will go down, the number of damage points dealt to Bob is 1 + 1 + 1 + 1 = 4 points.\n\n\nExample 3:\n\nInput: power = 8, damage = [40], health = [59]\nOutput: 320\n\n \nConstraints:\n\n1 <= power <= 104\n1 <= n == damage.length == health.length <= 105\n1 <= damage[i], health[i] <= 104\n\n",
+  "especificacion_entrada": "power: int, damage: list[int], health: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Enemy:\n  damage: int\n  timeTakenDown: int\n\n\nclass Solution:\n  def minDamage(self, power: int, damage: list[int], health: list[int]) -> int:\n    ans = 0\n    sumDamage = sum(damage)\n    enemies = [Enemy(d, (h + power - 1) // power)\n               for d, h in zip(damage, health)]\n\n    # It's better to take down the enemy i first if the damage dealt of taking\n    # down i first is less than the damage dealt of taking down j first. So,\n    #    damage[i] * t[i] + (t[i] + t[j]) * damage[j] <\n    #    damage[j] * t[j] + (t[i] + t[j]) * damage[i]\n    # => damage[i] * t[i] + damage[j] * t[i] + damage[j] * t[j] <\n    #    damage[j] * t[j] + damage[i] * t[j] + damage[i] * t[i]\n    # => damage[j] * t[i] < damage[i] * t[j]\n    # => damage[j] / t[j] < damage[i] / t[i]\n    enemies.sort(key=lambda x: -x.damage / x.timeTakenDown)\n\n    for enemy in enemies:\n      ans += sumDamage * enemy.timeTakenDown\n      sumDamage -= enemy.damage\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "power = 2, damage = [1,1,1,1,1], health = [1,2,3,4,5]",
+      "salida": "22",
+      "explicacion": ""
+    },
+    {
+      "entrada": "power = 100, damage = [10,20,30], health = [100,100,100]",
+      "salida": "100",
+      "explicacion": ""
+    },
+    {
+      "entrada": "power = 4, damage = [1,2,3,4], health = [4,5,6,8]",
+      "salida": "39",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3273: LC-3397 - Maximum Number of Distinct Elements After Operations. Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 1000000000, 1, 1000000000], k = 1000000000",
+      "salida": "4",
+      "explicacion": "Relación con LC-3273: Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxDistinctElements(self, nums: list[int], k: int) -> int:\n    ans = 0\n    occupied = -math.inf\n\n    for num in sorted(nums):\n      if occupied < num + k:\n        occupied = max(occupied + 1, num - k)\n        ans += 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minDamage(2, [1, 1, 1, 1, 1], [1, 2, 3, 4, 5]) == 22"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minDamage(100, [10, 20, 30], [100, 100, 100]) == 100"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minDamage(4, [1, 2, 3, 4], [4, 5, 6, 8]) == 39"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minDamage(5, [3, 2, 1], [10, 15, 20]) == 25"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minDamage(100, [50, 50, 50], [100, 100, 100]) == 300"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minDamage(5, [2, 3, 4], [10, 15, 20]) == 55"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minDamage(10, [5, 5, 5, 5], [5, 5, 5, 5]) == 50"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minDamage(10, [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]) == 15"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minDamage(10, [5, 5, 5, 5], [10, 10, 10, 10]) == 50"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minDamage(3, [2, 2, 2, 2], [3, 3, 3, 3]) == 20"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minDamage(5, [3, 3, 3], [6, 6, 6]) == 36"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minDamage(5000, [100, 200, 300, 400], [5000, 5000, 5000, 5000]) == 2000"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3273",
+    "fecha-estimada-2024-08-25",
+    "Greedy",
+    "Array",
+    "Sorting"
+  ]
+}

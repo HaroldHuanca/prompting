@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3265",
+  "titulo": "Count Almost Equal Pairs I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-almost-equal-pairs-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / Counting / Enumeration / Sorting",
+  "enunciado": "You are given an array nums consisting of positive integers.\nWe call two integers x and y in this problem almost equal if both integers can become equal after performing the following operation at most once:\n\nChoose either x or y and swap any two digits within the chosen number.\n\nReturn the number of indices i and j in nums where i < j such that nums[i] and nums[j] are almost equal.\nNote that it is allowed for an integer to have leading zeros after performing an operation.\n \nExample 1:\n\nInput: nums = [3,12,30,17,21]\nOutput: 2\nExplanation:\nThe almost equal pairs of elements are:\n\n3 and 30. By swapping 3 and 0 in 30, you get 3.\n12 and 21. By swapping 1 and 2 in 12, you get 21.\n\n\nExample 2:\n\nInput: nums = [1,1,1,1,1]\nOutput: 10\nExplanation:\nEvery two elements in the array are almost equal.\n\nExample 3:\n\nInput: nums = [123,231]\nOutput: 0\nExplanation:\nWe cannot swap any two digits of 123 or 231 to reach the other.\n\n \nConstraints:\n\n2 <= nums.length <= 100\n1 <= nums[i] <= 106\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countPairs(self, nums: list[int]) -> int:\n    ans = 0\n    count = collections.Counter()\n    maxLen = len(str(max(nums)))\n\n    for num in nums:\n      digits = list(str(num).zfill(maxLen))\n      for swap in self._getSwaps(digits):\n        ans += count[swap]\n      count[num] += 1\n\n    return ans\n\n  def _getSwaps(self, digits: str) -> set[int]:\n    \"\"\"Returns all possible numbers after 1 swap.\"\"\"\n    n = len(digits)\n    swaps = set([int(''.join(digits))])\n\n    for i, j in itertools.combinations(range(n), 2):\n      newDigits = digits[:]\n      newDigits[i], newDigits[j] = newDigits[j], newDigits[i]\n      swaps.add(int(''.join(newDigits)))\n\n    return swaps\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [111,222,333,444,555,666,777,888,999]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [101,110,111,1001,1100]",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [12,21,13,31,14]",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3265: LC-3267 - Count Almost Equal Pairs II. Ambos problemas comparten las técnicas de counting, enumeración, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [123, 321, 213, 132]",
+      "salida": "6",
+      "explicacion": "Relación con LC-3265: Ambos problemas comparten las técnicas de counting, enumeración, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport itertools\n\nclass Solution:\n  # Similar to 3265. Count Almost Equal Pairs I\n  def countPairs(self, nums: list[int]) -> int:\n    ans = 0\n    count = collections.Counter()\n    maxLen = len(str(max(nums)))\n\n    for num in nums:\n      digits = list(str(num).zfill(maxLen))\n      for swap in self._getSwaps(digits):\n        ans += count[swap]\n      count[num] += 1\n\n    return ans\n\n  def _getSwaps(self, digits: str) -> set[int]:\n    \"\"\"Returns all possible numbers after 1 or 2 swaps.\"\"\"\n    n = len(digits)\n    swaps = set([int(''.join(digits))])\n\n    # Add all numbers after 1 swap.\n    for i, j in itertools.combinations(range(n), 2):\n      newDigits = digits[:]\n      newDigits[i], newDigits[j] = newDigits[j], newDigits[i]\n      swaps.add(int(''.join(newDigits)))\n\n    # Add all numbers after 2 swaps.\n    for (i1, j1), (i2, j2) in itertools.combinations(\n            itertools.combinations(range(n), 2), 2):\n      newDigits = digits[:]\n      newDigits[i1], newDigits[j1] = newDigits[j1], newDigits[i1]\n      newDigits[i2], newDigits[j2] = newDigits[j2], newDigits[i2]\n      swaps.add(int(''.join(newDigits)))\n\n    return swaps\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countPairs([111, 222, 333, 444, 555, 666, 777, 888, 999]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countPairs([101, 110, 111, 1001, 1100]) == 5"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countPairs([12, 21, 13, 31, 14]) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countPairs([12, 21, 13, 31, 23, 32, 45, 54]) == 4"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countPairs([999999, 99999, 9999, 999, 99, 9]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countPairs([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countPairs([123, 321, 213, 231, 312, 132]) == 9"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countPairs([1234, 4321, 2134, 3412]) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countPairs([5, 55, 555, 5555]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countPairs([10, 100, 1000]) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countPairs([1111, 1112, 1121, 1211, 2111]) == 6"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countPairs([1234, 4321, 2341, 3412, 4123, 1423, 1324, 2413, 2134, 3421, 3124, 1342, 2431, 4312, 4213, 1243, 1432, 2143, 2314, 3214, 3142, 4132, 3241, 4231]) == 72"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3265",
+    "fecha-estimada-2024-08-25",
+    "Array",
+    "Hash Table",
+    "Counting",
+    "Enumeration",
+    "Sorting"
+  ]
+}

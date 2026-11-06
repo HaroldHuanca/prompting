@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3442",
+  "titulo": "Maximum Difference Between Even and Odd Frequency I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-difference-between-even-and-odd-frequency-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Hash Table / String / Counting",
+  "enunciado": "You are given a string s consisting of lowercase English letters. Your task is to find the maximum difference between the frequency of two characters in the string such that:\n\nOne of the characters has an even frequency in the string.\nThe other character has an odd frequency in the string.\n\nReturn the maximum difference, calculated as the frequency of the character with an odd frequency minus the frequency of the character with an even frequency.\n \nExample 1:\n\nInput: s = \"aaaaabbc\"\nOutput: 3\nExplanation:\n\nThe character 'a' has an odd frequency of 5, and 'b' has an even frequency of 2.\nThe maximum difference is 5 - 2 = 3.\n\n\nExample 2:\n\nInput: s = \"abcabcab\"\nOutput: 1\nExplanation:\n\nThe character 'a' has an odd frequency of 3, and 'c' has an even frequency of 2.\nThe maximum difference is 3 - 2 = 1.\n\n\n \nConstraints:\n\n3 <= s.length <= 100\ns consists only of lowercase English letters.\ns contains at least one character with an odd frequency and one with an even frequency.\n\n",
+  "especificacion_entrada": "s: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxDifference(self, s: str) -> int:\n    count = collections.Counter(s)\n    maxOdd = max((freq for freq in count.values()\n                  if freq % 2 == 1), default=0)\n    minEven = min((freq for freq in count.values()\n                   if freq % 2 == 0), default=len(s))\n    return maxOdd - minEven\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"pqrstuvwabcdef\"",
+      "salida": "-inf",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"mnopqrstuvwxyza\"",
+      "salida": "-inf",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"abcdefghijklmnopqrstuvwxyz\"",
+      "salida": "-inf",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3442: LC-3438 - Find Valid Pair of Adjacent Digits in String. Ambos problemas comparten las técnicas de counting, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = '213123'",
+      "salida": "",
+      "explicacion": "Relación con LC-3442: Ambos problemas comparten las técnicas de counting, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport itertools\n\nclass Solution:\n  def findValidPair(self, s: str) -> str:\n    count = collections.Counter(s)\n    return next((a + b\n                for a, b in itertools.pairwise(s)\n                if a != b and count[a] == int(a) and count[b] == int(b)), '')\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxDifference('pqrstuvwabcdef') == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxDifference('mnopqrstuvwxyza') == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxDifference('abcdefghijklmnopqrstuvwxyz') == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxDifference('abcdefghi') == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxDifference('abacabadabacaba') == -1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxDifference('aaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnoooo') == -4"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxDifference('aabbc') == -1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxDifference('aaabbbcccdddeeefffgghhhiiiijjjjkkkkllllmmmmmnnnnooooo') == 3"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxDifference('abcdefghijklmnopqrstuvwxyzaa') == float('-inf')"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxDifference('aabbccdde') == -1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxDifference('aabbccddeeffg') == -1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxDifference('xyzxyzxyz') == float('-inf')"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3442",
+    "fecha-estimada-2025-02-02",
+    "Hash Table",
+    "String",
+    "Counting"
+  ]
+}

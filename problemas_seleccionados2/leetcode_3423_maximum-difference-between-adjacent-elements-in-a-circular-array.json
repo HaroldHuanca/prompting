@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3423",
+  "titulo": "Maximum Difference Between Adjacent Elements in a Circular Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-difference-between-adjacent-elements-in-a-circular-array/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "Given a circular array nums, find the maximum absolute difference between adjacent elements.\nNote: In a circular array, the first and last elements are adjacent.\n \nExample 1:\n\nInput: nums = [1,2,4]\nOutput: 3\nExplanation:\nBecause nums is circular, nums[0] and nums[2] are adjacent. They have the maximum absolute difference of |4 - 1| = 3.\n\nExample 2:\n\nInput: nums = [-5,-10,-5]\nOutput: 5\nExplanation:\nThe adjacent elements nums[0] and nums[1] have the maximum absolute difference of |-5 - (-10)| = 5.\n\n \nConstraints:\n\n2 <= nums.length <= 100\n-100 <= nums[i] <= 100\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxAdjacentDistance(self, nums: list[int]) -> int:\n    return max(abs(nums[i] - nums[i - 1])\n               for i in range(len(nums)))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [100,1,100,1,100]",
+      "salida": "99",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30,40,50,60]",
+      "salida": "50",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,-1,2,-2,3,-3]",
+      "salida": "6",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3423: LC-3349 - Adjacent Increasing Subarrays Detection I. Ambos problemas comparten el tema de adjacent, aunque plantean una variante distinta.",
+      "entrada": "nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 2",
+      "salida": "True",
+      "explicacion": "Relación con LC-3423: Ambos problemas comparten el tema de adjacent, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def hasIncreasingSubarrays(self, nums: list[int], k: int) -> bool:\n    increasing = 1\n    prevIncreasing = 0\n\n    for a, b in itertools.pairwise(nums):\n      if b > a:\n        increasing += 1\n      else:\n        prevIncreasing = increasing\n        increasing = 1\n      if increasing // 2 >= k or min(prevIncreasing, increasing) >= k:\n        return True\n\n    return False\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxAdjacentDistance([100, 1, 100, 1, 100]) == 99"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxAdjacentDistance([10, 20, 30, 40, 50, 60]) == 50"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxAdjacentDistance([1, -1, 2, -2, 3, -3]) == 6"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxAdjacentDistance([50, 45, 40, 35, 30, 25, 20, 15, 10, 5]) == 45"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxAdjacentDistance([7, 9, 1, 5, 3]) == 8"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxAdjacentDistance([9, 7, 5, 3, 1]) == 8"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxAdjacentDistance([-10, 0, 10, -10, 0, 10]) == 20"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxAdjacentDistance([3, 8, 15, 1, 2]) == 14"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxAdjacentDistance([50, 50, 50, 50, 50]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxAdjacentDistance([1, 2, 4]) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxAdjacentDistance([1, 3, 5, 7, 9]) == 8"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxAdjacentDistance([1, -1, 1, -1, 1, -1]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3423",
+    "fecha-estimada-2025-01-12",
+    "Array"
+  ]
+}

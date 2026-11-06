@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3289",
+  "titulo": "The Two Sneaky Numbers of Digitville",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/the-two-sneaky-numbers-of-digitville/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Hash Table / Math",
+  "enunciado": "In the town of Digitville, there was a list of numbers called nums containing integers from 0 to n - 1. Each number was supposed to appear exactly once in the list, however, two mischievous numbers sneaked in an additional time, making the list longer than usual.\nAs the town detective, your task is to find these two sneaky numbers. Return an array of size two containing the two numbers (in any order), so peace can return to Digitville.\n \nExample 1:\n\nInput: nums = [0,1,1,0]\nOutput: [0,1]\nExplanation:\nThe numbers 0 and 1 each appear twice in the array.\n\nExample 2:\n\nInput: nums = [0,3,2,1,3,2]\nOutput: [2,3]\nExplanation: \nThe numbers 2 and 3 each appear twice in the array.\n\nExample 3:\n\nInput: nums = [7,1,5,4,3,4,6,0,9,5,8,2]\nOutput: [4,5]\nExplanation: \nThe numbers 4 and 5 each appear twice in the array.\n\n \nConstraints:\n\n2 <= n <= 100\nnums.length == n + 2\n0 <= nums[i] < n\nThe input is generated such that nums contains exactly two repeated elements.\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def getSneakyNumbers(self, nums: list[int]) -> list[int]:\n    return [num for num, freq in collections.Counter(nums).items()\n            if freq == 2]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,5,3,2,1,4,0]",
+      "salida": "[5]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [7,1,5,4,3,4,6,0,9,5,8,2]",
+      "salida": "[5, 4]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [0,1,1,0]",
+      "salida": "[0, 1]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3289: LC-3396 - Minimum Number of Operations to Make Elements in Array Distinct. Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [4, 5, 6, 4, 4]",
+      "salida": "2",
+      "explicacion": "Relación con LC-3289: Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minimumOperations(self, nums: list[int]) -> int:\n    seen = set()\n    for i, num in reversed(list(enumerate(nums))):\n      if num in seen:\n        return (i + 1 + 2) // 3  # ceil((i + 1) / 3)\n      seen.add(num)\n    return 0\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().getSneakyNumbers([5, 5, 3, 2, 1, 4, 0]) == [5]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().getSneakyNumbers([7, 1, 5, 4, 3, 4, 6, 0, 9, 5, 8, 2]) == [5, 4]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().getSneakyNumbers([0, 1, 1, 0]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().getSneakyNumbers([2, 2, 0, 1]) == [2]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().getSneakyNumbers([5, 5, 3, 0, 2, 1, 4, 4]) == [5, 4]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().getSneakyNumbers([9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 9]) == [9, 0]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().getSneakyNumbers([9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 1]) == [1, 0]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().getSneakyNumbers([5, 5, 4, 3, 2, 1, 0, 0]) == [5, 0]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().getSneakyNumbers([5, 4, 3, 2, 1, 0, 0, 1]) == [1, 0]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().getSneakyNumbers([2, 0, 1, 1, 0, 3]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().getSneakyNumbers([5, 5, 4, 3, 2, 1, 0]) == [5]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().getSneakyNumbers([0, 3, 2, 1, 3, 2]) == [3, 2]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3289",
+    "fecha-estimada-2024-09-15",
+    "Array",
+    "Hash Table",
+    "Math"
+  ]
+}

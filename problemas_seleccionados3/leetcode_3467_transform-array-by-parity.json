@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3467",
+  "titulo": "Transform Array by Parity",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/transform-array-by-parity/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Counting / Sorting",
+  "enunciado": "You are given an integer array nums. Transform nums by performing the following operations in the exact order specified:\n\nReplace each even number with 0.\nReplace each odd numbers with 1.\nSort the modified array in non-decreasing order.\n\nReturn the resulting array after performing these operations.\n \nExample 1:\n\nInput: nums = [4,3,2,1]\nOutput: [0,0,1,1]\nExplanation:\n\nReplace the even numbers (4 and 2) with 0 and the odd numbers (3 and 1) with 1. Now, nums = [0, 1, 0, 1].\nAfter sorting nums in non-descending order, nums = [0, 0, 1, 1].\n\n\nExample 2:\n\nInput: nums = [1,5,1,4,2]\nOutput: [0,0,1,1,1]\nExplanation:\n\nReplace the even numbers (4 and 2) with 0 and the odd numbers (1, 5 and 1) with 1. Now, nums = [1, 1, 1, 0, 0].\nAfter sorting nums in non-descending order, nums = [0, 0, 1, 1, 1].\n\n\n \nConstraints:\n\n1 <= nums.length <= 100\n1 <= nums[i] <= 1000\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def transformArray(self, nums: list[int]) -> list[int]:\n    return ([0] * sum(num % 2 == 0 for num in nums) +\n            [1] * sum(num % 2 == 1 for num in nums))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [111,222,333,444,555,666,777,888,999]",
+      "salida": "[0, 0, 0, 0, 1, 1, 1, 1, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [4,3,2,1]",
+      "salida": "[0, 0, 1, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,9,8,7,6,5,4,3,2,1]",
+      "salida": "[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3467: LC-3379 - Transformed Array. Ambos transforman los valores de un arreglo de acuerdo con una regla local y producen un nuevo arreglo.",
+      "entrada": "nums = [1, -1, 2, -2, 3, -3]",
+      "salida": "[-1, 1, 3, -1, -1, 2]",
+      "explicacion": "Relación con LC-3467: Ambos transforman los valores de un arreglo de acuerdo con una regla local y producen un nuevo arreglo.",
+      "codigo_ilustrativo": "class Solution:\n  def constructTransformedArray(self, nums: list[int]) -> list[int]:\n    n = len(nums)\n    return [nums[(i + num % n + n) % n]\n            for i, num in enumerate(nums)]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().transformArray([111, 222, 333, 444, 555, 666, 777, 888, 999]) == [0, 0, 0, 0, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().transformArray([4, 3, 2, 1]) == [0, 0, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().transformArray([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().transformArray([2, 4, 6, 8, 10]) == [0, 0, 0, 0, 0]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().transformArray([1, 3, 5, 7, 9]) == [1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().transformArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().transformArray([1, 5, 1, 4, 2]) == [0, 0, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().transformArray([1000, 999, 998, 997, 996]) == [0, 0, 0, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().transformArray([5, 5, 5, 5, 5]) == [1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().transformArray([999, 1000, 1001]) == [0, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().transformArray([999, 888, 777, 666, 555]) == [0, 0, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().transformArray([8, 6, 4, 2]) == [0, 0, 0, 0]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3467",
+    "fecha-estimada-2025-02-23",
+    "Array",
+    "Counting",
+    "Sorting"
+  ]
+}

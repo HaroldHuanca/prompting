@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3300",
+  "titulo": "Minimum Element After Replacement With Digit Sum",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-element-after-replacement-with-digit-sum/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Math",
+  "enunciado": "You are given an integer array nums.\nYou replace each element in nums with the sum of its digits.\nReturn the minimum element in nums after all replacements.\n \nExample 1:\n\nInput: nums = [10,12,13,14]\nOutput: 1\nExplanation:\nnums becomes [1, 3, 4, 5] after all replacements, with minimum element 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 1\nExplanation:\nnums becomes [1, 2, 3, 4] after all replacements, with minimum element 1.\n\nExample 3:\n\nInput: nums = [999,19,199]\nOutput: 10\nExplanation:\nnums becomes [27, 10, 19] after all replacements, with minimum element 10.\n\n \nConstraints:\n\n1 <= nums.length <= 100\n1 <= nums[i] <= 104\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minElement(self, nums: list[int]) -> int:\n    return min(sum(map(int, str(num))) for num in nums)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [9999,1001,1111]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [111,222,333]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1234,4321,2134,3412]",
+      "salida": "10",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3300: LC-3270 - Find the Key of the Numbers. La solución de referencia aporta una demostración cercana de técnicas de Math, aplicables como patrón al problema objetivo.",
+      "entrada": "num1 = 9999, num2 = 9999, num3 = 9999",
+      "salida": "9999",
+      "explicacion": "Relación con LC-3300: La solución de referencia aporta una demostración cercana de técnicas de Math, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "class Solution:\n  def generateKey(self, num1: int, num2: int, num3: int) -> int:\n    return int(''.join(min(a, b, c)\n                       for a, b, c in zip(str(num1).zfill(4),\n                                          str(num2).zfill(4),\n                                          str(num3).zfill(4))))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minElement([9999, 1001, 1111]) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minElement([111, 222, 333]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minElement([1234, 4321, 2134, 3412]) == 10"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minElement([10, 12, 13, 14]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minElement([100, 200, 300, 400]) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minElement([1111, 2222, 3333, 4444]) == 4"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minElement([1, 2, 3, 4]) == 1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minElement([9999, 1111, 2222, 3333]) == 4"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minElement([9, 99, 999, 9999]) == 9"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minElement([5050, 550, 50, 5]) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minElement([899, 989, 998, 123]) == 6"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minElement([9999, 1001, 2002, 3003]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3300",
+    "fecha-estimada-2024-09-22",
+    "Array",
+    "Math"
+  ]
+}

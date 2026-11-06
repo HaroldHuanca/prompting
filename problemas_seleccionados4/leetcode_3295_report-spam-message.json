@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3295",
+  "titulo": "Report Spam Message",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/report-spam-message/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / String",
+  "enunciado": "You are given an array of strings message and an array of strings bannedWords.\nAn array of words is considered spam if there are at least two words in it that exactly match any word in bannedWords.\nReturn true if the array message is spam, and false otherwise.\n \nExample 1:\n\nInput: message = [\"hello\",\"world\",\"leetcode\"], bannedWords = [\"world\",\"hello\"]\nOutput: true\nExplanation:\nThe words \"hello\" and \"world\" from the message array both appear in the bannedWords array.\n\nExample 2:\n\nInput: message = [\"hello\",\"programming\",\"fun\"], bannedWords = [\"world\",\"programming\",\"leetcode\"]\nOutput: false\nExplanation:\nOnly one word from the message array (\"programming\") appears in the bannedWords array.\n\n \nConstraints:\n\n1 <= message.length, bannedWords.length <= 105\n1 <= message[i].length, bannedWords[i].length <= 15\nmessage[i] and bannedWords[i] consist only of lowercase English letters.\n\n",
+  "especificacion_entrada": "message: list[str], bannedWords: list[str]",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def reportSpam(self, message: list[str], bannedWords: list[str]) -> bool:\n    bannedWordsSet = set(bannedWords)\n    return sum(word in bannedWordsSet for word in message) > 1\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "message = [\"spam\",\"egg\",\"ham\"], bannedWords = [\"spam\",\"bacon\",\"egg\"]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "message = [\"spam\",\"eggs\",\"spam\"], bannedWords = [\"spam\"]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "message = [\"spam\",\"spam\",\"spam\"], bannedWords = [\"spam\"]",
+      "salida": "True",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3295: LC-3431 - Minimum Unlocked Indices to Sort Nums. Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 2, 3, 3, 2, 1], locked = [0, 1, 0, 1, 0, 1]",
+      "salida": "-1",
+      "explicacion": "Relación con LC-3295: Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minUnlockedIndices(self, nums: list[int], locked: list[int]) -> int:\n    first2 = next((i for i, x in enumerate(nums) if x == 2), -1)\n    first3 = next((i for i, x in enumerate(nums) if x == 3), -1)\n    last1 = next((i for i, x in reversed(list(enumerate(nums))) if x == 1), -1)\n    last2 = next((i for i, x in reversed(list(enumerate(nums))) if x == 2), -1)\n    if first3 != -1 and last1 != -1 and first3 < last1:\n      return -1\n    return (sum(locked[i] == 1 for i in range(first2, last1)\n                if first2 != -1 and last1 != -1) +\n            sum(locked[i] == 1 for i in range(first3, last2)\n                if first3 != -1 and last2 != -1))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().reportSpam(['spam', 'egg', 'ham'], ['spam', 'bacon', 'egg']) == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().reportSpam(['spam', 'eggs', 'spam'], ['spam']) == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().reportSpam(['spam', 'spam', 'spam'], ['spam']) == True"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().reportSpam(['spam', 'egg', 'spam'], ['spam']) == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().reportSpam(['python', 'java', 'c++'], ['ruby', 'swift']) == False"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().reportSpam(['python', 'java', 'c++'], ['java', 'c#', 'ruby']) == False"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().reportSpam(['hello', 'programming', 'fun'], ['world', 'programming', 'leetcode']) == False"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().reportSpam(['a', 'b', 'c', 'd', 'e'], ['a', 'b']) == True"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().reportSpam(['apple', 'banana', 'cherry'], ['date', 'fig', 'grape']) == False"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().reportSpam(['code', 'is', 'fun'], ['code', 'cool']) == False"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().reportSpam(['apple', 'banana', 'cherry'], ['mango', 'pineapple']) == False"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().reportSpam(['coding', 'is', 'fun'], ['fun', 'coding', 'is', 'cool']) == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3295",
+    "fecha-estimada-2024-09-22",
+    "Array",
+    "Hash Table",
+    "String"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3457",
+  "titulo": "Eat Pizzas!",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/eat-pizzas/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Sorting",
+  "enunciado": "You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the ith pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 105\n1 <= pizzas[i] <= 105\nn is a multiple of 4.\n\n",
+  "especificacion_entrada": "pizzas: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxWeight(self, pizzas: list[int]) -> int:\n    eat = len(pizzas) // 4\n    odd = math.ceil(eat / 2)\n    even = eat - odd\n    pizzas.sort(reverse=True)\n    return (sum(pizzas[:odd]) +\n            sum(pizzas[odd + 1:odd + 1 + even * 2:2]))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "pizzas = [10,20,30,40,50,60,70,80,90,100,110,120]",
+      "salida": "320",
+      "explicacion": ""
+    },
+    {
+      "entrada": "pizzas = [10,20,30,40,50,60,70,80,90,100]",
+      "salida": "180",
+      "explicacion": ""
+    },
+    {
+      "entrada": "pizzas = [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]",
+      "salida": "20",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3457: LC-3424 - Minimum Cost to Make Arrays Identical. Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "arr = [0, 0, 0], brr = [0, 0, 0], k = 10",
+      "salida": "0",
+      "explicacion": "Relación con LC-3457: Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minCost(self, arr: list[int], brr: list[int], k: int) -> int:\n    def cost(arr: list[int], brr: list[int]) -> int:\n      return sum(abs(a - b) for a, b in zip(arr, brr))\n    return min(cost(arr, brr), cost(sorted(arr), sorted(brr)) + k)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxWeight([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]) == 320"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxWeight([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]) == 180"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxWeight([5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]) == 20"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxWeight([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 18"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxWeight([1, 3, 2, 4, 7, 6, 9, 8, 13, 12, 11, 10, 15, 14, 17, 16]) == 59"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxWeight([1, 2, 3, 4, 5, 6, 7, 8]) == 14"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxWeight([5, 5, 5, 5, 5, 5, 5, 5]) == 10"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxWeight([5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]) == 15"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxWeight([2, 1, 1, 1, 1, 1, 1, 1]) == 3"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxWeight([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]) == 106"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxWeight([5, 1, 9, 1, 5, 1, 9, 1, 5, 1, 9, 1, 5, 1, 9, 1]) == 32"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxWeight([3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]) == 15"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3457",
+    "fecha-estimada-2025-02-16",
+    "Greedy",
+    "Array",
+    "Sorting"
+  ]
+}

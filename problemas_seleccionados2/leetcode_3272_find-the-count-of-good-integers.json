@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3272",
+  "titulo": "Find the Count of Good Integers",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-count-of-good-integers/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Hash Table / Math / Combinatorics / Enumeration",
+  "enunciado": "You are given two positive integers n and k.\nAn integer x is called k-palindromic if:\n\nx is a palindrome.\nx is divisible by k.\n\nAn integer is called good if its digits can be rearranged to form a k-palindromic integer. For example, for k = 2, 2020 can be rearranged to form the k-palindromic integer 2002, whereas 1010 cannot be rearranged to form a k-palindromic integer.\nReturn the count of good integers containing n digits.\nNote that any integer must not have leading zeros, neither before nor after rearrangement. For example, 1010 cannot be rearranged to form 101.\n \nExample 1:\n\nInput: n = 3, k = 5\nOutput: 27\nExplanation:\nSome of the good integers are:\n\n551 because it can be rearranged to form 515.\n525 because it is already k-palindromic.\n\n\nExample 2:\n\nInput: n = 1, k = 4\nOutput: 2\nExplanation:\nThe two good integers are 4 and 8.\n\nExample 3:\n\nInput: n = 5, k = 6\nOutput: 2468\n\n \nConstraints:\n\n1 <= n <= 10\n1 <= k <= 9\n\n",
+  "especificacion_entrada": "n: int, k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countGoodIntegers(self, n: int, k: int) -> int:\n    halfLength = (n + 1) // 2\n    minHalf = 10**(halfLength - 1)\n    maxHalf = 10**halfLength\n    ans = 0\n    seen = set()\n\n    for num in range(minHalf, maxHalf):\n      palindrome = str(num) + str(num)[::-1][n % 2:]\n      sortedDigits = ''.join(sorted(palindrome))\n      if int(palindrome) % k != 0 or sortedDigits in seen:\n        continue\n      seen.add(sortedDigits)\n      digitCount = collections.Counter(palindrome)\n      # Leading zeros are not allowed, so the first digit is special.\n      firstDigitChoices = n - digitCount['0']\n      permutations = firstDigitChoices * math.factorial(n - 1)\n      # For each repeated digit, divide by the factorial of the frequency since\n      # permutations that swap identical digits don't create a new number.\n      for freq in digitCount.values():\n        permutations //= math.factorial(freq)\n      ans += permutations\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 6, k = 8",
+      "salida": "5221",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 10, k = 9",
+      "salida": "4610368",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 1, k = 4",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3272: LC-3395 - Subsequences with a Unique Middle Mode I. Ambos problemas comparten las técnicas de combinatoria, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1]",
+      "salida": "5613",
+      "explicacion": "Relación con LC-3272: Ambos problemas comparten las técnicas de combinatoria, tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport math\n\nclass Solution:\n  def __init__(self):\n    self.MOD = 1_000_000_007\n\n  def subsequencesWithMiddleMode(self, nums: list[int]) -> int:\n    n = len(nums)\n    ans = 0\n    left = collections.Counter()\n    right = collections.Counter()\n\n    for i in range(2):\n      left[nums[i]] += 1\n\n    for i in range(2, n):\n      right[nums[i]] += 1\n\n    for i in range(2, n - 2):\n      num = nums[i]\n      right[num] -= 1\n      if right[num] == 0:\n        del right[num]\n\n      leftCount = left[num]\n      rightCount = right[num]\n      leftOther = i - leftCount\n      rightOther = n - 1 - i - rightCount\n\n      # count[mode] = 5 -- [a a] a [a a]\n      ans += math.comb(leftCount, 2) * math.comb(rightCount, 2)\n\n      # count[mode] = 4 -- [a a] a [a ?]\n      ans += math.comb(leftCount, 2) * rightCount * rightOther\n\n      # count[mode] = 4 -- [a ?] a [a a]\n      ans += leftCount * leftOther * math.comb(rightCount, 2)\n\n      # count[mode] = 3 -- [a a] a [? ?]\n      ans += math.comb(leftCount, 2) * math.comb(rightOther, 2)\n\n      # count[mode] = 3 -- [? ?] a [a a]\n      ans += math.comb(leftOther, 2) * math.comb(rightCount, 2)\n\n      # count[mode] = 3 -- [a ?] a [a ?]\n      ans += leftCount * leftOther * rightCount * rightOther\n\n      # count[mode] = 2 -- [a ?] a [? ?]\n      ans += leftCount * self._calc(num, leftOther, rightOther, left, right)\n\n      # count[mode] = 2 -- [? ?] a [a ?]\n      ans += rightCount * self._calc(num, rightOther, leftOther, right, left)\n\n      ans %= self.MOD\n      left[num] += 1\n\n    return ans\n\n  def _calc(\n      self,\n      a: int,\n      other1: int,\n      other2: int,\n      count1: dict[int, int],\n      count2: dict[int, int]\n  ) -> int:\n    \"\"\"\n    Returns the count of subsequences that have `a` as the middle number, where\n    invalid subsequences are excluded.\n    \"\"\"\n    # [a ?] a [? ?]\n    res = (other1 * math.comb(other2, 2)) % self.MOD\n\n    for b, b1 in count1.items():\n      if b == a:\n        continue\n      b2 = count2[b]\n      # Exclude triples -- [a b] a [b b].\n      res = (res - b1 * math.comb(b2, 2)) % self.MOD\n      # Exclude doubles -- [a b] a [b ?].\n      res = (res - b1 * b2 * (other2 - b2)) % self.MOD\n\n    for b, b2 in count2.items():\n      if b == a:\n        continue\n      b1 = count1[b]\n      # Exclude doubles -- [a ?] a [b b].\n      res = (res - (other1 - b1) * math.comb(b2, 2)) % self.MOD\n\n    return (res + self.MOD) % self.MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countGoodIntegers(6, 8) == 5221"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countGoodIntegers(10, 9) == 4610368"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countGoodIntegers(1, 4) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countGoodIntegers(6, 9) == 1248"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countGoodIntegers(9, 1) == 41457015"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countGoodIntegers(8, 2) == 563392"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countGoodIntegers(10, 5) == 19284856"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countGoodIntegers(3, 5) == 27"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countGoodIntegers(8, 5) == 237112"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countGoodIntegers(9, 2) == 37728000"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countGoodIntegers(2, 3) == 3"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countGoodIntegers(10, 2) == 39718144"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3272",
+    "fecha-estimada-2024-08-25",
+    "Hash Table",
+    "Math",
+    "Combinatorics",
+    "Enumeration"
+  ]
+}

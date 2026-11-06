@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3314",
+  "titulo": "Construct the Minimum Bitwise Array I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/construct-the-minimum-bitwise-array-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Bit Manipulation / Array",
+  "enunciado": "You are given an array nums consisting of n prime integers.\nYou need to construct an array ans of length n, such that, for each index i, the bitwise OR of ans[i] and ans[i] + 1 is equal to nums[i], i.e. ans[i] OR (ans[i] + 1) == nums[i].\nAdditionally, you must minimize each value of ans[i] in the resulting array.\nIf it is not possible to find such a value for ans[i] that satisfies the condition, then set ans[i] = -1.\n \nExample 1:\n\nInput: nums = [2,3,5,7]\nOutput: [-1,1,4,3]\nExplanation:\n\nFor i = 0, as there is no value for ans[0] that satisfies ans[0] OR (ans[0] + 1) = 2, so ans[0] = -1.\nFor i = 1, the smallest ans[1] that satisfies ans[1] OR (ans[1] + 1) = 3 is 1, because 1 OR (1 + 1) = 3.\nFor i = 2, the smallest ans[2] that satisfies ans[2] OR (ans[2] + 1) = 5 is 4, because 4 OR (4 + 1) = 5.\nFor i = 3, the smallest ans[3] that satisfies ans[3] OR (ans[3] + 1) = 7 is 3, because 3 OR (3 + 1) = 7.\n\n\nExample 2:\n\nInput: nums = [11,13,31]\nOutput: [9,12,15]\nExplanation:\n\nFor i = 0, the smallest ans[0] that satisfies ans[0] OR (ans[0] + 1) = 11 is 9, because 9 OR (9 + 1) = 11.\nFor i = 1, the smallest ans[1] that satisfies ans[1] OR (ans[1] + 1) = 13 is 12, because 12 OR (12 + 1) = 13.\nFor i = 2, the smallest ans[2] that satisfies ans[2] OR (ans[2] + 1) = 31 is 15, because 15 OR (15 + 1) = 31.\n\n\n \nConstraints:\n\n1 <= nums.length <= 100\n2 <= nums[i] <= 1000\nnums[i] is a prime number.\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minBitwiseArray(self, nums: list[int]) -> list[int]:\n    return [-1 if num == 2 else num - self._getLeadingOneOfLastGroupOfOnes(num)\n            for num in nums]\n\n  def _getLeadingOneOfLastGroupOfOnes(self, num: int) -> int:\n    \"\"\"\n    Returns the leading one of the last group of 1s in the binary\n    representation of num. For example, if num = 0b10111, the leading one of\n    the last group of 1s is 0b100.\n    \"\"\"\n    leadingOne = 1\n    while (num & leadingOne) > 0:\n      leadingOne <<= 1\n    return leadingOne >> 1\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [3,7,11,13]",
+      "salida": "[1, 3, 9, 12]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [41,43,47,53]",
+      "salida": "[40, 41, 39, 52]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,3,5,7]",
+      "salida": "[-1, 1, 4, 3]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3314: LC-3315 - Construct the Minimum Bitwise Array II. Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [41, 43, 47, 53]",
+      "salida": "[40, 41, 39, 52]",
+      "explicacion": "Relación con LC-3314: Ambos problemas comparten las técnicas de manipulación de bits, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  # Same as 3314. Construct the Minimum Bitwise Array I\n  def minBitwiseArray(self, nums: list[int]) -> list[int]:\n    return [-1 if num == 2 else num - self._getLeadingOneOfLastGroupOfOnes(num)\n            for num in nums]\n\n  def _getLeadingOneOfLastGroupOfOnes(self, num: int) -> int:\n    \"\"\"\n    Returns the leading one of the last group of 1s in the binary\n    representation of num. For example, if num = 0b10111, the leading one of\n    the last group of 1s is 0b100.\n    \"\"\"\n    leadingOne = 1\n    while (num & leadingOne) > 0:\n      leadingOne <<= 1\n    return leadingOne >> 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minBitwiseArray([3, 7, 11, 13]) == [1, 3, 9, 12]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minBitwiseArray([41, 43, 47, 53]) == [40, 41, 39, 52]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minBitwiseArray([2, 3, 5, 7]) == [-1, 1, 4, 3]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minBitwiseArray([11, 13, 31]) == [9, 12, 15]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minBitwiseArray([2, 5, 13, 19]) == [-1, 4, 12, 17]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minBitwiseArray([7, 17, 23]) == [3, 16, 19]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minBitwiseArray([3, 7, 11, 17]) == [1, 3, 9, 16]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minBitwiseArray([5, 11, 17, 23]) == [4, 9, 16, 19]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minBitwiseArray([3, 7, 13, 17]) == [1, 3, 12, 16]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minBitwiseArray([19, 23, 29, 31]) == [17, 19, 28, 15]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minBitwiseArray([37, 41, 43, 47]) == [36, 40, 41, 39]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minBitwiseArray([89, 97, 101]) == [88, 96, 100]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3314",
+    "fecha-estimada-2024-10-06",
+    "Bit Manipulation",
+    "Array"
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3269",
+  "titulo": "Constructing Two Increasing Arrays",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/constructing-two-increasing-arrays/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "Given 2 integer arrays nums1 and nums2 consisting only of 0 and 1, your task is to calculate the minimum possible largest number in arrays nums1 and nums2, after doing the following.\nReplace every 0 with an even positive integer and every 1 with an odd positive integer. After replacement, both arrays should be increasing and each integer should be used at most once.\nReturn the minimum possible largest number after applying the changes.\n \nExample 1:\n\nInput: nums1 = [], nums2 = [1,0,1,1]\nOutput: 5\nExplanation:\nAfter replacing, nums1 = [], and nums2 = [1, 2, 3, 5].\n\nExample 2:\n\nInput: nums1 = [0,1,0,1], nums2 = [1,0,0,1]\nOutput: 9\nExplanation:\nOne way to replace, having 9 as the largest element is nums1 = [2, 3, 8, 9], and nums2 = [1, 4, 6, 7].\n\nExample 3:\n\nInput: nums1 = [0,1,0,0,1], nums2 = [0,0,0,1]\nOutput: 13\nExplanation:\nOne way to replace, having 13 as the largest element is nums1 = [2, 3, 4, 6, 7], and nums2 = [8, 10, 12, 13].\n\n \nConstraints:\n\n0 <= nums1.length <= 1000\n1 <= nums2.length <= 1000\nnums1 and nums2 consist only of 0 and 1.\n\n",
+  "especificacion_entrada": "nums1: list[int], nums2: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minLargest(self, nums1: list[int], nums2: list[int]) -> int:\n    m = len(nums1)\n    n = len(nums2)\n    # dp[i][j] := the minimum largest number for the first i nums1 and the\n    # first j nums2\n    dp = [[math.inf] * (n + 1) for _ in range(m + 1)]\n    dp[0][0] = 0\n\n    def f(prev: int, num: int) -> int:\n      \"\"\"\n      Returns the next number to fill in the array based on the previous number\n      and the current number.\n      \"\"\"\n      return prev + (2 if prev % 2 == num else 1)\n\n    for i in range(m + 1):\n      for j in range(n + 1):\n        if i > 0:\n          dp[i][j] = min(dp[i][j], f(dp[i - 1][j], nums1[i - 1]))\n        if j > 0:\n          dp[i][j] = min(dp[i][j], f(dp[i][j - 1], nums2[j - 1]))\n\n    return dp[m][n]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums1 = [0,0,0,0], nums2 = [1,1,1,1]",
+      "salida": "8",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums1 = [1], nums2 = [0]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums1 = [], nums2 = [0,0,0,0]",
+      "salida": "8",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3269: LC-3277 - Maximum XOR Score Subarray Queries. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [0, 7, 3, 2, 8, 5, 1], queries = [[0, 3], [1, 5], [2, 4], [2, 6], [5, 6]]",
+      "salida": "[7, 14, 11, 14, 5]",
+      "explicacion": "Relación con LC-3269: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maximumSubarrayXor(\n      self,\n      nums: list[int],\n      queries: list[list[int]]\n  ) -> list[int]:\n    n = len(nums)\n    # xors[i][j] := the XOR score of nums[i..j]\n    xors = [[0] * n for _ in range(n)]\n    # dp[i][j] := the maximum XOR score of nums[i..j]\n    dp = [[0] * n for _ in range(n)]\n\n    for i, num in enumerate(nums):\n      xors[i][i] = num\n      dp[i][i] = num\n\n    for d in range(1, n):\n      for i in range(n - d):\n        j = i + d\n        xors[i][j] = xors[i][j - 1] ^ xors[i + 1][j]\n        dp[i][j] = max(xors[i][j], dp[i][j - 1], dp[i + 1][j])\n\n    return [dp[l][r] for l, r in queries]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minLargest([0, 0, 0, 0], [1, 1, 1, 1]) == 8"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minLargest([1], [0]) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minLargest([], [0, 0, 0, 0]) == 8"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minLargest([1, 0, 1, 0], [0, 1, 0, 1]) == 8"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minLargest([1, 1], [1, 1]) == 7"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minLargest([1, 0], [0, 1]) == 4"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minLargest([0, 0], [1, 1]) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minLargest([0, 0], [0, 0]) == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minLargest([0, 0, 1, 1], [1, 1, 0, 0]) == 8"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minLargest([], []) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minLargest([], [0]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minLargest([], [1, 0, 1, 1]) == 5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3269",
+    "fecha-estimada-2024-08-25",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

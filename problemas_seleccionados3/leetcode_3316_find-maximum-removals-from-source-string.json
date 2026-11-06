@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3316",
+  "titulo": "Find Maximum Removals From Source String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-maximum-removals-from-source-string/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Hash Table / Two Pointers / String / Dynamic Programming",
+  "enunciado": "You are given a string source of size n, a string pattern that is a subsequence of source, and a sorted integer array targetIndices that contains distinct numbers in the range [0, n - 1].\nWe define an operation as removing a character at an index idx from source such that:\n\nidx is an element of targetIndices.\npattern remains a subsequence of source after removing the character.\n\nPerforming an operation does not change the indices of the other characters in source. For example, if you remove 'c' from \"acb\", the character at index 2 would still be 'b'.\nReturn the maximum number of operations that can be performed.\n \nExample 1:\n\nInput: source = \"abbaa\", pattern = \"aba\", targetIndices = [0,1,2]\nOutput: 1\nExplanation:\nWe can't remove source[0] but we can do either of these two operations:\n\nRemove source[1], so that source becomes \"a_baa\".\nRemove source[2], so that source becomes \"ab_aa\".\n\n\nExample 2:\n\nInput: source = \"bcda\", pattern = \"d\", targetIndices = [0,3]\nOutput: 2\nExplanation:\nWe can remove source[0] and source[3] in two operations.\n\nExample 3:\n\nInput: source = \"dda\", pattern = \"dda\", targetIndices = [0,1,2]\nOutput: 0\nExplanation:\nWe can't remove any character from source.\n\nExample 4:\n\nInput: source = \"yeyeykyded\", pattern = \"yeyyd\", targetIndices = [0,2,3,4]\nOutput: 2\nExplanation:\nWe can remove source[2] and source[3] in two operations.\n\n \nConstraints:\n\n1 <= n == source.length <= 3 * 103\n1 <= pattern.length <= n\n1 <= targetIndices.length <= n\ntargetIndices is sorted in ascending order.\nThe input is generated such that targetIndices contains distinct elements in the range [0, n - 1].\nsource and pattern consist only of lowercase English letters.\nThe input is generated such that pattern appears as a subsequence in source.\n\n",
+  "especificacion_entrada": "source: str, pattern: str, targetIndices: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxRemovals(\n      self,\n      source: str,\n      pattern: str,\n      targetIndices: list[int]\n  ) -> int:\n    m = len(source)\n    n = len(pattern)\n    target = set(targetIndices)\n\n    @functools.lru_cache(None)\n    def dp(i: int, j: int) -> int:\n      \"\"\"\n      Returns the maximum number of operations that can be performed for\n      source[i..m) and pattern[j..n).\n      \"\"\"\n      if i == m:\n        return 0 if j == n else -math.inf\n      if j == n:\n        return int(i in target) + dp(i + 1, j)\n      pick = dp(i + 1, j + 1) if source[i] == pattern[j] else -math.inf\n      skip = int(i in target) + dp(i + 1, j)\n      return max(pick, skip)\n\n    ans = dp(0, 0)\n    return 0 if ans == -math.inf else ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "source = \"abbaa\", pattern = \"aba\", targetIndices = [0,1,2]",
+      "salida": "1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "source = \"abracadabra\", pattern = \"abc\", targetIndices = [0,1,5,7,10]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "source = \"bcda\", pattern = \"d\", targetIndices = [0,3]",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3316: LC-3302 - Find the Lexicographically Smallest Valid Sequence. Ambos eligen una subsecuencia válida de una cadena y usan información de posiciones para satisfacer restricciones de selección.",
+      "entrada": "word1 = 'hello', word2 = 'heo'",
+      "salida": "[0, 1, 2]",
+      "explicacion": "Relación con LC-3316: Ambos eligen una subsecuencia válida de una cadena y usan información de posiciones para satisfacer restricciones de selección.",
+      "codigo_ilustrativo": "class Solution:\n  def validSequence(self, word1: str, word2: str) -> list[int]:\n    ans = []\n    # last[j] := the index i of the last occurrence in word1, where\n    # word1[i] == word2[j]\n    last = [-1] * len(word2)\n\n    i = len(word1) - 1\n    j = len(word2) - 1\n    while i >= 0 and j >= 0:\n      if word1[i] == word2[j]:\n        last[j] = i\n        j -= 1\n      i -= 1\n\n    canSkip = True\n    j = 0\n    for i, c in enumerate(word1):\n      if j == len(word2):\n        break\n      if c == word2[j]:\n        ans.append(i)\n        j += 1\n      elif canSkip and (j == len(word2) - 1 or i < last[j + 1]):\n        canSkip = False\n        ans.append(i)\n        j += 1\n\n    return ans if j == len(word2) else []\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxRemovals('abbaa', 'aba', [0, 1, 2]) == 1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxRemovals('abracadabra', 'abc', [0, 1, 5, 7, 10]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxRemovals('bcda', 'd', [0, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxRemovals('aaaaa', 'aaa', [0, 1, 2, 3, 4]) == 2"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxRemovals('dda', 'dda', [0, 1, 2]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxRemovals('abcd', 'ac', [0, 1, 2, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxRemovals('zzzz', 'z', [0, 1, 2, 3]) == 3"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxRemovals('aaaaabbbbb', 'ab', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxRemovals('mississippi', 'issi', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) == 7"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxRemovals('abcabcabc', 'abc', [0, 1, 2, 3, 4, 5, 6, 7, 8]) == 6"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxRemovals('abcde', 'ae', [1, 2, 3]) == 3"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxRemovals('yeyeykyded', 'yeyyd', [0, 2, 3, 4]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3316",
+    "fecha-estimada-2024-10-06",
+    "Array",
+    "Hash Table",
+    "Two Pointers",
+    "String",
+    "Dynamic Programming"
+  ]
+}

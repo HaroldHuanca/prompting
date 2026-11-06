@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3336",
+  "titulo": "Find the Number of Subsequences With Equal GCD",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-number-of-subsequences-with-equal-gcd/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Math / Dynamic Programming / Number Theory",
+  "enunciado": "You are given an integer array nums.\nYour task is to find the number of pairs of non-empty subsequences (seq1, seq2) of nums that satisfy the following conditions:\n\nThe subsequences seq1 and seq2 are disjoint, meaning no index of nums is common between them.\nThe GCD of the elements of seq1 is equal to the GCD of the elements of seq2.\n\nReturn the total number of such pairs.\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: nums = [1,2,3,4]\nOutput: 10\nExplanation:\nThe subsequence pairs which have the GCD of their elements equal to 1 are:\n\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n([1, 2, 3, 4], [1, 2, 3, 4])\n\n\nExample 2:\n\nInput: nums = [10,20,30]\nOutput: 2\nExplanation:\nThe subsequence pairs which have the GCD of their elements equal to 10 are:\n\n([10, 20, 30], [10, 20, 30])\n([10, 20, 30], [10, 20, 30])\n\n\nExample 3:\n\nInput: nums = [1,1,1,1]\nOutput: 50\n\n \nConstraints:\n\n1 <= nums.length <= 200\n1 <= nums[i] <= 200\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def subsequencePairCount(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def dp(i: int, x: int, y: int) -> int:\n      if i == len(nums):\n        return int(x > 0 and x == y)\n      # 1. Skip nums[i]\n      skip = dp(i + 1, x, y)\n      # 2. Pick nums[i] in the first subsequence\n      take1 = dp(i + 1, math.gcd(x, nums[i]), y)\n      # 3. Pick nums[i] in the second subsequence\n      take2 = dp(i + 1, x, math.gcd(y, nums[i]))\n      return (skip + take1 + take2) % MOD\n\n    return dp(0, 0, 0)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [10,20,30]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [2,3,5,7,11,13]",
+      "salida": "260",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1,1]",
+      "salida": "50",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3336: LC-3416 - Subsequences with a Unique Middle Mode II. Ambos cuentan subsecuencias que cumplen una condición; la demostración muestra cómo mantener frecuencias y acumular conteos de subsecuencias.",
+      "entrada": "nums = [1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4]",
+      "salida": "951",
+      "explicacion": "Relación con LC-3336: Ambos cuentan subsecuencias que cumplen una condición; la demostración muestra cómo mantener frecuencias y acumular conteos de subsecuencias.",
+      "codigo_ilustrativo": "import collections\n\n# Recall from solution 1 that after counting all the subsequences with `a` as\n# the middle mode number, we need to subtract the cases where `a` is not a\n# unique mode or not a mode.\n#\n# To avoid the need of looping through all numbers that are not `a`, we can\n# maintain the sums that are not related to `a` in the loop.\n#\n# So, during the simplification of the formula, keep the running sums of\n# pss, spp, pp, ss, and ps as the first item.\n# (for cleaner notation, abbreviate p[b] and s[b] to just p and s)\n#\n#   sum(b != a) (p[a] * p * s) * (r - s[a] - s)\n#             + (s[a] * s * p) * (l - p[a] - p)\n#             + (p, 2) * s[a] * (r - s[a])\n#             + (s, 2) * p[a] * (l - p[a])\n#\n#   sum(b != a) (p * s) * (p[a] * (r - s[a])) + (p * s^2) * (-p[a])\n#             + (s * p) * (s[a] * (l - p[a])) + (s * p^2) * (-s[a])\n#             + (p^2 - p) * (s[a] * (r - s[a]) / 2)\n#             + (s^2 - s) * (p[a] * (l - p[a]) / 2)\n\n\nclass Solution:\n  # Same as 3395. Subsequences with a Unique Middle Mode I\n  def subsequencesWithMiddleMode(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    ans = 0\n    p = collections.Counter()  # prefix counter\n    s = collections.Counter(nums)  # suffix counter\n\n    def nC2(n: int) -> int:\n      return n * (n - 1) // 2\n\n    pss = 0\n    spp = 0\n    pp = 0\n    ss = sum(freq**2 for freq in s.values())\n    ps = 0\n\n    for i, a in enumerate(nums):\n      # Update running sums after decrementing s[a].\n      pss += p[a] * (-s[a]**2 + (s[a] - 1)**2)\n      spp += -p[a]**2  # (-s[a] + (s[a] - 1)) * p[a]**2\n      ss += -s[a]**2 + (s[a] - 1)**2\n      ps += -p[a]  # -p[a] * (-s[a] + (s[a] - 1))\n\n      s[a] -= 1\n\n      l = i\n      r = len(nums) - i - 1\n\n      # Start with all possible subsequences with `a` as the middle number.\n      ans += nC2(l) * nC2(r)\n\n      # Minus the cases where the frequency of `a` is 1, so it's not a mode.\n      ans -= nC2(l - p[a]) * nC2(r - s[a])\n\n      # Minus the values where `b != a`.\n      pss_ = pss - p[a] * s[a]**2\n      spp_ = spp - s[a] * p[a]**2\n      pp_ = pp - p[a]**2\n      ss_ = ss - s[a]**2\n      ps_ = ps - p[a] * s[a]\n      p_ = l - p[a]\n      s_ = r - s[a]\n\n      # Minus the cases where the `a` is not a \"unique\" mode or not a mode.\n      ans -= ps_ * (p[a] * (r - s[a])) + pss_ * (-p[a])\n      ans -= ps_ * (s[a] * (l - p[a])) + spp_ * (-s[a])\n      ans -= (pp_ - p_) * s[a] * (r - s[a]) // 2\n      ans -= (ss_ - s_) * p[a] * (l - p[a]) // 2\n      ans %= MOD\n\n      # Update running sums after incrementing p[a].\n      pss += s[a]**2  # (-p[a] + (p[a] + 1)) * s[a]**2\n      spp += s[a] * (-p[a]**2 + (p[a] + 1)**2)\n      pp += -p[a]**2 + (p[a] + 1)**2\n      ps += s[a]  # (-p[a] + (p[a] + 1)) * s[a]\n\n      p[a] += 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().subsequencePairCount([10, 20, 30]) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().subsequencePairCount([2, 3, 5, 7, 11, 13]) == 260"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().subsequencePairCount([1, 1, 1, 1]) == 50"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().subsequencePairCount([2, 3, 5, 7, 11]) == 50"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().subsequencePairCount([2, 4, 6, 8, 10]) == 62"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().subsequencePairCount([200, 100, 50, 25]) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().subsequencePairCount([1, 2, 3, 4]) == 10"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().subsequencePairCount([13, 26, 39, 52]) == 10"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().subsequencePairCount([19, 38, 57, 76, 95]) == 62"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().subsequencePairCount([7, 7, 7, 7, 7]) == 180"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().subsequencePairCount([100, 200, 300, 400, 500]) == 62"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().subsequencePairCount([7, 14, 21, 28, 35]) == 62"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3336",
+    "fecha-estimada-2024-10-27",
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Number Theory"
+  ]
+}

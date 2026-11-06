@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3347",
+  "titulo": "Maximum Frequency of an Element After Performing Operations II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-frequency-of-an-element-after-performing-operations-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Binary Search / Prefix Sum / Sorting / Sliding Window",
+  "enunciado": "You are given an integer array nums and two integers k and numOperations.\nYou must perform an operation numOperations times on nums, where in each operation you:\n\nSelect an index i that was not selected in any previous operations.\nAdd an integer in the range [-k, k] to nums[i].\n\nReturn the maximum possible frequency of any element in nums after performing the operations.\n \nExample 1:\n\nInput: nums = [1,4,5], k = 1, numOperations = 2\nOutput: 2\nExplanation:\nWe can achieve a maximum frequency of two by:\n\nAdding 0 to nums[1], after which nums becomes [1, 4, 5].\nAdding -1 to nums[2], after which nums becomes [1, 4, 4].\n\n\nExample 2:\n\nInput: nums = [5,11,20,20], k = 5, numOperations = 1\nOutput: 2\nExplanation:\nWe can achieve a maximum frequency of two by:\n\nAdding 0 to nums[1].\n\n\n \nConstraints:\n\n1 <= nums.length <= 105\n1 <= nums[i] <= 109\n0 <= k <= 109\n0 <= numOperations <= nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], k: int, numOperations: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "from sortedcontainers import SortedDict\n\n\nclass Solution:\n  # Same as 3346. Maximum Frequency of an Element After Performing Operations I\n  def maxFrequency(self, nums: list[int], k: int, numOperations: int) -> int:\n    ans = 1\n    adjustable = 0\n    count = collections.Counter(nums)\n    line = SortedDict()\n    candidates = set()\n\n    for num in nums:\n      line[num - k] = line.get(num - k, 0) + 1\n      line[num + k + 1] = line.get(num + k + 1, 0) - 1\n      candidates.add(num)\n      candidates.add(num - k)\n      candidates.add(num + k + 1)\n\n    for num in sorted(candidates):\n      adjustable += line.get(num, 0)\n      adjusted = adjustable - count[num]\n      ans = max(ans, count[num] + min(numOperations, adjusted))\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,4,5], k = 1, numOperations = 2",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1000000000], k = 1000000000, numOperations = 1",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,10,10,10], k = 0, numOperations = 4",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3347: LC-3346 - Maximum Frequency of an Element After Performing Operations I. Ambos problemas comparten las técnicas de búsqueda binaria, sumas de prefijos, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 100000], k = 100000, numOperations = 1",
+      "salida": "2",
+      "explicacion": "Relación con LC-3347: Ambos problemas comparten las técnicas de búsqueda binaria, sumas de prefijos, ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "from bisect import bisect_left, bisect_right\nfrom collections import Counter\n\nclass Solution:\n  def maxFrequency(self, nums: list[int], k: int, numOperations: int) -> int:\n    ordered = sorted(nums)\n    frequency = Counter(ordered)\n    candidates = set(ordered)\n    for value in ordered:\n      candidates.add(value - k)\n      candidates.add(value + k)\n    answer = 0\n    for target in candidates:\n      reachable = bisect_right(ordered, target + k) - bisect_left(ordered, target - k)\n      answer = max(answer, frequency[target] + min(numOperations, reachable - frequency[target]))\n    return answer\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxFrequency([1, 4, 5], 1, 2) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxFrequency([1, 1000000000], 1000000000, 1) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxFrequency([10, 10, 10, 10], 0, 4) == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxFrequency([1, 2, 3, 4, 5], 10, 5) == 5"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxFrequency([1, 1000000000], 500000000, 1) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxFrequency([1, 2, 3, 4, 5], 2, 3) == 4"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxFrequency([10, 10, 10, 10], 0, 3) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxFrequency([5, 11, 20, 20], 5, 1) == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxFrequency([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150], 15, 15) == 4"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxFrequency([1, 2, 2, 2, 3, 3, 4, 4, 5, 5], 1, 9) == 7"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxFrequency([10, 10, 20, 20, 30, 30, 40, 40, 50, 50], 15, 20) == 8"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxFrequency([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 1, 5) == 10"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3347",
+    "fecha-estimada-2024-11-03",
+    "Array",
+    "Binary Search",
+    "Prefix Sum",
+    "Sorting",
+    "Sliding Window"
+  ]
+}

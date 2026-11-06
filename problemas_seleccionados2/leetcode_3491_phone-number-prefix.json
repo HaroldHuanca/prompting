@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3491",
+  "titulo": "Phone Number Prefix",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/phone-number-prefix/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Cadenas / Ordenamiento / Prefijos",
+  "enunciado": "You are given a string array numbers that represents phone numbers. Return true if no phone number is a prefix of any other phone number; otherwise, return false.\n \nExample 1:\n\nInput: numbers = [\"1\",\"2\",\"4\",\"3\"]\nOutput: true\nExplanation:\nNo number is a prefix of another number, so the output is true.\n\nExample 2:\n\nInput: numbers = [\"001\",\"007\",\"15\",\"00153\"]\nOutput: false\nExplanation:\nThe string \"001\" is a prefix of the string \"00153\". Thus, the output is false.\n\n \nConstraints:\n\n2 <= numbers.length <= 50\n1 <= numbers[i].length <= 50\nAll numbers contain only digits '0' to '9'.\n\n",
+  "especificacion_entrada": "numbers: string[]",
+  "especificacion_salida": "boolean",
+  "restricciones": "2 <= numbers.length <= 50\n1 <= numbers[i].length <= 50\nAll numbers contain only digits '0' to '9'.",
+  "solucion_referencia": "import itertools\nfrom itertools import pairwise\n\nclass Solution:\n  def phonePrefix(self, numbers: list[str]) -> bool:\n    return not any(b.startswith(a)\n                   for a, b in itertools.pairwise(sorted(numbers)))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "numbers = [\"1\",\"2\",\"4\",\"3\"]",
+      "salida": "true",
+      "explicacion": "No number is a prefix of another number, so the output is true."
+    },
+    {
+      "entrada": "numbers = [\"001\",\"007\",\"15\",\"00153\"]",
+      "salida": "false",
+      "explicacion": "The string \"001\" is a prefix of the string \"00153\". Thus, the output is false."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3491: LC-3485 - Longest Common Prefix of K Strings After Removal. Ambos problemas comparten las técnicas de trie, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "words = ['banana', 'band', 'bend', 'bendy'], k = 3",
+      "salida": "[1, 1, 1, 1]",
+      "explicacion": "Relación con LC-3491: Ambos problemas comparten las técnicas de trie, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport heapq\n\nclass TrieNode:\n    def __init__(self):\n        self.children: dict[str, TrieNode] = {}\n        self.count = 0\n\nclass Trie:\n    def __init__(self, k: int):\n        self.k = k\n        self.root = TrieNode()\n        self.prefixLengthsCount = collections.Counter()\n        self.max_heap = []\n\n    def insert(self, word: str) -> None:\n        node = self.root\n        for i, c in enumerate(word):\n            sz = i + 1\n            node = node.children.setdefault(c, TrieNode())\n            node.count += 1\n            if node.count >= self.k:\n                self.prefixLengthsCount[sz] += 1\n                if self.prefixLengthsCount[sz] == 1:\n                    heapq.heappush(self.max_heap, -sz)\n\n    def erase(self, word: str) -> None:\n        node = self.root\n        for i, c in enumerate(word):\n            sz = i + 1\n            node = node.children[c]\n            if node.count == self.k:\n                self.prefixLengthsCount[sz] -= 1\n            node.count -= 1\n\n    def getLongestCommonPrefix(self) -> int:\n        while self.max_heap and self.prefixLengthsCount[-self.max_heap[0]] == 0:\n            heapq.heappop(self.max_heap)\n        return -self.max_heap[0] if self.max_heap else 0\n\nclass Solution:\n    def longestCommonPrefix(self, words: list[str], k: int) -> list[int]:\n        ans = []\n        trie = Trie(k)\n        for word in words:\n            trie.insert(word)\n        for word in words:\n            trie.erase(word)\n            ans.append(trie.getLongestCommonPrefix())\n            trie.insert(word)\n        return ans"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().phonePrefix(['123', '456', '789', '101112']) is True"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().phonePrefix(['1111', '1112', '1121', '1211', '2111']) is True"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().phonePrefix(['9876543210', '1234567890', '0987654321', '1112223333']) is True"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().phonePrefix(['9', '99', '999', '9999']) is False"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().phonePrefix(['1', '2', '4', '3']) is True"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().phonePrefix(['0', '10', '100', '1000']) is False"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().phonePrefix(['001', '007', '15', '00153']) is False"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().phonePrefix(['11', '22', '1122', '33']) is False"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().phonePrefix(['111', '222', '1111', '333']) is False"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().phonePrefix(['555', '5555', '55555', '555555']) is False"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().phonePrefix(['222', '2222', '22222', '222222']) is False"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().phonePrefix(['12', '23', '34', '45', '56', '67', '78', '89']) is True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3491",
+    "seleccion-reciente-2026-11"
+  ]
+}

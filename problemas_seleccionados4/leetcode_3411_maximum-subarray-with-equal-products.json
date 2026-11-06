@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3411",
+  "titulo": "Maximum Subarray With Equal Products",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-subarray-with-equal-products/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Math / Enumeration / Number Theory / Sliding Window",
+  "enunciado": "You are given an array of positive integers nums.\nAn array arr is called product equivalent if prod(arr) == lcm(arr) * gcd(arr), where:\n\nprod(arr) is the product of all elements of arr.\ngcd(arr) is the GCD of all elements of arr.\nlcm(arr) is the LCM of all elements of arr.\n\nReturn the length of the longest product equivalent subarray of nums.\n \nExample 1:\n\nInput: nums = [1,2,1,2,1,1,1]\nOutput: 5\nExplanation: \nThe longest product equivalent subarray is [1, 2, 1, 1, 1], where prod([1, 2, 1, 1, 1]) = 2, gcd([1, 2, 1, 1, 1]) = 1, and lcm([1, 2, 1, 1, 1]) = 2.\n\nExample 2:\n\nInput: nums = [2,3,4,5,6]\nOutput: 3\nExplanation: \nThe longest product equivalent subarray is [3, 4, 5].\n\nExample 3:\n\nInput: nums = [1,2,3,1,4,5,1]\nOutput: 5\n\n \nConstraints:\n\n2 <= nums.length <= 100\n1 <= nums[i] <= 10\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxLength(self, nums: list[int]) -> int:\n    n = len(nums)\n    ans = 0\n\n    for i in range(n):\n      prod = 1\n      l = 1\n      g = 0\n      for j in range(i, n):\n        prod *= nums[j]\n        l = math.lcm(l, nums[j])\n        g = math.gcd(g, nums[j])\n        if prod == l * g:\n          ans = max(ans, j - i + 1)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [3,6,9,12,15,18,21,24,27,30]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [5,5,5,5,5,5,5,5]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [6,3,2,1,5,4]",
+      "salida": "4",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3411: LC-3381 - Maximum Subarray Sum With Length Divisible by K. Ambos optimizan una propiedad calculada sobre subarreglos contiguos y comparan candidatos durante un recorrido.",
+      "entrada": "nums = [1000000000, -1000000000, 1000000000, -1000000000, 1000000000], k = 2",
+      "salida": "0",
+      "explicacion": "Relación con LC-3411: Ambos optimizan una propiedad calculada sobre subarreglos contiguos y comparan candidatos durante un recorrido.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxSubarraySum(self, nums: list[int], k: int) -> int:\n    ans = -math.inf\n    prefix = 0\n    # minPrefix[i % k] := the minimum prefix sum of the first i numbers\n    minPrefix = [math.inf] * k\n    minPrefix[k - 1] = 0\n\n    for i, num in enumerate(nums):\n      prefix += num\n      ans = max(ans, prefix - minPrefix[i % k])\n      minPrefix[i % k] = min(minPrefix[i % k], prefix)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxLength([3, 6, 9, 12, 15, 18, 21, 24, 27, 30]) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxLength([5, 5, 5, 5, 5, 5, 5, 5]) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxLength([6, 3, 2, 1, 5, 4]) == 4"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxLength([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 3"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxLength([8, 9, 10, 11, 12]) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxLength([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 3"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxLength([2, 3, 5, 7, 11, 13, 17]) == 7"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxLength([7, 7, 7, 7, 7, 7, 7]) == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxLength([2, 3, 4, 5, 6]) == 3"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxLength([10, 5, 2, 1, 10, 5, 2]) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxLength([3, 6, 9, 12, 15]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxLength([1, 3, 5, 7, 9, 11, 13, 15, 17, 19]) == 5"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3411",
+    "fecha-estimada-2025-01-05",
+    "Array",
+    "Math",
+    "Enumeration",
+    "Number Theory",
+    "Sliding Window"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3470",
+  "titulo": "Permutations IV",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/permutations-iv/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Math / Combinatorics / Enumeration",
+  "enunciado": "Given two integers, n and k, an alternating permutation is a permutation of the first n positive integers such that no two adjacent elements are both odd or both even.\nReturn the k-th alternating permutation sorted in lexicographical order. If there are fewer than k valid alternating permutations, return an empty list.\n \nExample 1:\n\nInput: n = 4, k = 6\nOutput: [3,4,1,2]\nExplanation:\nThe lexicographically-sorted alternating permutations of [1, 2, 3, 4] are:\n\n[1, 2, 3, 4]\n[1, 4, 3, 2]\n[2, 1, 4, 3]\n[2, 3, 4, 1]\n[3, 2, 1, 4]\n[3, 4, 1, 2] ← 6th permutation\n[4, 1, 2, 3]\n[4, 3, 2, 1]\n\nSince k = 6, we return [3, 4, 1, 2].\n\nExample 2:\n\nInput: n = 3, k = 2\nOutput: [3,2,1]\nExplanation:\nThe lexicographically-sorted alternating permutations of [1, 2, 3] are:\n\n[1, 2, 3]\n[3, 2, 1] ← 2nd permutation\n\nSince k = 2, we return [3, 2, 1].\n\nExample 3:\n\nInput: n = 2, k = 3\nOutput: []\nExplanation:\nThe lexicographically-sorted alternating permutations of [1, 2] are:\n\n[1, 2]\n[2, 1]\n\nThere are only 2 alternating permutations, but k = 3, which is out of range. Thus, we return an empty list [].\n\n \nConstraints:\n\n1 <= n <= 100\n1 <= k <= 1015\n\n",
+  "especificacion_entrada": "n: int, k: int",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def permute(self, n: int, k: int) -> list[int]:\n    ans = []\n    isLookingForEven = True\n    remainingNumbers = list(range(1, n + 1))\n\n    for turn in range(n):\n      remainingPermutations = (math.factorial((n - 1 - turn) // 2) *\n                               math.factorial((n - turn) // 2))\n      found = False\n      for index, number in enumerate(remainingNumbers):\n        if number % 2 != isLookingForEven and (turn > 0 or n % 2 == 1):\n          continue\n        if k <= remainingPermutations:\n          ans.append(remainingNumbers.pop(index))\n          isLookingForEven = ans[-1] % 2 == 0\n          found = True\n          break\n        k -= remainingPermutations\n      if not found:\n        return []\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 100, k = 1000000000000000",
+      "salida": "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 91, 98, 99, 88, 79, 90, 93, 96, 97, 82, 89, 80, 85, 86, 81, 92, 95, 84, 87, 100, 83, 94]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 10, k = 1000000",
+      "salida": "[]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 3, k = 2",
+      "salida": "[3, 2, 1]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3470: LC-3343 - Count Number of Balanced Permutations. Ambos problemas comparten las técnicas de combinatoria, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "num = '9876543210'",
+      "salida": "0",
+      "explicacion": "Relación con LC-3470: Ambos problemas comparten las técnicas de combinatoria, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\nimport functools\nimport math\n\nclass Solution:\n  def countBalancedPermutations(self, num: str) -> int:\n    nums = list(map(int, num))\n    summ = sum(nums)\n    if summ % 2 == 1:\n      return 0\n\n    nums.sort(reverse=True)\n\n    @functools.lru_cache(None)\n    def dp(even: int, odd: int, evenBalance: int) -> int:\n      \"\"\"\n      Returns the number of permutations where there are `even` even indices\n      left, `odd` odd indices left, and `evenBalance` is the target sum of the\n      remaining numbers to be placed in even indices.\n      \"\"\"\n      if evenBalance < 0:\n        return 0\n      if even == 0:\n        return (evenBalance == 0) * math.factorial(odd)\n      if odd == 0:\n        return (sum(nums[-(even + odd):]) == evenBalance) * math.factorial(even)\n      return (dp(even - 1, odd, evenBalance - nums[-(odd + even)]) * even +\n              dp(even, odd - 1, evenBalance) * odd)\n\n    MOD = 1_000_000_007\n    perm = functools.reduce(lambda x, y: x * math.factorial(y),\n                            collections.Counter(nums).values(), 1)\n    return (dp(even=(len(nums) + 1) // 2,\n               odd=len(nums) // 2,\n               evenBalance=summ // 2) // perm) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().permute(100, 1000000000000000) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 91, 98, 99, 88, 79, 90, 93, 96, 97, 82, 89, 80, 85, 86, 81, 92, 95, 84, 87, 100, 83, 94]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().permute(10, 1000000) == []"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().permute(3, 2) == [3, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().permute(1, 1) == [1]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().permute(5, 1) == [1, 2, 3, 4, 5]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().permute(10, 100) == [1, 2, 3, 8, 9, 4, 7, 10, 5, 6]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().permute(10, 1) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().permute(9, 5040) == []"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().permute(5, 20) == []"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().permute(6, 100) == []"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().permute(8, 1000) == [7, 8, 5, 2, 3, 6, 1, 4]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().permute(7, 100) == [5, 6, 1, 4, 7, 2, 3]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3470",
+    "fecha-estimada-2025-02-23",
+    "Array",
+    "Math",
+    "Combinatorics",
+    "Enumeration"
+  ]
+}

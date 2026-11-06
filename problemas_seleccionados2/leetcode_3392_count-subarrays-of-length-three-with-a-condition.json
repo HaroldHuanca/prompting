@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3392",
+  "titulo": "Count Subarrays of Length Three With a Condition",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-subarrays-of-length-three-with-a-condition/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "Given an integer array nums, return the number of subarrays of length 3 such that the sum of the first and third numbers equals exactly half of the second number.\n \nExample 1:\n\nInput: nums = [1,2,1,4,1]\nOutput: 1\nExplanation:\nOnly the subarray [1,4,1] contains exactly 3 elements where the sum of the first and third numbers equals half the middle number.\n\nExample 2:\n\nInput: nums = [1,1,1]\nOutput: 0\nExplanation:\n[1,1,1] is the only subarray of length 3. However, its first and third numbers do not add to half the middle number.\n\n \nConstraints:\n\n3 <= nums.length <= 100\n-100 <= nums[i] <= 100\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countSubarrays(self, nums: list[int]) -> int:\n    return sum(b == (a + c) * 2\n               for a, b, c in zip(nums, nums[1:], nums[2:]))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5,10,5,15,5]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,-1,1,-1,1]",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3392: LC-3349 - Adjacent Increasing Subarrays Detection I. Ambos problemas comparten el tema de subarrays, aunque plantean una variante distinta.",
+      "entrada": "nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 2",
+      "salida": "True",
+      "explicacion": "Relación con LC-3392: Ambos problemas comparten el tema de subarrays, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def hasIncreasingSubarrays(self, nums: list[int], k: int) -> bool:\n    increasing = 1\n    prevIncreasing = 0\n\n    for a, b in itertools.pairwise(nums):\n      if b > a:\n        increasing += 1\n      else:\n        prevIncreasing = increasing\n        increasing = 1\n      if increasing // 2 >= k or min(prevIncreasing, increasing) >= k:\n        return True\n\n    return False\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countSubarrays([5, 10, 5, 15, 5]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countSubarrays([1, 1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countSubarrays([1, -1, 1, -1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countSubarrays([100, -50, -50, 100, 100, -100, -100, 100]) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countSubarrays([33, 66, 33, 99, 33]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countSubarrays([100, -50, 50]) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countSubarrays([3, 6, 3, 1, 2, 3, 6, 3]) == 0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countSubarrays([1, 2, 1, 4, 1]) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countSubarrays([-2, 4, -2, 8, -2]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countSubarrays([-1, 2, -1, 4, -1]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countSubarrays([100, -50, 50, 0, 100]) == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countSubarrays([2, 4, 2, 4, 2]) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3392",
+    "fecha-estimada-2024-12-15",
+    "Array"
+  ]
+}

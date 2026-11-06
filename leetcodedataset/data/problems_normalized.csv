@@ -1,0 +1,22 @@
+leetcode_id,title,slug,url,description,difficulty,publication_date,date_type,original_date_field,source_name,source_url,extracted_at,tags,constraints,examples,signature,test_cases,reference_solution,source_license,completeness,date_conflicts,notes
+4054,Longest Increasing Path in a Matrix,longest-increasing-path-in-a-matrix,https://leetcode.com/problems/longest-increasing-path-in-a-matrix/,"Given an m x n matrix, return the length of the longest increasing path.",Hard,2024-08-09,official,,example_dataset,https://example.invalid/records/4054,2026-10-31T02:51:02Z,Dynamic Programming; Graph; Topological Sort,"1 <= m, n <= 2000","Input: grid = [[9,9,4],[6,6,8],[2,1,1]]
+Output: 4","class Solution:
+    def longestIncreasingPath(self, matrix: list[list[int]]) -> int:",,Use memoized DFS with topological sorting semantics.,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4055,Minimum Cost to Connect Points,min-cost-to-connect-points,https://leetcode.com/problems/min-cost-to-connect-points/,Return the minimum cost to connect all points with a Steiner tree variant.,Medium,2024-08-15,official,,example_dataset,https://example.invalid/records/4055,2026-10-31T02:51:02Z,Graph; Prim; Union-Find,2 <= points.length <= 1000,"Input: points = [[0,0],[2,2],[3,10],[5,2],[7,0]]
+Output: 20","class Solution:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4056,Count Paths Through Grid,count-paths-through-grid,https://leetcode.com/problems/count-paths-through-grid/,Count the number of valid paths through a grid with obstacle constraints.,Easy,2024-08-27,official,,example_dataset,https://example.invalid/records/4056,2026-10-31T02:51:02Z,Dynamic Programming; Grid,"1 <= m, n <= 100","Input: grid = [[0,0],[0,0]]
+Output: 2","class Solution:
+    def countPaths(self, grid: list[list[int]]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4057,Find the Longest Balanced Subsequence,find-the-longest-balanced-subsequence,https://leetcode.com/problems/find-the-longest-balanced-subsequence/,Find the longest sub-sequence whose counts of opening and closing brackets stay balanced.,Medium,2024-08-15,estimated,,example_dataset,https://example.invalid/records/4057,2026-10-31T02:51:02Z,String; Greedy,1 <= s.length <= 10^5,"Input: s = ""(()())""
+Output: 6","class Solution:
+    def longestBalancedSubsequence(self, s: str) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4058,Best Time to Buy and Sell After Events,best-time-to-buy-and-sell-after-events,https://leetcode.com/problems/best-time-to-buy-and-sell-after-events/,A dynamic programming problem on event-driven stock price updates.,Hard,2024-09-01,unknown,,example_dataset,https://example.invalid/records/4058,2026-10-31T02:51:02Z,Dynamic Programming; Stock Market,1 <= events.length <= 10^5,"Input: events = [1,2,3]
+Output: 6","class Solution:
+    def maxProfit(self, events: list[int]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+101,Symmetric Tree,symmetric-tree,https://leetcode.com/problems/symmetric-tree/,Check whether a binary tree is symmetric.,Easy,2019-08-12,official,,example_dataset,https://example.invalid/records/101,2026-10-31T02:51:02Z,Tree; Recursion,"The number of nodes in the tree is in the range [1, 1000].","Input: root = [1,2,2,3,4,4,3]
+Output: true","class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.
+4059,Minimize Maximum Difference,minimize-maximum-difference,https://leetcode.com/problems/minimize-maximum-difference/,Minimize the maximum difference under a set of constraints.,Medium,2024-08-06,official,,example_dataset,https://example.invalid/records/4059,2026-10-31T02:51:02Z,Binary Search; Arrays,1 <= nums.length <= 10^5,"Input: nums = [1,5,6,14]
+Output: 4","class Solution:
+    def minimizeMax(self, nums: list[int]) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.

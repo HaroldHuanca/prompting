@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3455",
+  "titulo": "Shortest Matching Substring",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/shortest-matching-substring/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Two Pointers / String / Binary Search / String Matching",
+  "enunciado": "You are given a string s and a pattern string p, where p contains exactly two '*' characters.\nThe '*' in p matches any sequence of zero or more characters.\nReturn the length of the shortest substring in s that matches p. If there is no such substring, return -1.\nNote: The empty substring is considered valid.\n \nExample 1:\n\nInput: s = \"abaacbaecebce\", p = \"ba*c*ce\"\nOutput: 8\nExplanation:\nThe shortest matching substring of p in s is \"baecebce\".\n\nExample 2:\n\nInput: s = \"baccbaadbc\", p = \"cc*baa*adb\"\nOutput: -1\nExplanation:\nThere is no matching substring in s.\n\nExample 3:\n\nInput: s = \"a\", p = \"**\"\nOutput: 0\nExplanation:\nThe empty substring is the shortest matching substring.\n\nExample 4:\n\nInput: s = \"madlogic\", p = \"*adlogi*\"\nOutput: 6\nExplanation:\nThe shortest matching substring of p in s is \"adlogi\".\n\n \nConstraints:\n\n1 <= s.length <= 105\n2 <= p.length <= 105\ns contains only lowercase English letters.\np contains only lowercase English letters and exactly two '*'.\n\n",
+  "especificacion_entrada": "s: str, p: str",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def shortestMatchingSubstring(self, s: str, p: str) -> int:\n    n = len(s)\n    a, b, c = p.split('*')\n    lpsA = self._getLPS(a + '#' + s)[len(a) + 1:]\n    lpsB = self._getLPS(b + '#' + s)[len(b) + 1:]\n    lpsC = self._getLPS(c + '#' + s)[len(c) + 1:]\n    ans = math.inf\n\n    i = 0  # lpsA's index\n    j = 0  # lpsB's index\n    k = 0  # lpsC's index\n    while i + len(b) + len(c) < n:\n      while i < n and lpsA[i] != len(a):\n        i += 1\n      while j < n and (j < i + len(b) or lpsB[j] != len(b)):\n        j += 1\n      while k < n and (k < j + len(c) or lpsC[k] != len(c)):\n        k += 1\n      if k == n:\n        break\n      ans = min(ans, k - i + len(a))\n      i += 1\n\n    return -1 if ans == math.inf else ans\n\n  def _getLPS(self, pattern: str) -> list[int]:\n    \"\"\"\n    Returns the lps array, where lps[i] is the length of the longest prefix of\n    pattern[0..i] which is also a suffix of this substring.\n    \"\"\"\n    lps = [0] * len(pattern)\n    j = 0\n    for i in range(1, len(pattern)):\n      while j > 0 and pattern[j] != pattern[i]:\n        j = lps[j - 1]\n      if pattern[i] == pattern[j]:\n        lps[i] = j + 1\n        j += 1\n    return lps\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"abcdefg\", p = \"*bcd*fg\"",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"abcabcabc\", p = \"*bc*bc\"",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"mississippi\", p = \"mis*si*\"",
+      "salida": "5",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3455: LC-3407 - Substring Matching Pattern. Ambos problemas comparten las técnicas de búsqueda de cadenas, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'luck', p = 'u*'",
+      "salida": "True",
+      "explicacion": "Relación con LC-3455: Ambos problemas comparten las técnicas de búsqueda de cadenas, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def hasMatch(self, s: str, p: str) -> bool:\n    prefix, suffix = p.split('*')\n    i = s.find(prefix)\n    return i != -1 and s.find(suffix, i + len(prefix)) != -1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().shortestMatchingSubstring('abcdefg', '*bcd*fg') == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().shortestMatchingSubstring('abcabcabc', '*bc*bc') == 5"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().shortestMatchingSubstring('mississippi', 'mis*si*') == 5"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().shortestMatchingSubstring('baccbaadbc', 'cc*baa*adb') == -1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().shortestMatchingSubstring('aaaaa', '*aaa*') == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().shortestMatchingSubstring('xyz', '*x*z') == -1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().shortestMatchingSubstring('xyxyxyxy', 'xy*xy*') == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().shortestMatchingSubstring('abaacbaecebce', 'ba*c*ce') == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().shortestMatchingSubstring('aaaaaa', 'a*a*a') == 3"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().shortestMatchingSubstring('hellothere', 'he*lo*re') == 10"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().shortestMatchingSubstring('a', '**') == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().shortestMatchingSubstring('abcde', '*c*') == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3455",
+    "fecha-estimada-2025-02-09",
+    "Two Pointers",
+    "String",
+    "Binary Search",
+    "String Matching"
+  ]
+}

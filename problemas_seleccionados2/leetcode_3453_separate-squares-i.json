@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3453",
+  "titulo": "Separate Squares I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/separate-squares-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Binary Search",
+  "enunciado": "You are given a 2D integer array squares. Each squares[i] = [xi, yi, li] represents the coordinates of the bottom-left point and the side length of a square parallel to the x-axis.\nFind the minimum y-coordinate value of a horizontal line such that the total area of the squares above the line equals the total area of the squares below the line.\nAnswers within 10-5 of the actual answer will be accepted.\nNote: Squares may overlap. Overlapping areas should be counted multiple times.\n \nExample 1:\n\nInput: squares = [[0,0,1],[2,2,1]]\nOutput: 1.00000\nExplanation:\n\nAny horizontal line between y = 1 and y = 2 will have 1 square unit above it and 1 square unit below it. The lowest option is 1.\n\nExample 2:\n\nInput: squares = [[0,0,2],[1,1,1]]\nOutput: 1.16667\nExplanation:\n\nThe areas are:\n\nBelow the line: 7/6 * 2 (Red) + 1/6 (Blue) = 15/6 = 2.5.\nAbove the line: 5/6 * 2 (Red) + 5/6 (Blue) = 15/6 = 2.5.\n\nSince the areas above and below the line are equal, the output is 7/6 = 1.16667.\n\n \nConstraints:\n\n1 <= squares.length <= 5 * 104\nsquares[i] = [xi, yi, li]\nsquares[i].length == 3\n0 <= xi, yi <= 109\n1 <= li <= 109\nThe total area of all the squares will not exceed 1012.\n\n",
+  "especificacion_entrada": "squares: list[list[int]]",
+  "especificacion_salida": "float",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def separateSquares(self, squares: list[list[int]]) -> float:\n    halfArea = sum((l**2 for _, _, l in squares)) / 2\n    events = sorted([(y, True, l) for _, y, l in squares] +\n                    [(y + l, False, l) for _, y, l in squares])\n    area = 0\n    width = 0\n    prevY = 0\n\n    for y, isStart, l in events:\n      areaGain = width * (y - prevY)\n      if area + areaGain >= halfArea:\n        return prevY + (halfArea - area) / width\n      area += areaGain\n      width += l if isStart else -l\n      prevY = y\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "squares = [[0,0,10],[5,5,10],[10,10,10]]",
+      "salida": "10.0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "squares = [[0,0,4],[2,2,2],[4,4,1]]",
+      "salida": "2.4166666666666665",
+      "explicacion": ""
+    },
+    {
+      "entrada": "squares = [[0,0,3],[3,3,3],[6,6,3]]",
+      "salida": "4.5",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3453: LC-3350 - Adjacent Increasing Subarrays Detection II. Ambos problemas comparten las técnicas de búsqueda binaria, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 3, 2, 4, 3, 5, 4, 6, 5, 7]",
+      "salida": "2",
+      "explicacion": "Relación con LC-3453: Ambos problemas comparten las técnicas de búsqueda binaria, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  # Similar to 3349. Adjacent Increasing Subarrays Detection I\n  def maxIncreasingSubarrays(self, nums: list[int]) -> int:\n    ans = 0\n    increasing = 1\n    prevIncreasing = 0\n\n    for a, b in itertools.pairwise(nums):\n      if b > a:\n        increasing += 1\n      else:\n        prevIncreasing = increasing\n        increasing = 1\n      ans = max(ans, increasing // 2)\n      ans = max(ans, min(prevIncreasing, increasing))\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().separateSquares([[0, 0, 10], [5, 5, 10], [10, 10, 10]]) == 10.0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().separateSquares([[0, 0, 4], [2, 2, 2], [4, 4, 1]]) == 2.4166666666666665"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().separateSquares([[0, 0, 3], [3, 3, 3], [6, 6, 3]]) == 4.5"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().separateSquares([[0, 0, 3], [3, 3, 3]]) == 3.0"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().separateSquares([[0, 0, 5], [5, 5, 5], [2, 2, 2], [3, 3, 3]]) == 4.5625"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().separateSquares([[5, 5, 5], [10, 10, 5], [15, 15, 5]]) == 12.5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().separateSquares([[1, 1, 2], [2, 2, 2], [3, 3, 2]]) == 3.0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().separateSquares([[0, 0, 10], [5, 5, 5], [10, 0, 10]]) == 5.5"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().separateSquares([[0, 0, 3], [1, 1, 2], [2, 2, 1]]) == 1.8"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().separateSquares([[0, 0, 2], [1, 1, 1]]) == 1.1666666666666667"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().separateSquares([[0, 0, 5], [1, 1, 3], [2, 2, 2], [3, 3, 1]]) == 2.65"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().separateSquares([[0, 0, 4], [2, 2, 2], [1, 1, 2]]) == 2.25"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3453",
+    "fecha-estimada-2025-02-09",
+    "Array",
+    "Binary Search"
+  ]
+}

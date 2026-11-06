@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3490",
+  "titulo": "Count Beautiful Numbers",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-beautiful-numbers/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Programación Dinámica / DP de Dígitos / Matemáticas",
+  "enunciado": "You are given two positive integers, l and r. A positive integer is called beautiful if the product of its digits is divisible by the sum of its digits.\nReturn the count of beautiful numbers between l and r, inclusive.\n \nExample 1:\n\nInput: l = 10, r = 20\nOutput: 2\nExplanation:\nThe beautiful numbers in the range are 10 and 20.\n\nExample 2:\n\nInput: l = 1, r = 15\nOutput: 10\nExplanation:\nThe beautiful numbers in the range are 1, 2, 3, 4, 5, 6, 7, 8, 9, and 10.\n\n \nConstraints:\n\n1 <= l <= r < 109\n\n",
+  "especificacion_entrada": "l: integer, r: integer",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= l <= r < 109",
+  "solucion_referencia": "import functools\n\nclass Solution:\n  def beautifulNumbers(self, l: int, r: int) -> int:\n    @functools.lru_cache(None)\n    def dp(\n        s: str,\n        i: int,\n        tight: bool,\n        isLeadingZero: bool,\n        hasZero: bool,\n        sum: int,\n        prod: int,\n    ) -> int:\n      if i == len(s):\n        if isLeadingZero:\n          return 0\n        return 1 if hasZero or prod % sum == 0 else 0\n      if not isLeadingZero and hasZero and not tight:\n        return 10 ** (len(s) - i)\n\n      res = 0\n      maxDigit = int(s[i]) if tight else 9\n\n      for d in range(maxDigit + 1):\n        nextTight = tight and (d == maxDigit)\n        nextIsLeadingZero = isLeadingZero and d == 0\n        nextHasZero = not nextIsLeadingZero and d == 0\n        nextProd = 1 if nextIsLeadingZero else prod * d\n        res += dp(s, i + 1, nextTight, nextIsLeadingZero,\n                  nextHasZero, sum + d, nextProd)\n\n      return res\n\n    return (dp(str(r), 0, tight=True, isLeadingZero=True, hasZero=False, sum=0, prod=1) -\n            dp(str(l - 1), 0, tight=True, isLeadingZero=True, hasZero=False, sum=0, prod=1))",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "l = 10, r = 20",
+      "salida": "2",
+      "explicacion": "The beautiful numbers in the range are 10 and 20."
+    },
+    {
+      "entrada": "l = 1, r = 15",
+      "salida": "10",
+      "explicacion": "The beautiful numbers in the range are 1, 2, 3, 4, 5, 6, 7, 8, 9, and 10."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3490: LC-3345 - Smallest Divisible Digit Product I. Ambos aplican propiedades aritméticas de los dígitos para reconocer o construir números que satisfacen una condición.",
+      "entrada": "n = 30, t = 5",
+      "salida": "30",
+      "explicacion": "Relación con LC-3490: Ambos aplican propiedades aritméticas de los dígitos para reconocer o construir números que satisfacen una condición.",
+      "codigo_ilustrativo": "class Solution:\n  def smallestNumber(self, n: int, t: int) -> int:\n    return next(num for num in range(n, n + 10)\n                if self._getDigitProd(num) % t == 0)\n\n  def _getDigitProd(self, num: int) -> int:\n    digitProd = 1\n    while num > 0:\n      digitProd *= num % 10\n      num //= 10\n    return digitProd\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().beautifulNumbers(999, 999) == 1"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().beautifulNumbers(1, 9) == 9"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().beautifulNumbers(900, 1000) == 35"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().beautifulNumbers(789, 890) == 35"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().beautifulNumbers(500, 5000) == 1800"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().beautifulNumbers(5, 50) == 13"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().beautifulNumbers(100, 200) == 32"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().beautifulNumbers(50, 100) == 9"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().beautifulNumbers(10, 20) == 2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().beautifulNumbers(999, 1001) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().beautifulNumbers(1, 999999999) == 670349658"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().beautifulNumbers(990, 1000) == 3"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3490",
+    "seleccion-reciente-2026-11"
+  ]
+}

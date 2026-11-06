@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3363",
+  "titulo": "Find the Maximum Number of Fruits Collected",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-maximum-number-of-fruits-collected/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Dynamic Programming / Matrix",
+  "enunciado": "There is a game dungeon comprised of n x n rooms arranged in a grid.\nYou are given a 2D array fruits of size n x n, where fruits[i][j] represents the number of fruits in the room (i, j). Three children will play in the game dungeon, with initial positions at the corner rooms (0, 0), (0, n - 1), and (n - 1, 0).\nThe children will make exactly n - 1 moves according to the following rules to reach the room (n - 1, n - 1):\n\nThe child starting from (0, 0) must move from their current room (i, j) to one of the rooms (i + 1, j + 1), (i + 1, j), and (i, j + 1) if the target room exists.\nThe child starting from (0, n - 1) must move from their current room (i, j) to one of the rooms (i + 1, j - 1), (i + 1, j), and (i + 1, j + 1) if the target room exists.\nThe child starting from (n - 1, 0) must move from their current room (i, j) to one of the rooms (i - 1, j + 1), (i, j + 1), and (i + 1, j + 1) if the target room exists.\n\nWhen a child enters a room, they will collect all the fruits there. If two or more children enter the same room, only one child will collect the fruits, and the room will be emptied after they leave.\nReturn the maximum number of fruits the children can collect from the dungeon.\n \nExample 1:\n\nInput: fruits = [[1,2,3,4],[5,6,8,7],[9,10,11,12],[13,14,15,16]]\nOutput: 100\nExplanation:\n\nIn this example:\n\nThe 1st child (green) moves on the path (0,0) -> (1,1) -> (2,2) -> (3, 3).\nThe 2nd child (red) moves on the path (0,3) -> (1,2) -> (2,3) -> (3, 3).\nThe 3rd child (blue) moves on the path (3,0) -> (3,1) -> (3,2) -> (3, 3).\n\nIn total they collect 1 + 6 + 11 + 16 + 4 + 8 + 12 + 13 + 14 + 15 = 100 fruits.\n\nExample 2:\n\nInput: fruits = [[1,1],[1,1]]\nOutput: 4\nExplanation:\nIn this example:\n\nThe 1st child moves on the path (0,0) -> (1,1).\nThe 2nd child moves on the path (0,1) -> (1,1).\nThe 3rd child moves on the path (1,0) -> (1,1).\n\nIn total they collect 1 + 1 + 1 + 1 = 4 fruits.\n\n \nConstraints:\n\n2 <= n == fruits.length == fruits[i].length <= 1000\n0 <= fruits[i][j] <= 1000\n\n",
+  "especificacion_entrada": "fruits: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxCollectedFruits(self, fruits: list[list[int]]) -> int:\n    n = len(fruits)\n\n    def getTopLeft() -> int:\n      return sum(fruits[i][i] for i in range(n))\n\n    def getTopRight() -> int:\n      # dp[i][j] := the number of fruits collected from (0, n - 1) to (i, j)\n      dp = [[0] * n for _ in range(n)]\n      dp[0][-1] = fruits[0][-1]\n      for x in range(n):\n        for y in range(n):\n          if x >= y and (x, y) != (n - 1, n - 1):\n            continue\n          for dx, dy in [(1, -1), (1, 0), (1, 1)]:\n            i = x - dx\n            j = y - dy\n            if i < 0 or i == n or j < 0 or j == n:\n              continue\n            if i < j < n - 1 - i:\n              continue\n            dp[x][y] = max(dp[x][y], dp[i][j] + fruits[x][y])\n      return dp[-1][-1]\n\n    def getBottomLeft() -> int:\n      # dp[i][j] := the number of fruits collected from (n - 1, 0) to (i, j)\n      dp = [[0] * n for _ in range(n)]\n      dp[-1][0] = fruits[-1][0]\n      for y in range(n):\n        for x in range(n):\n          if x <= y and (x, y) != (n - 1, n - 1):\n            continue\n          for dx, dy in [(-1, 1), (0, 1), (1, 1)]:\n            i = x - dx\n            j = y - dy\n            if i < 0 or i == n or j < 0 or j == n:\n              continue\n            if j < i < n - 1 - j:\n              continue\n            dp[x][y] = max(dp[x][y], dp[i][j] + fruits[x][y])\n      return dp[-1][-1]\n\n    return getTopLeft() + getTopRight() + getBottomLeft() - 2 * fruits[-1][-1]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "fruits = [[10,20,30,40],[50,60,70,80],[90,100,110,120],[130,140,150,160]]",
+      "salida": "1000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "fruits = [[1000,0,0],[0,1000,0],[0,0,1000]]",
+      "salida": "3000",
+      "explicacion": ""
+    },
+    {
+      "entrada": "fruits = [[10,0,0,10],[0,1,1,0],[0,1,1,0],[10,0,0,10]]",
+      "salida": "44",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3363: LC-3256 - Maximum Value Sum by Placing Three Rooks I. Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "board = [[10, 20, 30], [40, 50, 60], [70, 80, 90]]",
+      "salida": "150",
+      "explicacion": "Relación con LC-3363: Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import heapq\nimport itertools\n\nclass Solution:\n  def maximumValueSum(self, board: list[list[int]]) -> int:\n    rows = [heapq.nlargest(3, [(val, i, j)\n            for j, val in enumerate(row)])\n            for i, row in enumerate(board)]\n    cols = [heapq.nlargest(3, [(val, i, j)\n            for i, val in enumerate(col)])\n            for j, col in enumerate(zip(*board))]\n    topNine = heapq.nlargest(9,\n                             set(itertools.chain(*rows)) &\n                             set(itertools.chain(*cols)))\n    return max(\n        (val1 + val2 + val3 for\n         (val1, i1, j1),\n         (val2, i2, j2),\n         (val3, i3, j3) in (itertools.combinations(topNine, 3))\n         if len({i1, i2, i3}) == 3 and len({j1, j2, j3}) == 3))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxCollectedFruits([[10, 20, 30, 40], [50, 60, 70, 80], [90, 100, 110, 120], [130, 140, 150, 160]]) == 1000"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxCollectedFruits([[1000, 0, 0], [0, 1000, 0], [0, 0, 1000]]) == 3000"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxCollectedFruits([[10, 0, 0, 10], [0, 1, 1, 0], [0, 1, 1, 0], [10, 0, 0, 10]]) == 44"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxCollectedFruits([[1, 1], [1, 1]]) == 4"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxCollectedFruits([[1, 2], [3, 4]]) == 10"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxCollectedFruits([[5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5]]) == 65"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxCollectedFruits([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) == 0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxCollectedFruits([[1, 2, 3, 4], [5, 6, 8, 7], [9, 10, 11, 12], [13, 14, 15, 16]]) == 100"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxCollectedFruits([[3, 1, 2, 2], [1, 4, 4, 5], [2, 4, 2, 2], [2, 4, 2, 2]]) == 28"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxCollectedFruits([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) == 39"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxCollectedFruits([[5, 5, 5], [5, 5, 5], [5, 5, 5]]) == 35"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxCollectedFruits([[10, 20, 30], [40, 50, 60], [70, 80, 90]]) == 390"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3363",
+    "fecha-estimada-2024-11-17",
+    "Array",
+    "Dynamic Programming",
+    "Matrix"
+  ]
+}

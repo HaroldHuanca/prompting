@@ -1,0 +1,4 @@
+leetcode_id,title,slug,url,description,difficulty,publication_date,date_type,original_date_field,source_name,source_url,extracted_at,tags,constraints,examples,signature,test_cases,reference_solution,source_license,completeness,date_conflicts,notes
+4057,Find the Longest Balanced Subsequence,find-the-longest-balanced-subsequence,https://leetcode.com/problems/find-the-longest-balanced-subsequence/,Find the longest sub-sequence whose counts of opening and closing brackets stay balanced.,Medium,2024-08-15,estimated,,example_dataset,https://example.invalid/records/4057,2026-10-31T02:51:02Z,String; Greedy,1 <= s.length <= 10^5,"Input: s = ""(()())""
+Output: 6","class Solution:
+    def longestBalancedSubsequence(self, s: str) -> int:",,,,partial,,Fallback sample dataset used when live sources are inaccessible.

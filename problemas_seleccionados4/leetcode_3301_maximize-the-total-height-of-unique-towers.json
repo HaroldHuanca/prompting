@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3301",
+  "titulo": "Maximize the Total Height of Unique Towers",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-the-total-height-of-unique-towers/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Greedy / Array / Sorting",
+  "enunciado": "You are given an array maximumHeight, where maximumHeight[i] denotes the maximum height the ith tower can be assigned.\nYour task is to assign a height to each tower so that:\n\nThe height of the ith tower is a positive integer and does not exceed maximumHeight[i].\nNo two towers have the same height.\n\nReturn the maximum possible total sum of the tower heights. If it's not possible to assign heights, return -1.\n \nExample 1:\n\nInput: maximumHeight = [2,3,4,3]\nOutput: 10\nExplanation:\nWe can assign heights in the following way: [1, 2, 4, 3].\n\nExample 2:\n\nInput: maximumHeight = [15,10]\nOutput: 25\nExplanation:\nWe can assign heights in the following way: [15, 10].\n\nExample 3:\n\nInput: maximumHeight = [2,2,1]\nOutput: -1\nExplanation:\nIt's impossible to assign positive heights to each index so that no two towers have the same height.\n\n \nConstraints:\n\n1 <= maximumHeight.length <= 105\n1 <= maximumHeight[i] <= 109\n\n",
+  "especificacion_entrada": "maximumHeight: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maximumTotalSum(self, maximumHeight: list[int]) -> int:\n    ans = 0\n    mn = math.inf\n\n    for height in sorted(maximumHeight, reverse=True):\n      assigned = min(height, mn - 1)\n      if assigned == 0:\n        return -1\n      ans += assigned\n      mn = assigned\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "maximumHeight = [2,3,4,3]",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "maximumHeight = [5,5,5,5,5]",
+      "salida": "15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "maximumHeight = [1,2,3,4,5]",
+      "salida": "15",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3301: LC-3424 - Minimum Cost to Make Arrays Identical. Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "arr = [0, 0, 0], brr = [0, 0, 0], k = 10",
+      "salida": "0",
+      "explicacion": "Relación con LC-3301: Ambos problemas comparten las técnicas de estrategia voraz, ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minCost(self, arr: list[int], brr: list[int], k: int) -> int:\n    def cost(arr: list[int], brr: list[int]) -> int:\n      return sum(abs(a - b) for a, b in zip(arr, brr))\n    return min(cost(arr, brr), cost(sorted(arr), sorted(brr)) + k)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maximumTotalSum([2, 3, 4, 3]) == 10"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maximumTotalSum([5, 5, 5, 5, 5]) == 15"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maximumTotalSum([1, 2, 3, 4, 5]) == 15"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maximumTotalSum([1000000000, 999999999, 999999998, 999999997, 999999996]) == 4999999990"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maximumTotalSum([1]) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maximumTotalSum([1000000000, 1000000000, 1000000000]) == 2999999997"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maximumTotalSum([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 55"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maximumTotalSum([2, 2, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maximumTotalSum([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == -1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maximumTotalSum([15, 10]) == 25"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maximumTotalSum([30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 465"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maximumTotalSum([3, 3, 3, 3, 2, 2, 2, 1, 1, 1]) == -1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3301",
+    "fecha-estimada-2024-09-22",
+    "Greedy",
+    "Array",
+    "Sorting"
+  ]
+}

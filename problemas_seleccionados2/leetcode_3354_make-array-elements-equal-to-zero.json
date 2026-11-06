@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3354",
+  "titulo": "Make Array Elements Equal to Zero",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/make-array-elements-equal-to-zero/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Prefix Sum / Simulation",
+  "enunciado": "You are given an integer array nums.\nStart by selecting a starting position curr such that nums[curr] == 0, and choose a movement direction of either left or right.\nAfter that, you repeat the following process:\n\nIf curr is out of the range [0, n - 1], this process ends.\nIf nums[curr] == 0, move in the current direction by incrementing curr if you are moving right, or decrementing curr if you are moving left.\nElse if nums[curr] > 0:\n\t\nDecrement nums[curr] by 1.\nReverse your movement direction (left becomes right and vice versa).\nTake a step in your new direction.\n\n\n\nA selection of the initial position curr and movement direction is considered valid if every element in nums becomes 0 by the end of the process.\nReturn the number of possible valid selections.\n \nExample 1:\n\nInput: nums = [1,0,2,0,3]\nOutput: 2\nExplanation:\nThe only possible valid selections are the following:\n\nChoose curr = 3, and a movement direction to the left.\n\n\t\n[1,0,2,0,3] -> [1,0,2,0,3] -> [1,0,1,0,3] -> [1,0,1,0,3] -> [1,0,1,0,2] -> [1,0,1,0,2] -> [1,0,0,0,2] -> [1,0,0,0,2] -> [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,0].\n\n\nChoose curr = 3, and a movement direction to the right.\n\t\n[1,0,2,0,3] -> [1,0,2,0,3] -> [1,0,2,0,2] -> [1,0,2,0,2] -> [1,0,1,0,2] -> [1,0,1,0,2] -> [1,0,1,0,1] -> [1,0,1,0,1] -> [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,0] -> [1,0,0,0,0] -> [1,0,0,0,0] -> [1,0,0,0,0] -> [0,0,0,0,0].\n\n\n\n\nExample 2:\n\nInput: nums = [2,3,4,0,4,1,0]\nOutput: 0\nExplanation:\nThere are no possible valid selections.\n\n \nConstraints:\n\n1 <= nums.length <= 100\n0 <= nums[i] <= 100\nThere is at least one element i where nums[i] == 0.\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countValidSelections(self, nums: list[int]) -> int:\n    ans = 0\n    prefix = list(itertools.accumulate(nums))\n    suffix = list(itertools.accumulate(nums[::-1]))[::-1]\n\n    for i, num in enumerate(nums):\n      if num > 0:\n        continue\n      if prefix[i] == suffix[i]:\n        ans += 2  # Go to either direction.\n      if abs(prefix[i] - suffix[i]) == 1:\n        ans += 1  # Go to the direction with the larger sum.\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,2,3,4,0]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,0,1,0,1,0,1,0]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,0,0,2,0,3,0,0,4]",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3354: LC-3355 - Zero Array Transformation I. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [0, 0, 0, 0], queries = [[0, 3], [1, 2], [2, 2]]",
+      "salida": "True",
+      "explicacion": "Relación con LC-3354: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def isZeroArray(self, nums: list[int], queries: list[list[int]]) -> bool:\n    line = [0] * (len(nums) + 1)\n    decrement = 0\n\n    for l, r in queries:\n      line[l] += 1\n      line[r + 1] -= 1\n\n    for i, num in enumerate(nums):\n      decrement += line[i]\n      if decrement < num:\n        return False\n\n    return True\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countValidSelections([1, 2, 3, 4, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countValidSelections([1, 0, 1, 0, 1, 0, 1, 0]) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countValidSelections([1, 0, 0, 2, 0, 3, 0, 0, 4]) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countValidSelections([0, 1, 0, 1, 0]) == 2"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countValidSelections([2, 0, 2, 0, 2, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countValidSelections([0, 1, 1, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countValidSelections([0, 2, 1, 0, 3, 0, 1]) == 1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countValidSelections([0, 0, 0, 0, 0]) == 10"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countValidSelections([3, 0, 0, 0, 3]) == 6"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countValidSelections([0, 1, 2, 3, 4]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countValidSelections([2, 3, 4, 0, 4, 1, 0]) == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countValidSelections([0]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3354",
+    "fecha-estimada-2024-11-17",
+    "Array",
+    "Prefix Sum",
+    "Simulation"
+  ]
+}

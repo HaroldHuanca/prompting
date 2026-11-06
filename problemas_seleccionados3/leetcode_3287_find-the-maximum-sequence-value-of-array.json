@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3287",
+  "titulo": "Find the Maximum Sequence Value of Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-maximum-sequence-value-of-array/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Bit Manipulation / Array / Dynamic Programming",
+  "enunciado": "You are given an integer array nums and a positive integer k.\nThe value of a sequence seq of size 2 * x is defined as:\n\n(seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1]).\n\nReturn the maximum value of any subsequence of nums having size 2 * k.\n \nExample 1:\n\nInput: nums = [2,6,7], k = 1\nOutput: 5\nExplanation:\nThe subsequence [2, 7] has the maximum value of 2 XOR 7 = 5.\n\nExample 2:\n\nInput: nums = [4,2,5,6,7], k = 2\nOutput: 2\nExplanation:\nThe subsequence [4, 5, 6, 7] has the maximum value of (4 OR 5) XOR (6 OR 7) = 2.\n\n \nConstraints:\n\n2 <= nums.length <= 400\n1 <= nums[i] < 27\n1 <= k <= nums.length / 2\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxValue(self, nums: list[int], k: int) -> int:\n    left = self._getPossibleORs(nums, k)\n    right = self._getPossibleORs(nums[::-1], k)[::-1]\n    return max(a ^ b\n               for i in range(k - 1, len(nums) - k)\n               for a in range(128 + 1)\n               for b in range(128 + 1)\n               if left[i][k][a] and right[i + 1][k][b])\n\n  def _getPossibleORs(self, nums: list[int], k: int) -> list[list[list[bool]]]:\n    dp = [[[False] * (128 + 1)\n          for _ in range(k + 1)]\n          for _ in range(len(nums))]\n\n    dp[0][1][nums[0]] = True\n\n    for i in range(len(nums)):\n      dp[i][0][0] = True\n\n    for i in range(1, len(nums)):\n      for j in range(1, k + 1):\n        for x in range(128 + 1):\n          if dp[i - 1][j][x]:\n            dp[i][j][x] = True\n          if dp[i - 1][j - 1][x]:\n            dp[i][j][nums[i] | x] = True\n\n    return dp\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,3,5,7,9,11], k = 3",
+      "salida": "8",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1,1,1,1,1,1], k = 2",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [31,15,7,3,1], k = 2",
+      "salida": "28",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3287: LC-3393 - Count Paths With the Given XOR Value. Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "grid = [[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], k = 2",
+      "salida": "5",
+      "explicacion": "Relación con LC-3287: Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def countPathsWithXorValue(self, grid: list[list[int]], k: int) -> int:\n    MOD = 1_000_000_007\n    m = len(grid)\n    n = len(grid[0])\n\n    @functools.lru_cache(None)\n    def count(i: int, j: int, xors: int) -> int:\n      \"\"\"\n      Return the number of paths from (i, j) to (m - 1, n - 1) with XOR value\n      `xors`.\n      \"\"\"\n      if i == m or j == n:\n        return 0\n      xors ^= grid[i][j]\n      if i == m - 1 and j == n - 1:\n        return int(xors == k)\n      right = count(i, j + 1, xors)\n      down = count(i + 1, j, xors)\n      return (right + down) % MOD\n\n    return count(0, 0, 0)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxValue([1, 3, 5, 7, 9, 11], 3) == 8"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxValue([1, 1, 1, 1, 1, 1, 1, 1], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxValue([31, 15, 7, 3, 1], 2) == 28"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxValue([26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 12) == 16"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxValue([1, 3, 5, 7, 9, 11, 13, 15], 3) == 8"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxValue([8, 4, 2, 1], 1) == 12"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxValue([2, 6, 7], 1) == 5"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxValue([4, 2, 5, 6, 7], 2) == 2"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxValue([8, 8, 8, 8, 8, 8, 8, 8], 2) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxValue([26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1], 8) == 24"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxValue([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39], 5) == 56"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxValue([1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59], 7) == 56"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3287",
+    "fecha-estimada-2024-09-08",
+    "Bit Manipulation",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

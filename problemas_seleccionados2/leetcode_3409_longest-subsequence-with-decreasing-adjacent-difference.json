@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3409",
+  "titulo": "Longest Subsequence With Decreasing Adjacent Difference",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-subsequence-with-decreasing-adjacent-difference/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "You are given an array of integers nums.\nYour task is to find the length of the longest subsequence seq of nums, such that the absolute differences between consecutive elements form a non-increasing sequence of integers. In other words, for a subsequence seq0, seq1, seq2, ..., seqm of nums, |seq1 - seq0| >= |seq2 - seq1| >= ... >= |seqm - seqm - 1|.\nReturn the length of such a subsequence.\n \nExample 1:\n\nInput: nums = [16,6,3]\nOutput: 3\nExplanation: \nThe longest subsequence is [16, 6, 3] with the absolute adjacent differences [10, 3].\n\nExample 2:\n\nInput: nums = [6,5,3,4,2,1]\nOutput: 4\nExplanation:\nThe longest subsequence is [6, 4, 2, 1] with the absolute adjacent differences [2, 2, 1].\n\nExample 3:\n\nInput: nums = [10,20,10,19,10,20]\nOutput: 5\nExplanation: \nThe longest subsequence is [10, 20, 10, 19, 10] with the absolute adjacent differences [10, 10, 9, 9].\n\n \nConstraints:\n\n2 <= nums.length <= 104\n1 <= nums[i] <= 300\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def longestSubsequence(self, nums: list[int]) -> int:\n    mx = max(nums)\n    # dp[num][diff] := the length of the longest subsequence ending in `num`\n    # s.t. the last absolute difference between consecutive elements is `diff`\n    dp = [[0] * (mx + 1) for _ in range(mx + 1)]\n\n    for num in nums:\n      for prev in range(1, mx + 1):\n        diff = abs(num - prev)\n        dp[num][diff] = max(dp[num][diff], dp[prev][diff] + 1)\n      # dp[num][diff] := max(dp[num][j]) for j >= diff\n      for j in range(mx - 1, -1, -1):\n        dp[num][j] = max(dp[num][j], dp[num][j + 1])\n\n    return max(map(max, dp))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [1,3,2,4,3,5,4,6,5,7]",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,10,1,10,1,10,1,10]",
+      "salida": "8",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [300,1,300,2,300,3,300]",
+      "salida": "7",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3409: LC-3366 - Minimum Array Sum. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [0, 0, 0, 0], k = 0, op1 = 4, op2 = 4",
+      "salida": "0",
+      "explicacion": "Relación con LC-3409: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def minArraySum(self, nums: list[int], k: int, op1: int, op2: int) -> int:\n    @functools.lru_cache(None)\n    def dp(i: int, op1: int, op2: int) -> int:\n      \"\"\"\n      Returns the minimum sum of nums[i..n - 1] with `op1` operations of op1 and\n      `op2` operations of op2.\n      \"\"\"\n      if i == len(nums):\n        return 0\n      res = nums[i] + dp(i + 1, op1, op2)\n      if op1 > 0:\n        res = min(res, (nums[i] + 1) // 2 + dp(i + 1, op1 - 1, op2))\n      if op2 > 0 and nums[i] >= k:\n        res = min(res, nums[i] - k + dp(i + 1, op1, op2 - 1))\n      if op1 > 0 and op2 > 0:\n        if (nums[i] + 1) // 2 >= k:\n          res = min(res, (nums[i] + 1) // 2 - k + dp(i + 1, op1 - 1, op2 - 1))\n        if nums[i] >= k:\n          res = min(res, (nums[i] - k + 1) // 2 + dp(i + 1, op1 - 1, op2 - 1))\n      return res\n\n    return dp(0, op1, op2)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().longestSubsequence([1, 3, 2, 4, 3, 5, 4, 6, 5, 7]) == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().longestSubsequence([1, 10, 1, 10, 1, 10, 1, 10]) == 8"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().longestSubsequence([300, 1, 300, 2, 300, 3, 300]) == 7"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().longestSubsequence([3, 3, 3, 3, 3, 3, 3, 3, 3, 3]) == 10"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().longestSubsequence([100, 150, 100, 200, 100, 200, 100]) == 5"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().longestSubsequence([300, 299, 298, 297, 296, 295, 294]) == 7"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().longestSubsequence([6, 5, 3, 4, 2, 1]) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().longestSubsequence([1, 300, 2, 299, 3, 298, 4, 297]) == 8"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().longestSubsequence([10, 10, 10, 10, 10, 10, 10, 10, 10, 10]) == 10"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().longestSubsequence([300, 1, 300, 1, 300]) == 5"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().longestSubsequence([1, 2, 3, 4, 5]) == 5"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().longestSubsequence([1, 100, 2, 99, 3, 98, 4, 97]) == 8"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3409",
+    "fecha-estimada-2024-12-29",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

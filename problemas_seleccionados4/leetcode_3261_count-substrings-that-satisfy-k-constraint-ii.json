@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3261",
+  "titulo": "Count Substrings That Satisfy K-Constraint II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-substrings-that-satisfy-k-constraint-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / String / Binary Search / Prefix Sum / Sliding Window",
+  "enunciado": "You are given a binary string s and an integer k.\nYou are also given a 2D integer array queries, where queries[i] = [li, ri].\nA binary string satisfies the k-constraint if either of the following conditions holds:\n\nThe number of 0's in the string is at most k.\nThe number of 1's in the string is at most k.\n\nReturn an integer array answer, where answer[i] is the number of substrings of s[li..ri] that satisfy the k-constraint.\n \nExample 1:\n\nInput: s = \"0001111\", k = 2, queries = [[0,6]]\nOutput: [26]\nExplanation:\nFor the query [0, 6], all substrings of s[0..6] = \"0001111\" satisfy the k-constraint except for the substrings s[0..5] = \"000111\" and s[0..6] = \"0001111\".\n\nExample 2:\n\nInput: s = \"010101\", k = 1, queries = [[0,5],[1,4],[2,3]]\nOutput: [15,9,3]\nExplanation:\nThe substrings of s with a length greater than 3 do not satisfy the k-constraint.\n\n \nConstraints:\n\n1 <= s.length <= 105\ns[i] is either '0' or '1'.\n1 <= k <= s.length\n1 <= queries.length <= 105\nqueries[i] == [li, ri]\n0 <= li <= ri < s.length\nAll queries are distinct.\n\n",
+  "especificacion_entrada": "s: str, k: int, queries: list[list[int]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countKConstraintSubstrings(\n      self,\n      s: str,\n      k: int,\n      queries: list[list[int]]\n  ) -> list[int]:\n    n = len(s)\n    ans = []\n    count = [0, 0]\n    # leftToRight[l] := the maximum right index r s.t. s[l..r] is valid\n    leftToRight = [0] * n\n    # rightToLeft[r] := the minimum left index l s.t. s[l..r] is valid\n    rightToLeft = [0] * n\n\n    l = 0\n    for r in range(n):\n      count[int(s[r])] += 1\n      while min(count) > k:\n        count[int(s[l])] -= 1\n        l += 1\n      rightToLeft[r] = l\n\n    count = [0, 0]\n    r = n - 1\n    for l in reversed(range(n)):\n      count[int(s[l])] += 1\n      while min(count) > k:\n        count[int(s[r])] -= 1\n        r -= 1\n      leftToRight[l] = r\n\n    # prefix[i] := the number of valid substrings ending in [0..i - 1].\n    prefix = list(itertools.accumulate((r - l + 1\n                                       for r, l in enumerate(rightToLeft)),\n                                       initial=0))\n\n    for l, r in queries:\n      if r > leftToRight[l]:\n        # If r is beyond leftToRight[l], compute the number of valid substrings\n        # from l to leftToRight[l] and add the number of valid substrings\n        # ending in [leftToRight[l] + 1..r].\n        #\n        # prefix[r + 1] := the number of valid substrings ending in [0..r].\n        # prefix[leftToRight[l] + 1] := the number of valid substrings ending\n        # in [0..leftToRight].\n        # => prefix[r + 1] - prefix[leftToRight[l] + 1] := the number of valid\n        # substrings ending in [leftToRight[l] + 1..r].\n        sz = leftToRight[l] - l + 1\n        numValidSubstrings = sz * (sz + 1) // 2 + (\n            prefix[r + 1] - prefix[leftToRight[l] + 1])\n      else:\n        # If r is within the range of leftToRight[l], compute the number of\n        # valid substrings directly from l to r.\n        sz = r - l + 1\n        numValidSubstrings = sz * (sz + 1) // 2\n      ans.append(numValidSubstrings)\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"010101\", k = 1, queries = [[0,5],[1,4],[2,3]]",
+      "salida": "[15, 9, 3]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"111111\", k = 3, queries = [[0,5],[1,4],[2,3]]",
+      "salida": "[21, 10, 3]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"000000\", k = 3, queries = [[0,5],[1,4],[2,3]]",
+      "salida": "[21, 10, 3]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3261: LC-3258 - Count Substrings That Satisfy K-Constraint I. Ambos problemas comparten las técnicas de ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = '0101010101', k = 5",
+      "salida": "55",
+      "explicacion": "Relación con LC-3261: Ambos problemas comparten las técnicas de ventana deslizante, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def countKConstraintSubstrings(self, s: str, k: int) -> int:\n    ans = 0\n    count = [0, 0]\n\n    l = 0\n    for r, c in enumerate(s):\n      count[int(c)] += 1\n      while min(count) > k:\n        count[int(s[l])] -= 1\n        l += 1\n      ans += r - l + 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countKConstraintSubstrings('010101', 1, [[0, 5], [1, 4], [2, 3]]) == [15, 9, 3]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countKConstraintSubstrings('111111', 3, [[0, 5], [1, 4], [2, 3]]) == [21, 10, 3]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countKConstraintSubstrings('000000', 3, [[0, 5], [1, 4], [2, 3]]) == [21, 10, 3]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countKConstraintSubstrings('0001111', 2, [[0, 6]]) == [26]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countKConstraintSubstrings('1010101010', 1, [[0, 9], [1, 8], [2, 7], [3, 6]]) == [27, 21, 15, 9]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countKConstraintSubstrings('0101010101', 1, [[0, 9], [1, 8], [2, 7], [3, 6]]) == [27, 21, 15, 9]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countKConstraintSubstrings('1111111111', 2, [[0, 9], [1, 8], [2, 7], [3, 6]]) == [55, 36, 21, 10]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countKConstraintSubstrings('111000', 2, [[0, 5], [1, 4], [2, 3]]) == [20, 10, 3]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countKConstraintSubstrings('0110011001', 2, [[0, 9], [1, 8], [2, 7], [3, 6]]) == [42, 32, 20, 10]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countKConstraintSubstrings('0000000000', 2, [[0, 9], [1, 8], [2, 7], [3, 6]]) == [55, 36, 21, 10]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countKConstraintSubstrings('11001100110011001100110011001100', 1, [[0, 30], [5, 25], [10, 20], [15, 25]]) == [90, 60, 30, 30]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countKConstraintSubstrings('111110000001111100000111', 2, [[0, 21], [5, 16], [10, 19], [0, 21], [3, 18]]) == [127, 61, 46, 127, 89]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3261",
+    "fecha-estimada-2024-08-18",
+    "Array",
+    "String",
+    "Binary Search",
+    "Prefix Sum",
+    "Sliding Window"
+  ]
+}

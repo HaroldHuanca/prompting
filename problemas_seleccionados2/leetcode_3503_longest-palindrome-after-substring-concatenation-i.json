@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3503",
+  "titulo": "Longest Palindrome After Substring Concatenation I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/longest-palindrome-after-substring-concatenation-i/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Cadenas / Programación Dinámica / Palíndromos",
+  "enunciado": "You are given two strings, s and t.\nYou can create a new string by selecting a substring from s (possibly empty) and a substring from t (possibly empty), then concatenating them in order.\nReturn the length of the longest palindrome that can be formed this way.\n \nExample 1:\n\nInput: s = \"a\", t = \"a\"\nOutput: 2\nExplanation:\nConcatenating \"a\" from s and \"a\" from t results in \"aa\", which is a palindrome of length 2.\n\nExample 2:\n\nInput: s = \"abc\", t = \"def\"\nOutput: 1\nExplanation:\nSince all characters are different, the longest palindrome is any single character, so the answer is 1.\n\nExample 3:\n\nInput: s = \"b\", t = \"aaaa\"\nOutput: 4\nExplanation:\nSelecting \"aaaa\" from t is the longest palindrome, so the answer is 4.\n\nExample 4:\n\nInput: s = \"abcde\", t = \"ecdba\"\nOutput: 5\nExplanation:\nConcatenating \"abc\" from s and \"ba\" from t results in \"abcba\", which is a palindrome of length 5.\n\n \nConstraints:\n\n1 <= s.length, t.length <= 30\ns and t consist of lowercase English letters.\n\n",
+  "especificacion_entrada": "s: string, t: string",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= s.length, t.length <= 30\ns and t consist of lowercase English letters.",
+  "solucion_referencia": "class Solution:\n  def longestPalindrome(self, s: str, t: str) -> int:\n    m = len(s)\n    n = len(t)\n    suffix = self._getPalindromeLengths(s, True)\n    prefix = self._getPalindromeLengths(t, False)\n    ans = max(max(suffix), max(prefix))\n    # dp[i][j] := the longest length of palindrome starting in s[i] and ending\n    # in t[j]\n    dp = [[0] * n for _ in range(m)]\n\n    for i in range(m):\n      for j in range(n - 1, -1, -1):\n        if s[i] == t[j]:\n          dp[i][j] = 2 + (dp[i - 1][j + 1] if i > 0 and j < n - 1 else 0)\n          extend = max(suffix[i + 1] if i + 1 < m else 0,\n                       prefix[j - 1] if j > 0 else 0)\n          ans = max(ans, dp[i][j] + extend)\n\n    return ans\n\n  def _getPalindromeLengths(self, s: str, isSuffix: bool) -> list[int]:\n    n = len(s)\n    # dp[i][j] := True if s[i..j] is a palindrome\n    dp = [[False] * n for _ in range(n)]\n    # lengths[i] := length of longest palindrome in s[i..n - 1]\n    lengths = [0] * n\n    for i in range(n - 1, -1, -1):\n      for j in range(i, n):\n        if s[i] == s[j] and (j - i < 2 or dp[i + 1][j - 1]):\n          dp[i][j] = True\n          index = i if isSuffix else j\n          lengths[index] = max(lengths[index], j - i + 1)\n    return lengths",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"a\", t = \"a\"",
+      "salida": "2",
+      "explicacion": "Concatenating \"a\" from s and \"a\" from t results in \"aa\", which is a palindrome of length 2."
+    },
+    {
+      "entrada": "s = \"abc\", t = \"def\"",
+      "salida": "1",
+      "explicacion": "Since all characters are different, the longest palindrome is any single character, so the answer is 1."
+    },
+    {
+      "entrada": "s = \"b\", t = \"aaaa\"",
+      "salida": "4",
+      "explicacion": "Selecting \"aaaa\" from t is the longest palindrome, so the answer is 4."
+    },
+    {
+      "entrada": "s = \"abcde\", t = \"ecdba\"",
+      "salida": "5",
+      "explicacion": "Concatenating \"abc\" from s and \"ba\" from t results in \"abcba\", which is a palindrome of length 5."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3503: LC-3504 - Longest Palindrome After Substring Concatenation II. Ambos problemas comparten las técnicas de programación dinámica, palindrome, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = 'b', t = 'aaaa'",
+      "salida": "4",
+      "explicacion": "Relación con LC-3503: Ambos problemas comparten las técnicas de programación dinámica, palindrome, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  # 3503. Longest Palindrome After Substring Concatenation I\n  def longestPalindrome(self, s: str, t: str) -> int:\n    m = len(s)\n    n = len(t)\n    suffix = self._getPalindromeLengths(s, True)\n    prefix = self._getPalindromeLengths(t, False)\n    ans = max(max(suffix), max(prefix))\n    # dp[i][j] := the longest length of palindrome starting in s[i] and ending\n    # in t[j]\n    dp = [[0] * n for _ in range(m)]\n\n    for i in range(m):\n      for j in range(n - 1, -1, -1):\n        if s[i] == t[j]:\n          dp[i][j] = 2 + (dp[i - 1][j + 1] if i > 0 and j < n - 1 else 0)\n          extend = max(suffix[i + 1] if i + 1 < m else 0,\n                       prefix[j - 1] if j > 0 else 0)\n          ans = max(ans, dp[i][j] + extend)\n\n    return ans\n\n  def _getPalindromeLengths(self, s: str, isSuffix: bool) -> list[int]:\n    n = len(s)\n    # dp[i][j] := True if s[i..j] is a palindrome\n    dp = [[False] * n for _ in range(n)]\n    # lengths[i] := length of longest palindrome in s[i..n - 1]\n    lengths = [0] * n\n    for i in range(n - 1, -1, -1):\n      for j in range(i, n):\n        if s[i] == s[j] and (j - i < 2 or dp[i + 1][j - 1]):\n          dp[i][j] = True\n          index = i if isSuffix else j\n          lengths[index] = max(lengths[index], j - i + 1)\n    return lengths"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().longestPalindrome('b', 'aaaa') == 4"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().longestPalindrome('hello', 'world') == 3"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().longestPalindrome('different', 'entirely') == 5"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().longestPalindrome('level', 'deified') == 7"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().longestPalindrome('xyza', 'azxy') == 4"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().longestPalindrome('abcabc', 'cbacba') == 12"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().longestPalindrome('race', 'ecar') == 8"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().longestPalindrome('abcde', 'ecdba') == 5"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().longestPalindrome('noon', 'moon') == 7"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().longestPalindrome('race', 'care') == 7"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().longestPalindrome('a', 'a') == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().longestPalindrome('hello', 'olleh') == 10"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3503",
+    "seleccion-reciente-2026-11"
+  ]
+}

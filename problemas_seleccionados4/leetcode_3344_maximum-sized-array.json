@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3344",
+  "titulo": "Maximum Sized Array",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-sized-array/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Bit Manipulation / Binary Search",
+  "enunciado": "Given a positive integer s, let A be a 3D array of dimensions n × n × n, where each element A[i][j][k] is defined as:\n\nA[i][j][k] = i * (j OR k), where 0 <= i, j, k < n.\n\nReturn the maximum possible value of n such that the sum of all elements in array A does not exceed s.\n \nExample 1:\n\nInput: s = 10\nOutput: 2\nExplanation:\n\nElements of the array A for n = 2:\n\nA[0][0][0] = 0 * (0 OR 0) = 0\nA[0][0][1] = 0 * (0 OR 1) = 0\nA[0][1][0] = 0 * (1 OR 0) = 0\nA[0][1][1] = 0 * (1 OR 1) = 0\nA[1][0][0] = 1 * (0 OR 0) = 0\nA[1][0][1] = 1 * (0 OR 1) = 1\nA[1][1][0] = 1 * (1 OR 0) = 1\nA[1][1][1] = 1 * (1 OR 1) = 1\n\n\nThe total sum of the elements in array A is 3, which does not exceed 10, so the maximum possible value of n is 2.\n\n\nExample 2:\n\nInput: s = 0\nOutput: 1\nExplanation:\n\nElements of the array A for n = 1:\n\n\t\nA[0][0][0] = 0 * (0 OR 0) = 0\n\n\nThe total sum of the elements in array A is 0, which does not exceed 0, so the maximum possible value of n is 1.\n\n\n \nConstraints:\n\n0 <= s <= 1015\n\n",
+  "especificacion_entrada": "s: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxSizedArray(self, s: int) -> int:\n    def getNumbersWithBitSet(n: int, i: int) -> int:\n      \"\"\"\n      Returns the number of integers in [0, n - 1] with the i-th bit set.\n\n      For the i-th bit, numbers in the range [0, n - 1] can be divided into\n      groups of 2^(i + 1) numbers. In each group, exactly half of the numbers\n      have the i-th bit set.\n      \"\"\"\n      groupSize = 1 << (i + 1)\n      halfGroupSize = 1 << i\n      fullGroups = n // groupSize\n      remaining = max(0, (n % groupSize) - halfGroupSize)\n      return fullGroups * halfGroupSize + remaining\n\n    def getArraySum(n: int) -> int:\n      \"\"\"\n      Returns the sum of all i * (j OR k) values in 3D arrays of size n^3.\n\n        sum(i * (j OR k)), where 0 <= i, j, k < n\n      = 0 * (j OR k) + 1 * (j OR k) + ... + (n - 1) * (j OR k)\n      = (0 + 1 + ... + n - 1) * sum(j OR k)\n      = (n * (n - 1) / 2) * sum(j OR k)\n      \"\"\"\n      arithmeticSum = n * (n - 1) // 2  # 0 + 1 + ... + n - 1\n      orSum = 0  # the sum of (j OR k) values in 2D arrays of size n^2\n      for i in range(n.bit_length()):\n        numbersWithoutBit = n - getNumbersWithBitSet(n, i)\n        pairsWithBit = n**2 - numbersWithoutBit**2\n        orSum += pairsWithBit * (1 << i)  # Add contribution of this bit.\n      return arithmeticSum * orSum\n\n    if s == 0:\n      return 1\n    l = 0\n    r = 1196  # when s = 10^15, n = 1196\n    return bisect.bisect_right(range(l, r + 1), s, key=getArraySum) - 1 + l\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = 100000000000000",
+      "salida": "756",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = 10",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = 27",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3344: LC-3492 - Maximum Containers on a Ship. Ambos buscan la capacidad máxima de un contenedor o arreglo sujeto a restricciones de dimensiones y recursos.",
+      "entrada": "n = 10, w = 5, maxWeight = 25",
+      "salida": "5",
+      "explicacion": "Relación con LC-3344: Ambos buscan la capacidad máxima de un contenedor o arreglo sujeto a restricciones de dimensiones y recursos.",
+      "codigo_ilustrativo": "class Solution:\n  def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n    return min(n * n, maxWeight // w)"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxSizedArray(100000000000000) == 756"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxSizedArray(10) == 2"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxSizedArray(27) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxSizedArray(1000) == 5"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxSizedArray(1000000000000000) == 1196"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxSizedArray(123456789) == 50"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxSizedArray(50) == 3"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxSizedArray(1000000000000) == 300"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxSizedArray(1) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSizedArray(64) == 3"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSizedArray(0) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSizedArray(100) == 3"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3344",
+    "fecha-estimada-2024-11-03",
+    "Bit Manipulation",
+    "Binary Search"
+  ]
+}

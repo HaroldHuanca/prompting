@@ -1,0 +1,96 @@
+{
+  "codigo": "LC-3469",
+  "titulo": "Find Minimum Cost to Remove Array Elements",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-minimum-cost-to-remove-array-elements/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "",
+  "enunciado": "You are given an integer array nums. Your task is to remove all elements from the array by performing one of the following operations at each step until nums is empty:\n\nChoose any two elements from the first three elements of nums and remove them. The cost of this operation is the maximum of the two elements removed.\nIf fewer than three elements remain in nums, remove all the remaining elements in a single operation. The cost of this operation is the maximum of the remaining elements.\n\nReturn the minimum cost required to remove all the elements.\n \nExample 1:\n\nInput: nums = [6,2,8,4]\nOutput: 12\nExplanation:\nInitially, nums = [6, 2, 8, 4].\n\nIn the first operation, remove nums[0] = 6 and nums[2] = 8 with a cost of max(6, 8) = 8. Now, nums = [2, 4].\nIn the second operation, remove the remaining elements with a cost of max(2, 4) = 4.\n\nThe cost to remove all elements is 8 + 4 = 12. This is the minimum cost to remove all elements in nums. Hence, the output is 12.\n\nExample 2:\n\nInput: nums = [2,1,3,3]\nOutput: 5\nExplanation:\nInitially, nums = [2, 1, 3, 3].\n\nIn the first operation, remove nums[0] = 2 and nums[1] = 1 with a cost of max(2, 1) = 2. Now, nums = [3, 3].\nIn the second operation remove the remaining elements with a cost of max(3, 3) = 3.\n\nThe cost to remove all elements is 2 + 3 = 5. This is the minimum cost to remove all elements in nums. Hence, the output is 5.\n\n \nConstraints:\n\n1 <= nums.length <= 1000\n1 <= nums[i] <= 106\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minCost(self, nums: list[int]) -> int:\n    n = len(nums)\n\n    @functools.lru_cache(None)\n    def dp(last: int, i: int) -> int:\n      if i == n:  # Single element left.\n        return nums[last]\n      if i == n - 1:  # Two elements left.\n        return max(nums[last], nums[i])\n      a = max(nums[i], nums[i + 1]) + dp(last, i + 2)\n      b = max(nums[last], nums[i]) + dp(i + 1, i + 2)\n      c = max(nums[last], nums[i + 1]) + dp(i, i + 2)\n      return min(a, b, c)\n\n    return dp(0, 1)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [10,10,10,10]",
+      "salida": "20",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30]",
+      "salida": "40",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [999999,1]",
+      "salida": "999999",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3469: LC-3496 - Maximize Score After Pair Deletions. Ambos optimizan una secuencia de eliminaciones por parejas en un arreglo mediante decisiones dinámicas sobre los elementos restantes.",
+      "entrada": "nums = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]",
+      "salida": "8",
+      "explicacion": "Relación con LC-3469: Ambos optimizan una secuencia de eliminaciones por parejas en un arreglo mediante decisiones dinámicas sobre los elementos restantes.",
+      "codigo_ilustrativo": "import itertools\nfrom itertools import pairwise\n\nclass Solution:\n  def maxScore(self, nums: list[int]) -> int:\n    summ = sum(nums)\n    if len(nums) % 2 == 1:\n      return summ - min(nums)\n    return summ - min(a + b for a, b in itertools.pairwise(nums))"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minCost([10, 10, 10, 10]) == 20"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minCost([10, 20, 30]) == 40"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minCost([999999, 1]) == 999999"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minCost([5, 3, 7, 9, 1, 4]) == 18"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minCost([9, 8, 7, 6, 5, 4, 3, 2, 1]) == 25"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minCost([1]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minCost([3, 1, 2, 4, 5, 6, 7, 8, 9, 10]) == 30"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minCost([10, 20, 30, 40, 50]) == 90"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minCost([5, 5, 5, 5, 5]) == 15"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minCost([1, 2, 3, 4, 5]) == 9"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minCost([999999, 999998, 999997, 999996, 999995]) == 2999991"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minCost([6, 2, 8, 4]) == 12"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3469",
+    "fecha-estimada-2025-02-23"
+  ]
+}

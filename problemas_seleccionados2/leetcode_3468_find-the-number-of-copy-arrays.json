@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3468",
+  "titulo": "Find the Number of Copy Arrays",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-number-of-copy-arrays/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Math",
+  "enunciado": "You are given an array original of length n and a 2D array bounds of length n x 2, where bounds[i] = [ui, vi].\nYou need to find the number of possible arrays copy of length n such that:\n\n(copy[i] - copy[i - 1]) == (original[i] - original[i - 1]) for 1 <= i <= n - 1.\nui <= copy[i] <= vi for 0 <= i <= n - 1.\n\nReturn the number of such arrays.\n \nExample 1:\n\nInput: original = [1,2,3,4], bounds = [[1,2],[2,3],[3,4],[4,5]]\nOutput: 2\nExplanation:\nThe possible arrays are:\n\n[1, 2, 3, 4]\n[2, 3, 4, 5]\n\n\nExample 2:\n\nInput: original = [1,2,3,4], bounds = [[1,10],[2,9],[3,8],[4,7]]\nOutput: 4\nExplanation:\nThe possible arrays are:\n\n[1, 2, 3, 4]\n[2, 3, 4, 5]\n[3, 4, 5, 6]\n[4, 5, 6, 7]\n\n\nExample 3:\n\nInput: original = [1,2,1,2], bounds = [[1,1],[2,3],[3,3],[2,3]]\nOutput: 0\nExplanation:\nNo array is possible.\n\n \nConstraints:\n\n2 <= n == original.length <= 105\n1 <= original[i] <= 109\nbounds.length == n\nbounds[i].length == 2\n1 <= bounds[i][0] <= bounds[i][1] <= 109\n\n",
+  "especificacion_entrada": "original: list[int], bounds: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countArrays(self, original: list[int], bounds: list[list[int]]) -> int:\n    mn, mx = bounds[0]\n\n    for i in range(1, len(original)):\n      diff = original[i] - original[i - 1]\n      mn = max(mn + diff, bounds[i][0])\n      mx = min(mx + diff, bounds[i][1])\n\n    return max(0, mx - mn + 1)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "original = [1,2,3,4], bounds = [[1,10],[2,9],[3,8],[4,7]]",
+      "salida": "4",
+      "explicacion": ""
+    },
+    {
+      "entrada": "original = [3,5,7,9], bounds = [[2,4],[4,6],[6,8],[8,10]]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "original = [10,11,12,13], bounds = [[8,10],[9,11],[10,12],[11,13]]",
+      "salida": "3",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3468: LC-3424 - Minimum Cost to Make Arrays Identical. Ambos problemas comparten el tema de arrays, aunque plantean una variante distinta.",
+      "entrada": "arr = [0, 0, 0], brr = [0, 0, 0], k = 10",
+      "salida": "0",
+      "explicacion": "Relación con LC-3468: Ambos problemas comparten el tema de arrays, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "class Solution:\n  def minCost(self, arr: list[int], brr: list[int], k: int) -> int:\n    def cost(arr: list[int], brr: list[int]) -> int:\n      return sum(abs(a - b) for a, b in zip(arr, brr))\n    return min(cost(arr, brr), cost(sorted(arr), sorted(brr)) + k)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countArrays([1, 2, 3, 4], [[1, 10], [2, 9], [3, 8], [4, 7]]) == 4"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countArrays([3, 5, 7, 9], [[2, 4], [4, 6], [6, 8], [8, 10]]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countArrays([10, 11, 12, 13], [[8, 10], [9, 11], [10, 12], [11, 13]]) == 3"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countArrays([5, 7, 9, 11], [[4, 6], [6, 8], [8, 10], [10, 12]]) == 3"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countArrays([2, 2, 2, 2], [[1, 3], [1, 3], [1, 3], [1, 3]]) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countArrays([3, 2, 1], [[1, 3], [1, 3], [1, 3]]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countArrays([5, 6, 7, 8], [[5, 5], [6, 6], [7, 7], [8, 8]]) == 1"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countArrays([5, 6, 7, 8], [[3, 5], [4, 6], [5, 7], [6, 8]]) == 3"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countArrays([1, 3, 5, 7], [[1, 2], [3, 4], [5, 6], [7, 8]]) == 2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countArrays([1, 3, 2, 4], [[1, 3], [2, 4], [1, 3], [2, 4]]) == 1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countArrays([3, 2, 1, 2], [[1, 3], [2, 4], [1, 3], [2, 4]]) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countArrays([1, 5, 9, 13], [[1, 4], [5, 8], [9, 12], [13, 16]]) == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3468",
+    "fecha-estimada-2025-02-23",
+    "Array",
+    "Math"
+  ]
+}

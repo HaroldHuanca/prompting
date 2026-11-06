@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3276",
+  "titulo": "Select Cells in Grid With Maximum Score",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/select-cells-in-grid-with-maximum-score/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Bit Manipulation / Array / Dynamic Programming / Bitmask / Matrix",
+  "enunciado": "You are given a 2D matrix grid consisting of positive integers.\nYou have to select one or more cells from the matrix such that the following conditions are satisfied:\n\nNo two selected cells are in the same row of the matrix.\nThe values in the set of selected cells are unique.\n\nYour score will be the sum of the values of the selected cells.\nReturn the maximum score you can achieve.\n \nExample 1:\n\nInput: grid = [[1,2,3],[4,3,2],[1,1,1]]\nOutput: 8\nExplanation:\n\nWe can select the cells with values 1, 3, and 4 that are colored above.\n\nExample 2:\n\nInput: grid = [[8,7,6],[8,3,2]]\nOutput: 15\nExplanation:\n\nWe can select the cells with values 7 and 8 that are colored above.\n\n \nConstraints:\n\n1 <= grid.length, grid[i].length <= 10\n1 <= grid[i][j] <= 100\n\n",
+  "especificacion_entrada": "grid: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxScore(self, grid: list[list[int]]) -> int:\n    numToIndices = collections.defaultdict(set)\n    for index, row in enumerate(grid):\n      for num in row:\n        numToIndices[num].add(index)\n    numToIndices = list(numToIndices.items())\n\n    @functools.lru_cache(None)\n    def dp(i: int, mask: int) -> int:\n      \"\"\"\n      Returns the maximum score by selecting numbers from numToIndices[i..],\n      where `mask` is the bitmask of the used row indices.\n      \"\"\"\n      if i == len(numToIndices):\n        return 0\n      # Skip numToIndices[i][0].\n      res = dp(i + 1, mask)\n      for index in numToIndices[i][1]:\n        if (mask >> index & 1) == 0:\n          # Take numToIndices[i][0].\n          res = max(res, numToIndices[i][0] + dp(i + 1, mask | 1 << index))\n      return res\n\n    return dp(0, 0)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "grid = [[5,5,5],[5,5,5],[5,5,5]]",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[8,7,6],[8,3,2]]",
+      "salida": "15",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[1,2,3,4,5],[5,4,3,2,1],[2,3,4,5,1]]",
+      "salida": "12",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3276: LC-3393 - Count Paths With the Given XOR Value. Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "grid = [[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], k = 2",
+      "salida": "5",
+      "explicacion": "Relación con LC-3276: Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def countPathsWithXorValue(self, grid: list[list[int]], k: int) -> int:\n    MOD = 1_000_000_007\n    m = len(grid)\n    n = len(grid[0])\n\n    @functools.lru_cache(None)\n    def count(i: int, j: int, xors: int) -> int:\n      \"\"\"\n      Return the number of paths from (i, j) to (m - 1, n - 1) with XOR value\n      `xors`.\n      \"\"\"\n      if i == m or j == n:\n        return 0\n      xors ^= grid[i][j]\n      if i == m - 1 and j == n - 1:\n        return int(xors == k)\n      right = count(i, j + 1, xors)\n      down = count(i + 1, j, xors)\n      return (right + down) % MOD\n\n    return count(0, 0, 0)\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxScore([[5, 5, 5], [5, 5, 5], [5, 5, 5]]) == 5"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxScore([[8, 7, 6], [8, 3, 2]]) == 15"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxScore([[1, 2, 3, 4, 5], [5, 4, 3, 2, 1], [2, 3, 4, 5, 1]]) == 12"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxScore([[5, 9, 1], [9, 5, 1], [1, 5, 9]]) == 15"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxScore([[5, 9, 3], [4, 5, 6], [7, 8, 9]]) == 23"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxScore([[1, 1, 1], [1, 1, 1], [1, 1, 1]]) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxScore([[10, 10, 10], [10, 10, 10], [10, 10, 10]]) == 10"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxScore([[1, 100, 1], [100, 1, 100], [1, 100, 1]]) == 101"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxScore([[1, 2, 3], [3, 2, 1]]) == 5"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore([[1, 2], [3, 4], [5, 6]]) == 12"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore([[9, 8, 7], [6, 5, 4], [3, 2, 1]]) == 18"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore([[1, 2, 3], [4, 3, 2], [1, 1, 1]]) == 8"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3276",
+    "fecha-estimada-2024-09-01",
+    "Bit Manipulation",
+    "Array",
+    "Dynamic Programming",
+    "Bitmask",
+    "Matrix"
+  ]
+}

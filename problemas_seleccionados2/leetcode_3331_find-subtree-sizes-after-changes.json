@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3331",
+  "titulo": "Find Subtree Sizes After Changes",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-subtree-sizes-after-changes/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Tree / Depth-First Search / Array / Hash Table / String",
+  "enunciado": "You are given a tree rooted at node 0 that consists of n nodes numbered from 0 to n - 1. The tree is represented by an array parent of size n, where parent[i] is the parent of node i. Since node 0 is the root, parent[0] == -1.\nYou are also given a string s of length n, where s[i] is the character assigned to node i.\nWe make the following changes on the tree one time simultaneously for all nodes x from 1 to n - 1:\n\nFind the closest node y to node x such that y is an ancestor of x, and s[x] == s[y].\nIf node y does not exist, do nothing.\nOtherwise, remove the edge between x and its current parent and make node y the new parent of x by adding an edge between them.\n\nReturn an array answer of size n where answer[i] is the size of the subtree rooted at node i in the final tree.\n \nExample 1:\n\nInput: parent = [-1,0,0,1,1,1], s = \"abaabc\"\nOutput: [6,3,1,1,1,1]\nExplanation:\n\nThe parent of node 3 will change from node 1 to node 0.\n\nExample 2:\n\nInput: parent = [-1,0,4,0,1], s = \"abbba\"\nOutput: [5,2,1,1,1]\nExplanation:\n\nThe following changes will happen at the same time:\n\nThe parent of node 4 will change from node 1 to node 0.\nThe parent of node 2 will change from node 4 to node 1.\n\n\n \nConstraints:\n\nn == parent.length == s.length\n1 <= n <= 105\n0 <= parent[i] <= n - 1 for all i >= 1.\nparent[0] == -1\nparent represents a valid tree.\ns consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "parent: list[int], s: str",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def findSubtreeSizes(self, parent: list[int], s: str) -> list[int]:\n    n = len(parent)\n    ans = [0] * n\n    newParent = parent.copy()\n    tree = [[] for _ in range(n)]\n\n    for i in range(1, n):\n      closest = self._findClosestAncestor(i, parent, s)\n      if closest != -1:\n        newParent[i] = closest\n\n    for i in range(1, n):\n      tree[newParent[i]].append(i)\n\n    self._dfs(tree, 0, ans)\n    return ans\n\n  def _findClosestAncestor(self, u: int, parent: list[int], s: str) -> int:\n    \"\"\"\n    Returns the closest ancestor of node `u` that has the same value as `u`.\n    \"\"\"\n    curr = parent[u]\n    while curr != -1:\n      if s[curr] == s[u]:\n        return curr\n      curr = parent[curr]\n    return -1\n\n  def _dfs(self, tree: list[list[int]], u: int, ans: list[int]) -> int:\n    sz = 1\n    for v in tree[u]:\n      sz += self._dfs(tree, v, ans)\n    ans[u] = sz\n    return sz\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "parent = [-1,0,1,2,3,4], s = \"aaaaa\"",
+      "salida": "[5, 4, 3, 2, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "parent = [-1,0,0,0,0], s = \"abcde\"",
+      "salida": "[5, 1, 1, 1, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "parent = [-1,0,4,0,1], s = \"abbba\"",
+      "salida": "[5, 2, 1, 1, 1]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3331: LC-3327 - Check if DFS Strings Are Palindromes. Ambos problemas comparten las técnicas de depth-first search, tabla hash, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "parent = [-1, 0, 1, 2, 2], s = 'abcba'",
+      "salida": "[False, False, False, True, True]",
+      "explicacion": "Relación con LC-3331: Ambos problemas comparten las técnicas de depth-first search, tabla hash, árboles, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def findAnswer(self, parent: list[int], s: str) -> list[bool]:\n    n = len(parent)\n    tree = [[] for _ in parent]\n    start = [0] * n  # start[i] := the start index of `dfsStr` of node i\n    end = [0] * n  # end[i] := the end index of `dfsStr` of node i\n    dfsStr = []\n\n    for i in range(1, n):\n      tree[parent[i]].append(i)\n\n    self._dfs(tree, 0, 0, s, start, end, dfsStr)\n    t = '#'.join('@' + ''.join(dfsStr) + '$')\n    p = self._manacher(t)\n    return [self._isPalindrome(s, e, p)\n            for s, e in zip(start, end)]\n\n  def _dfs(\n      self,\n      tree: list[list[int]],\n      u: int,\n      index: int,\n      s: str,\n      start: list[int],\n      end: list[int],\n      dfsStr: list[str]\n  ) -> int:\n    \"\"\"Returns the start index of the \"DFS string\" of u's next node.\"\"\"\n    start[u] = index\n    for v in tree[u]:\n      index = self._dfs(tree, v, index, s, start, end, dfsStr)\n    end[u] = index\n    dfsStr.append(s[u])\n    return index + 1\n\n  def _manacher(self, t: str) -> list[int]:\n    \"\"\"\n    Returns an array `p` s.t. `p[i]` is the length of the longest palindrome\n    centered at `t[i]`, where `t` is a string with delimiters and sentinels.\n    \"\"\"\n    p = [0] * len(t)\n    center = 0\n    for i in range(1, len(t) - 1):\n      rightBoundary = center + p[center]\n      mirrorIndex = center - (i - center)\n      if rightBoundary > i:\n        p[i] = min(rightBoundary - i, p[mirrorIndex])\n      # Try to expand the palindrome centered at i.\n      while t[i + 1 + p[i]] == t[i - 1 - p[i]]:\n        p[i] += 1\n      # If a palindrome centered at i expands past `rightBoundary`, adjust\n      # the center based on the expanded palindrome.\n      if i + p[i] > rightBoundary:\n        center = i\n    return p\n\n  def _isPalindrome(self, s: int, e: int, p: list[int]) -> bool:\n    \"\"\"\n    Returns true if `dfsStr[s..e]` is a palindrome by using the precomputed\n    array `p` from the Manacher's algorithm.\n\n    The precomputed array `p` is based on the string `t` with delimiters and\n    sentinels. Let `t = '#'.join('@' + dfsStr + '$')`. Then, the center of\n    `dfsStr` maps to `t[s + e + 2]` since `dfsStr[s]` maps to `t[2 * s + 2]`\n    and `dfsStr[e]` maps to `t[2 * e + 2]`. So, the center of `dfsStr` is\n    `t[(2 * s + 2 + 2 * e + 2) / 2] = t[s + e + 2]`.\n    \"\"\"\n    length = e - s + 1\n    center = s + e + 2\n    return p[center] >= length\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 1, 2, 3, 4], 'aaaaa') == [5, 4, 3, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 0, 0], 'abcde') == [5, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 4, 0, 1], 'abbba') == [5, 2, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 1, 2, 3, 0, 2], 'abacaba') == [7, 1, 4, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 1, 1, 1], 'abaabc') == [6, 3, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 1, 1, 2, 2, 3, 3, 4, 4], 'aabbaabbaa') == [10, 9, 1, 3, 3, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 1, 2, 3], 'aaaaa') == [5, 4, 3, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 1, 2, 3, 4], 'abcde') == [5, 4, 3, 2, 1]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 2, 2], 'aaaba') == [5, 1, 3, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 0, 0, 0], 'abcabc') == [6, 1, 1, 1, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 2, 2], 'aaaaa') == [5, 1, 3, 1, 1]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().findSubtreeSizes([-1, 0, 0, 2, 2], 'abcde') == [5, 1, 3, 1, 1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3331",
+    "fecha-estimada-2024-10-20",
+    "Tree",
+    "Depth-First Search",
+    "Array",
+    "Hash Table",
+    "String"
+  ]
+}

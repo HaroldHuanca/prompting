@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3433",
+  "titulo": "Count Mentions Per User",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-mentions-per-user/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Math / Sorting / Simulation",
+  "enunciado": "You are given an integer numberOfUsers representing the total number of users and an array events of size n x 3.\nEach events[i] can be either of the following two types:\n\nMessage Event: [\"MESSAGE\", \"timestampi\", \"mentions_stringi\"]\n\nThis event indicates that a set of users was mentioned in a message at timestampi.\nThe mentions_stringi string can contain one of the following tokens:\n\t\t\nid: where  is an integer in range [0,numberOfUsers - 1]. There can be multiple ids separated by a single whitespace and may contain duplicates. This can mention even the offline users.\nALL: mentions all users.\nHERE: mentions all online users.\n\n\n\n\nOffline Event: [\"OFFLINE\", \"timestampi\", \"idi\"]\n\nThis event indicates that the user idi had become offline at timestampi for 60 time units. The user will automatically be online again at time timestampi + 60.\n\n\n\nReturn an array mentions where mentions[i] represents the number of mentions the user with id i has across all MESSAGE events.\nAll users are initially online, and if a user goes offline or comes back online, their status change is processed before handling any message event that occurs at the same timestamp.\nNote that a user can be mentioned multiple times in a single message event, and each mention should be counted separately.\n \nExample 1:\n\nInput: numberOfUsers = 2, events = [[\"MESSAGE\",\"10\",\"id1 id0\"],[\"OFFLINE\",\"11\",\"0\"],[\"MESSAGE\",\"71\",\"HERE\"]]\nOutput: [2,2]\nExplanation:\nInitially, all users are online.\nAt timestamp 10, id1 and id0 are mentioned. mentions = [1,1]\nAt timestamp 11, id0 goes offline.\nAt timestamp 71, id0 comes back online and \"HERE\" is mentioned. mentions = [2,2]\n\nExample 2:\n\nInput: numberOfUsers = 2, events = [[\"MESSAGE\",\"10\",\"id1 id0\"],[\"OFFLINE\",\"11\",\"0\"],[\"MESSAGE\",\"12\",\"ALL\"]]\nOutput: [2,2]\nExplanation:\nInitially, all users are online.\nAt timestamp 10, id1 and id0 are mentioned. mentions = [1,1]\nAt timestamp 11, id0 goes offline.\nAt timestamp 12, \"ALL\" is mentioned. This includes offline users, so both id0 and id1 are mentioned. mentions = [2,2]\n\nExample 3:\n\nInput: numberOfUsers = 2, events = [[\"OFFLINE\",\"10\",\"0\"],[\"MESSAGE\",\"12\",\"HERE\"]]\nOutput: [0,1]\nExplanation:\nInitially, all users are online.\nAt timestamp 10, id0 goes offline.\nAt timestamp 12, \"HERE\" is mentioned. Because id0 is still offline, they will not be mentioned. mentions = [0,1]\n\n \nConstraints:\n\n1 <= numberOfUsers <= 100\n1 <= events.length <= 100\nevents[i].length == 3\nevents[i][0] will be one of MESSAGE or OFFLINE.\n1 <= int(events[i][1]) <= 105\nThe number of id mentions in any \"MESSAGE\" event is between 1 and 100.\n0 <=  <= numberOfUsers - 1\nIt is guaranteed that the user id referenced in the OFFLINE event is online at the time the event occurs.\n\n",
+  "especificacion_entrada": "numberOfUsers: int, events: list[list[str]]",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass OfflineUser:\n  returnTimestamp: int\n  userId: int\n\n  def __lt__(self, other):\n    return self.returnTimestamp < other.returnTimestamp\n\n\nclass Solution:\n  def countMentions(\n      self,\n      numberOfUsers: int,\n      events: list[list[str]]\n  ) -> list[int]:\n    ans = [0] * numberOfUsers\n    online = [True] * numberOfUsers\n    offlineQueue = []  # min-heap to track users that are offline\n    allMentionsCount = 0\n\n    events.sort(key=lambda x: (int(x[1]), -ord(x[0][0])))\n\n    for eventType, t, messageContent in events:\n      timestamp = int(t)\n      # Bring users back online if their offline period has ended.\n      while offlineQueue and offlineQueue[0].returnTimestamp <= timestamp:\n        user = heapq.heappop(offlineQueue)\n        online[user.userId] = True\n      if eventType == \"MESSAGE\":\n        match messageContent:\n          case \"ALL\":\n            allMentionsCount += 1\n          case \"HERE\":\n            for userId in range(numberOfUsers):\n              if online[userId]:\n                ans[userId] += 1\n          case _:\n            for userId in [int(part[2:]) for part in messageContent.split()]:\n              ans[userId] += 1\n      elif eventType == \"OFFLINE\":\n        userId = int(messageContent)\n        online[userId] = False\n        # Add to queue to bring back online after 60 units.\n        heapq.heappush(offlineQueue, OfflineUser(timestamp + 60, userId))\n\n    # Add the \"ALL\" mentions to all users.\n    for userId in range(numberOfUsers):\n      ans[userId] += allMentionsCount\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "numberOfUsers = 1, events = [[\"MESSAGE\",\"1\",\"id0\"],[\"MESSAGE\",\"1\",\"HERE\"],[\"MESSAGE\",\"1\",\"ALL\"]]",
+      "salida": "[3]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "numberOfUsers = 2, events = [[\"OFFLINE\",\"10\",\"0\"],[\"MESSAGE\",\"12\",\"HERE\"]]",
+      "salida": "[0, 1]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "numberOfUsers = 3, events = [[\"MESSAGE\",\"5\",\"id0 id1 id2\"],[\"OFFLINE\",\"10\",\"1\"],[\"MESSAGE\",\"20\",\"HERE\"],[\"MESSAGE\",\"60\",\"ALL\"]]",
+      "salida": "[3, 2, 3]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3433: LC-3386 - Button with Longest Push Time. Ambos procesan eventos con marcas de tiempo e identificadores, actualizando el estado a medida que se recorren los eventos.",
+      "entrada": "events = [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]]",
+      "salida": "1",
+      "explicacion": "Relación con LC-3433: Ambos procesan eventos con marcas de tiempo e identificadores, actualizando el estado a medida que se recorren los eventos.",
+      "codigo_ilustrativo": "class Solution:\n  def buttonWithLongestTime(self, events: list[list[int]]) -> int:\n    ans = 0\n    maxTimeTaken = 0\n    prevTime = 0\n\n    for index, time in events:\n      timeTaken = time - prevTime\n      if timeTaken > maxTimeTaken or timeTaken == maxTimeTaken and index < ans:\n        maxTimeTaken = timeTaken\n        ans = index\n      prevTime = time\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countMentions(1, [['MESSAGE', '1', 'id0'], ['MESSAGE', '1', 'HERE'], ['MESSAGE', '1', 'ALL']]) == [3]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countMentions(2, [['OFFLINE', '10', '0'], ['MESSAGE', '12', 'HERE']]) == [0, 1]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countMentions(3, [['MESSAGE', '5', 'id0 id1 id2'], ['OFFLINE', '10', '1'], ['MESSAGE', '20', 'HERE'], ['MESSAGE', '60', 'ALL']]) == [3, 2, 3]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countMentions(5, [['MESSAGE', '1', 'id0 id1 id2 id3 id4'], ['OFFLINE', '2', '0'], ['OFFLINE', '3', '1'], ['MESSAGE', '4', 'HERE'], ['MESSAGE', '65', 'id0 id1'], ['OFFLINE', '70', '2'], ['MESSAGE', '75', 'ALL']]) == [3, 3, 3, 3, 3]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countMentions(1, [['MESSAGE', '5', 'ALL'], ['OFFLINE', '10', '0'], ['MESSAGE', '20', 'HERE']]) == [1]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countMentions(4, [['OFFLINE', '5', '0'], ['OFFLINE', '10', '1'], ['MESSAGE', '15', 'HERE'], ['MESSAGE', '20', 'ALL'], ['MESSAGE', '25', 'id0 id2']]) == [2, 1, 3, 2]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countMentions(2, [['MESSAGE', '10', 'id1 id0'], ['OFFLINE', '11', '0'], ['MESSAGE', '12', 'ALL']]) == [2, 2]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countMentions(5, [['MESSAGE', '5', 'id0 id1 id2 id3 id4'], ['OFFLINE', '10', '0'], ['OFFLINE', '10', '1'], ['MESSAGE', '15', 'HERE'], ['MESSAGE', '20', 'id2 id3 id4'], ['MESSAGE', '25', 'ALL']]) == [2, 2, 4, 4, 4]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countMentions(4, [['MESSAGE', '1', 'id0 id1'], ['OFFLINE', '2', '0'], ['MESSAGE', '3', 'HERE'], ['MESSAGE', '65', 'id0'], ['OFFLINE', '70', '1'], ['MESSAGE', '75', 'ALL']]) == [3, 3, 2, 2]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countMentions(3, [['OFFLINE', '5', '0'], ['OFFLINE', '10', '1'], ['MESSAGE', '15', 'id0 id1 id2'], ['MESSAGE', '20', 'HERE'], ['MESSAGE', '25', 'ALL']]) == [2, 2, 3]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countMentions(3, [['MESSAGE', '5', 'ALL'], ['OFFLINE', '10', '1'], ['MESSAGE', '15', 'HERE'], ['OFFLINE', '20', '2'], ['MESSAGE', '25', 'id0 id1 id2']]) == [3, 2, 3]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countMentions(1, [['MESSAGE', '1', 'id0'], ['OFFLINE', '10', '0'], ['MESSAGE', '20', 'HERE']]) == [1]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3433",
+    "fecha-estimada-2025-01-26",
+    "Array",
+    "Math",
+    "Sorting",
+    "Simulation"
+  ]
+}

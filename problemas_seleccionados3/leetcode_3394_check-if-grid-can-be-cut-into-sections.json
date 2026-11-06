@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3394",
+  "titulo": "Check if Grid can be Cut into Sections",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/check-if-grid-can-be-cut-into-sections/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Sorting",
+  "enunciado": "You are given an integer n representing the dimensions of an n x n grid, with the origin at the bottom-left corner of the grid. You are also given a 2D array of coordinates rectangles, where rectangles[i] is in the form [startx, starty, endx, endy], representing a rectangle on the grid. Each rectangle is defined as follows:\n\n(startx, starty): The bottom-left corner of the rectangle.\n(endx, endy): The top-right corner of the rectangle.\n\nNote that the rectangles do not overlap. Your task is to determine if it is possible to make either two horizontal or two vertical cuts on the grid such that:\n\nEach of the three resulting sections formed by the cuts contains at least one rectangle.\nEvery rectangle belongs to exactly one section.\n\nReturn true if such cuts can be made; otherwise, return false.\n \nExample 1:\n\nInput: n = 5, rectangles = [[1,0,5,2],[0,2,2,4],[3,2,5,3],[0,4,4,5]]\nOutput: true\nExplanation:\n\nThe grid is shown in the diagram. We can make horizontal cuts at y = 2 and y = 4. Hence, output is true.\n\nExample 2:\n\nInput: n = 4, rectangles = [[0,0,1,1],[2,0,3,4],[0,2,2,3],[3,0,4,3]]\nOutput: true\nExplanation:\n\nWe can make vertical cuts at x = 2 and x = 3. Hence, output is true.\n\nExample 3:\n\nInput: n = 4, rectangles = [[0,2,2,4],[1,0,3,2],[2,2,3,4],[3,0,4,2],[3,2,4,4]]\nOutput: false\nExplanation:\nWe cannot make two horizontal or two vertical cuts that satisfy the conditions. Hence, output is false.\n\n \nConstraints:\n\n3 <= n <= 109\n3 <= rectangles.length <= 105\n0 <= rectangles[i][0] < rectangles[i][2] <= n\n0 <= rectangles[i][1] < rectangles[i][3] <= n\nNo two rectangles overlap.\n\n",
+  "especificacion_entrada": "n: int, rectangles: list[list[int]]",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def checkValidCuts(self, n: int, rectangles: list[list[int]]) -> bool:\n    xs = [(startX, endX) for startX, _, endX, _ in rectangles]\n    ys = [(startY, endY) for _, startY, _, endY in rectangles]\n    return max(self._countMerged(xs),\n               self._countMerged(ys)) >= 3\n\n  def _countMerged(self, intervals: list[tuple[int, int]]) -> int:\n    count = 0\n    prevEnd = 0\n    for start, end in sorted(intervals):\n      if start < prevEnd:\n        prevEnd = max(prevEnd, end)\n      else:\n        prevEnd = end\n        count += 1\n    return count\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 5, rectangles = [[1,0,5,2],[0,2,2,4],[3,2,5,3],[0,4,4,5]]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 4, rectangles = [[0,0,1,1],[2,0,3,4],[0,2,2,3],[3,0,4,3]]",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 4, rectangles = [[0,2,2,4],[1,0,3,2],[2,2,3,4],[3,0,4,2],[3,2,4,4]]",
+      "salida": "False",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3394: LC-3301 - Maximize the Total Height of Unique Towers. Ambos problemas comparten las técnicas de ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "maximumHeight = [2, 3, 4, 3]",
+      "salida": "10",
+      "explicacion": "Relación con LC-3394: Ambos problemas comparten las técnicas de ordenamiento, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maximumTotalSum(self, maximumHeight: list[int]) -> int:\n    ans = 0\n    mn = math.inf\n\n    for height in sorted(maximumHeight, reverse=True):\n      assigned = min(height, mn - 1)\n      if assigned == 0:\n        return -1\n      ans += assigned\n      mn = assigned\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().checkValidCuts(5, [[1, 0, 5, 2], [0, 2, 2, 4], [3, 2, 5, 3], [0, 4, 4, 5]]) == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().checkValidCuts(4, [[0, 0, 1, 1], [2, 0, 3, 4], [0, 2, 2, 3], [3, 0, 4, 3]]) == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().checkValidCuts(4, [[0, 2, 2, 4], [1, 0, 3, 2], [2, 2, 3, 4], [3, 0, 4, 2], [3, 2, 4, 4]]) == False"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().checkValidCuts(10, [[0, 0, 3, 3], [3, 0, 6, 3], [6, 0, 9, 3], [0, 3, 3, 6], [3, 3, 6, 6], [6, 3, 9, 6], [0, 6, 3, 9], [3, 6, 6, 9], [6, 6, 9, 9]]) == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().checkValidCuts(14, [[1, 1, 5, 5], [6, 1, 10, 5], [11, 1, 14, 5], [1, 6, 5, 10], [6, 6, 10, 10], [11, 6, 14, 10], [1, 11, 5, 14], [6, 11, 10, 14], [11, 11, 14, 14]]) == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().checkValidCuts(10, [[0, 0, 2, 3], [2, 0, 4, 3], [4, 0, 6, 3], [6, 0, 8, 3], [8, 0, 10, 3], [1, 4, 3, 6], [3, 4, 5, 6], [5, 4, 7, 6], [7, 4, 9, 6], [0, 7, 2, 10], [2, 7, 4, 10], [4, 7, 6, 10], [6, 7, 8, 10], [8, 7, 10, 10]]) == True"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().checkValidCuts(20, [[0, 0, 5, 5], [5, 0, 10, 5], [10, 0, 15, 5], [15, 0, 20, 5], [0, 5, 5, 10], [5, 5, 10, 10], [10, 5, 15, 10], [15, 5, 20, 10], [0, 10, 5, 15], [5, 10, 10, 15], [10, 10, 15, 15], [15, 10, 20, 15], [0, 15, 5, 20], [5, 15, 10, 20], [10, 15, 15, 20], [15, 15, 20, 20]]) == True"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().checkValidCuts(10, [[0, 0, 4, 3], [4, 0, 7, 2], [7, 0, 10, 1], [0, 3, 3, 7], [3, 3, 10, 5], [0, 7, 5, 10], [5, 7, 8, 8], [8, 7, 10, 10]]) == True"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().checkValidCuts(15, [[0, 0, 5, 4], [5, 0, 10, 3], [10, 0, 15, 2], [0, 4, 3, 8], [3, 4, 7, 6], [7, 4, 11, 5], [11, 4, 15, 7], [0, 8, 5, 10], [5, 8, 10, 9], [10, 8, 15, 12], [0, 10, 7, 12], [7, 10, 11, 11], [11, 10, 15, 15]]) == True"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().checkValidCuts(8, [[0, 0, 3, 2], [3, 0, 5, 3], [5, 0, 8, 2], [0, 2, 3, 6], [3, 3, 5, 6], [5, 2, 8, 6], [0, 6, 3, 8], [3, 6, 5, 8], [5, 6, 8, 8]]) == True"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().checkValidCuts(10, [[0, 0, 3, 3], [3, 0, 6, 6], [6, 0, 10, 10], [0, 3, 3, 6], [3, 3, 6, 9], [6, 3, 10, 10], [0, 6, 3, 10], [3, 6, 6, 10], [6, 6, 10, 10]]) == True"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().checkValidCuts(30, [[0, 0, 10, 10], [10, 0, 20, 10], [20, 0, 30, 10], [0, 10, 10, 20], [10, 10, 20, 20], [20, 10, 30, 20], [0, 20, 10, 30], [10, 20, 20, 30], [20, 20, 30, 30], [1, 1, 2, 2], [3, 3, 4, 4], [5, 5, 6, 6], [7, 7, 8, 8], [9, 9, 10, 10], [11, 11, 12, 12], [13, 13, 14, 14], [15, 15, 16, 16], [17, 17, 18, 18], [19, 19, 20, 20], [21, 21, 22, 22], [23, 23, 24, 24], [25, 25, 26, 26], [27, 27, 28, 28], [29, 29, 30, 30]]) == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3394",
+    "fecha-estimada-2024-12-15",
+    "Array",
+    "Sorting"
+  ]
+}

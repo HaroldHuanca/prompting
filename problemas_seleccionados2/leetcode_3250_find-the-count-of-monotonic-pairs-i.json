@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3250",
+  "titulo": "Find the Count of Monotonic Pairs I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-count-of-monotonic-pairs-i/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Array / Math / Dynamic Programming / Combinatorics / Prefix Sum",
+  "enunciado": "You are given an array of positive integers nums of length n.\nWe call a pair of non-negative integer arrays (arr1, arr2) monotonic if:\n\nThe lengths of both arrays are n.\narr1 is monotonically non-decreasing, in other words, arr1[0] <= arr1[1] <= ... <= arr1[n - 1].\narr2 is monotonically non-increasing, in other words, arr2[0] >= arr2[1] >= ... >= arr2[n - 1].\narr1[i] + arr2[i] == nums[i] for all 0 <= i <= n - 1.\n\nReturn the count of monotonic pairs.\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: nums = [2,3,2]\nOutput: 4\nExplanation:\nThe good pairs are:\n\n([0, 1, 1], [2, 2, 1])\n([0, 1, 2], [2, 2, 0])\n([0, 2, 2], [2, 1, 0])\n([1, 2, 2], [1, 1, 0])\n\n\nExample 2:\n\nInput: nums = [5,5,5,5]\nOutput: 126\n\n \nConstraints:\n\n1 <= n == nums.length <= 2000\n1 <= nums[i] <= 50\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countOfPairs(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    MAX = 1000\n    n = len(nums)\n    # dp[i][num] := the number of valid ways to fill the arrays up to index i\n    # with arr1[i] = num\n    dp = [[0] * (MAX + 1) for _ in range(n)]\n\n    for num in range(nums[0] + 1):\n      dp[0][num] = 1\n\n    for i in range(1, n):\n      ways = 0\n      prevNum = 0\n      # To satisfy arr1, prevNum <= num.\n      # To satisfy arr2, nums[i - 1] - prevNum >= nums[i] - num.\n      #               => prevNum <= min(num, num - (nums[i] - nums[i - 1])).\n      # As we move from `num` to `num + 1`, the range of valid `prevNum` values\n      # becomes prevNum <= min(num + 1, num + 1 - (nums[i] - nums[i - 1])).\n      # Since the range of `prevNum` can only increase by at most 1, there's\n      # no need to iterate through all possible values of `prevNum`. We can\n      # simply increment `prevNum` by 1 if it meets the condition.\n      for num in range(nums[i] + 1):\n        if prevNum <= min(num, num - (nums[i] - nums[i - 1])):\n          ways = (ways + dp[i - 1][prevNum]) % MOD\n          prevNum += 1\n        dp[i][num] = ways\n\n    return sum(dp[n - 1]) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [50,1,50,1,50]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [3,3,3,3,3,3]",
+      "salida": "84",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30,40,50]",
+      "salida": "3003",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3250: LC-3251 - Find the Count of Monotonic Pairs II. Es la variante complementaria del mismo problema de conteo de pares monótonos; ambas soluciones modelan las transiciones con programación dinámica y prefijos.",
+      "entrada": "nums = [2, 3, 2]",
+      "salida": "4",
+      "explicacion": "Relación con LC-3250: Es la variante complementaria del mismo problema de conteo de pares monótonos; ambas soluciones modelan las transiciones con programación dinámica y prefijos.",
+      "codigo_ilustrativo": "class Solution:\n  # Same as 3250. Find the Count of Monotonic Pairs I\n  def countOfPairs(self, nums: list[int]) -> int:\n    MOD = 1_000_000_007\n    MAX = 1000\n    n = len(nums)\n    # dp[i][num] := the number of valid ways to fill the arrays up to index i\n    # with arr1[i] = num\n    dp = [[0] * (MAX + 1) for _ in range(n)]\n\n    for num in range(nums[0] + 1):\n      dp[0][num] = 1\n\n    for i in range(1, n):\n      ways = 0\n      prevNum = 0\n      # To satisfy arr1, prevNum <= num.\n      # To satisfy arr2, nums[i - 1] - prevNum >= nums[i] - num.\n      #               => prevNum <= min(num, num - (nums[i] - nums[i - 1])).\n      # As we move from `num` to `num + 1`, the range of valid `prevNum` values\n      # becomes prevNum <= min(num + 1, num + 1 - (nums[i] - nums[i - 1])).\n      # Since the range of `prevNum` can only increase by at most 1, there's\n      # no need to iterate through all possible values of `prevNum`. We can\n      # simply increment `prevNum` by 1 if it meets the condition.\n      for num in range(nums[i] + 1):\n        if prevNum <= min(num, num - (nums[i] - nums[i - 1])):\n          ways = (ways + dp[i - 1][prevNum]) % MOD\n          prevNum += 1\n        dp[i][num] = ways\n\n    return sum(dp[n - 1]) % MOD\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countOfPairs([50, 1, 50, 1, 50]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countOfPairs([3, 3, 3, 3, 3, 3]) == 84"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countOfPairs([10, 20, 30, 40, 50]) == 3003"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countOfPairs([5, 5, 5, 5]) == 126"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countOfPairs([1, 2, 3, 4, 5]) == 6"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countOfPairs([10, 9, 8, 7, 6]) == 462"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countOfPairs([2, 3, 2]) == 4"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countOfPairs([10, 10, 10]) == 286"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countOfPairs([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == 11"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countOfPairs([1, 1, 1, 1, 1]) == 6"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countOfPairs([25, 25, 25, 25, 25]) == 142506"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countOfPairs([1, 2, 1, 2, 1, 2]) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3250",
+    "fecha-estimada-2024-08-11",
+    "Array",
+    "Math",
+    "Dynamic Programming",
+    "Combinatorics",
+    "Prefix Sum"
+  ]
+}

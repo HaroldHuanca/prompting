@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3427",
+  "titulo": "Sum of Variable Length Subarrays",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/sum-of-variable-length-subarrays/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Prefix Sum",
+  "enunciado": "You are given an integer array nums of size n. For each index i where 0 <= i < n, define a subarray nums[start ... i] where start = max(0, i - nums[i]).\nReturn the total sum of all elements from the subarray defined for each index in the array.\n \nExample 1:\n\nInput: nums = [2,3,1]\nOutput: 11\nExplanation:\n\n\n\ni\nSubarray\nSum\n\n\n0\nnums[0] = [2]\n2\n\n\n1\nnums[0 ... 1] = [2, 3]\n5\n\n\n2\nnums[1 ... 2] = [3, 1]\n4\n\n\nTotal Sum\n \n11\n\n\n\nThe total sum is 11. Hence, 11 is the output.\n\nExample 2:\n\nInput: nums = [3,1,1,2]\nOutput: 13\nExplanation:\n\n\n\ni\nSubarray\nSum\n\n\n0\nnums[0] = [3]\n3\n\n\n1\nnums[0 ... 1] = [3, 1]\n4\n\n\n2\nnums[1 ... 2] = [1, 1]\n2\n\n\n3\nnums[1 ... 3] = [1, 1, 2]\n4\n\n\nTotal Sum\n \n13\n\n\n\nThe total sum is 13. Hence, 13 is the output.\n\n \nConstraints:\n\n1 <= n == nums.length <= 100\n1 <= nums[i] <= 1000\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def subarraySum(self, nums: list[int]) -> int:\n    prefix = list(itertools.accumulate(nums, initial=0))\n    return sum(prefix[i + 1] - prefix[max(0, i - num)]\n               for i, num in enumerate((nums)))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [5, 4, 3, 2, 1]",
+      "salida": "38",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [50,25,50,25,50]",
+      "salida": "600",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,5,2,3]",
+      "salida": "62",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3427: LC-3432 - Count Partitions with Even Sum Difference. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [100, 100, 100, 100]",
+      "salida": "3",
+      "explicacion": "Relación con LC-3427: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def countPartitions(self, nums: list[int]) -> int:\n    # If we add the same number in the left subarray and remove it from the\n    # right subarray, then the difference remains the same parity. So, just\n    # return the number of ways to partition the array into two subarrays when\n    # the array sum is even.\n    return len(nums) - 1 if sum(nums) % 2 == 0 else 0\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().subarraySum([5, 4, 3, 2, 1]) == 38"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().subarraySum([50, 25, 50, 25, 50]) == 600"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().subarraySum([10, 5, 2, 3]) == 62"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().subarraySum([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) == 19"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().subarraySum([10, 9, 8, 7, 6]) == 130"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().subarraySum([1, 1, 1, 1, 1]) == 9"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().subarraySum([3, 1, 1, 2]) == 13"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().subarraySum([1, 1, 1, 1]) == 7"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().subarraySum([2, 3, 1]) == 11"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().subarraySum([10, 1, 10, 1, 10]) == 85"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().subarraySum([5, 5, 5, 5, 5]) == 75"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().subarraySum([10, 10, 10]) == 60"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3427",
+    "fecha-estimada-2025-01-19",
+    "Array",
+    "Prefix Sum"
+  ]
+}

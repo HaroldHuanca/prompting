@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3479",
+  "titulo": "Fruits Into Baskets III",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/fruits-into-baskets-iii/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Segment Tree / Range Maximum Query / Búsqueda Binaria",
+  "enunciado": "You are given two arrays of integers, fruits and baskets, each of length n, where fruits[i] represents the quantity of the ith type of fruit, and baskets[j] represents the capacity of the jth basket.\nFrom left to right, place the fruits according to these rules:\n\nEach fruit type must be placed in the leftmost available basket with a capacity greater than or equal to the quantity of that fruit type.\nEach basket can hold only one type of fruit.\nIf a fruit type cannot be placed in any basket, it remains unplaced.\n\nReturn the number of fruit types that remain unplaced after all possible allocations are made.\n \nExample 1:\n\nInput: fruits = [4,2,5], baskets = [3,5,4]\nOutput: 1\nExplanation:\n\nfruits[0] = 4 is placed in baskets[1] = 5.\nfruits[1] = 2 is placed in baskets[0] = 3.\nfruits[2] = 5 cannot be placed in baskets[2] = 4.\n\nSince one fruit type remains unplaced, we return 1.\n\nExample 2:\n\nInput: fruits = [3,6,1], baskets = [6,4,7]\nOutput: 0\nExplanation:\n\nfruits[0] = 3 is placed in baskets[0] = 6.\nfruits[1] = 6 cannot be placed in baskets[1] = 4 (insufficient capacity) but can be placed in the next available basket, baskets[2] = 7.\nfruits[2] = 1 is placed in baskets[1] = 4.\n\nSince all fruits are successfully placed, we return 0.\n\n \nConstraints:\n\nn == fruits.length == baskets.length\n1 <= n <= 105\n1 <= fruits[i], baskets[i] <= 109\n\n",
+  "especificacion_entrada": "fruits: integer[], baskets: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "n == fruits.length == baskets.length\n1 <= n <= 105\n1 <= fruits[i], baskets[i] <= 109",
+  "solucion_referencia": "class Solution:\n    def numOfUnplacedFruits(self, fruits: list[int], baskets: list[int]) -> int:\n        n = len(baskets)\n        tree = [0] * (4 * n)\n        \n        def build(node, l, r):\n            if l == r:\n                tree[node] = baskets[l]\n                return\n            mid = (l + r) // 2\n            build(node * 2, l, mid)\n            build(node * 2 + 1, mid + 1, r)\n            tree[node] = max(tree[node * 2], tree[node * 2 + 1])\n            \n        def query_and_update(node, l, r, val):\n            if tree[node] < val:\n                return False\n            if l == r:\n                tree[node] = 0\n                return True\n            mid = (l + r) // 2\n            if tree[node * 2] >= val:\n                res = query_and_update(node * 2, l, mid, val)\n            else:\n                res = query_and_update(node * 2 + 1, mid + 1, r, val)\n            tree[node] = max(tree[node * 2], tree[node * 2 + 1])\n            return res\n            \n        build(1, 0, n - 1)\n        unplaced = 0\n        for f in fruits:\n            if not query_and_update(1, 0, n - 1, f):\n                unplaced += 1\n        return unplaced",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "fruits = [4,2,5], baskets = [3,5,4]",
+      "salida": "1",
+      "explicacion": "fruits[0] = 4 is placed in baskets[1] = 5.\nfruits[1] = 2 is placed in baskets[0] = 3.\nfruits[2] = 5 cannot be placed in baskets[2] = 4.\n\nSince one fruit type remains unplaced, we return 1."
+    },
+    {
+      "entrada": "fruits = [3,6,1], baskets = [6,4,7]",
+      "salida": "0",
+      "explicacion": "fruits[0] = 3 is placed in baskets[0] = 6.\nfruits[1] = 6 cannot be placed in baskets[1] = 4 (insufficient capacity) but can be placed in the next available basket, baskets[2] = 7.\nfruits[2] = 1 is placed in baskets[1] = 4.\n\nSince all fruits are successfully placed, we return 0."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3479: LC-3477 - Fruits Into Baskets II. Ambos problemas comparten las técnicas de búsqueda binaria, árbol de segmentos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "fruits = [5, 5, 5, 5], baskets = [4, 4, 4, 4]",
+      "salida": "4",
+      "explicacion": "Relación con LC-3479: Ambos problemas comparten las técnicas de búsqueda binaria, árbol de segmentos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n    def numOfUnplacedFruits(self, fruits: list[int], baskets: list[int]) -> int:\n        used = [False] * len(baskets)\n        unplaced = 0\n        for fruit in fruits:\n            placed = False\n            for j in range(len(baskets)):\n                if not used[j] and baskets[j] >= fruit:\n                    used[j] = True\n                    placed = True\n                    break\n            if not placed:\n                unplaced += 1\n        return unplaced"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().numOfUnplacedFruits([5, 5, 5, 5, 5], [1, 2, 3, 4, 5]) == 4"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().numOfUnplacedFruits([4, 2, 5], [3, 5, 4]) == 1"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().numOfUnplacedFruits([1, 1, 1, 1], [1, 1, 1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().numOfUnplacedFruits([1000000000, 1000000000], [999999999, 1000000000]) == 1"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().numOfUnplacedFruits([1000000000], [1000000000]) == 0"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().numOfUnplacedFruits([1, 2, 3, 4], [4, 3, 2, 1]) == 2"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().numOfUnplacedFruits([1, 1, 1, 1, 1], [1, 1, 1, 1, 1]) == 0"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().numOfUnplacedFruits([1, 2, 3, 4], [10, 10, 10, 10]) == 0"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().numOfUnplacedFruits([10, 9, 8, 7, 6], [6, 7, 8, 9, 10]) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().numOfUnplacedFruits([5, 5, 5, 5], [5, 5, 5, 5]) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().numOfUnplacedFruits([1, 10, 100, 1000], [1000, 100, 10, 1]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().numOfUnplacedFruits([7, 8, 9], [6, 7, 8]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3479",
+    "seleccion-reciente-2026-11"
+  ]
+}

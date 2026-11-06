@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3481",
+  "titulo": "Apply Substitutions",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/apply-substitutions/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Cadenas / Grafos / DFS / Memoización",
+  "enunciado": "You are given a replacements mapping and a text string that may contain placeholders formatted as %var%, where each var corresponds to a key in the replacements mapping. Each replacement value may itself contain one or more such placeholders. Each placeholder is replaced by the value associated with its corresponding replacement key.\nReturn the fully substituted text string which does not contain any placeholders.\n \nExample 1:\n\nInput: replacements = [[\"A\",\"abc\"],[\"B\",\"def\"]], text = \"%A%_%B%\"\nOutput: \"abc_def\"\nExplanation:\n\nThe mapping associates \"A\" with \"abc\" and \"B\" with \"def\".\nReplace %A% with \"abc\" and %B% with \"def\" in the text.\nThe final text becomes \"abc_def\".\n\n\nExample 2:\n\nInput: replacements = [[\"A\",\"bce\"],[\"B\",\"ace\"],[\"C\",\"abc%B%\"]], text = \"%A%_%B%_%C%\"\nOutput: \"bce_ace_abcace\"\nExplanation:\n\nThe mapping associates \"A\" with \"bce\", \"B\" with \"ace\", and \"C\" with \"abc%B%\".\nReplace %A% with \"bce\" and %B% with \"ace\" in the text.\nThen, for %C%, substitute %B% in \"abc%B%\" with \"ace\" to obtain \"abcace\".\nThe final text becomes \"bce_ace_abcace\".\n\n\n \nConstraints:\n\n1 <= replacements.length <= 10\nEach element of replacements is a two-element list [key, value], where:\n\t\nkey is a single uppercase English letter.\nvalue is a non-empty string of at most 8 characters that may contain zero or more placeholders formatted as %%.\n\n\nAll replacement keys are unique.\nThe text string is formed by concatenating all key placeholders (formatted as %%) randomly from the replacements mapping, separated by underscores.\ntext.length == 4 * replacements.length - 1\nEvery placeholder in the text or in any replacement value corresponds to a key in the replacements mapping.\nThere are no cyclic dependencies between replacement keys.\n\n",
+  "especificacion_entrada": "replacements: string[][], text: string",
+  "especificacion_salida": "string",
+  "restricciones": "1 <= replacements.length <= 10\nEach element of replacements is a two-element list [key, value], where:\n\t\nkey is a single uppercase English letter.\nvalue is a non-empty string of at most 8 characters that may contain zero or more placeholders formatted as %%.\n\n\nAll replacement keys are unique.\nThe text string is formed by concatenating all key placeholders (formatted as %%) randomly from the replacements mapping, separated by underscores.\ntext.length == 4 * replacements.length - 1\nEvery placeholder in the text or in any replacement value corresponds to a key in the replacements mapping.\nThere are no cyclic dependencies between replacement keys.",
+  "solucion_referencia": "class Solution:\n  def applySubstitutions(self, replacements: list[list[str]], text: str) -> str:\n    replaceMap = {key: value for key, value in replacements}\n\n    def evaluate(text: str) -> str:\n      \"\"\"\n      Evaluates the text and replaces the placeholders with the values\n      from the replace_map recursively.\n      \"\"\"\n      res = []\n      i = 0\n      while i < len(text):\n        if text[i] == '%':\n          j = i + 1 + text[i + 1:].find('%')\n          key = text[i + 1:j]\n          value = replaceMap[key]\n          res.append(evaluate(value))\n          i = j + 1\n        else:\n          res.append(text[i])\n          i += 1\n      return ''.join(res)\n\n    return evaluate(text)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "replacements = [[\"A\",\"abc\"],[\"B\",\"def\"]], text = \"%A%_%B%\"",
+      "salida": "\"abc_def\"",
+      "explicacion": "The mapping associates \"A\" with \"abc\" and \"B\" with \"def\".\nReplace %A% with \"abc\" and %B% with \"def\" in the text.\nThe final text becomes \"abc_def\"."
+    },
+    {
+      "entrada": "replacements = [[\"A\",\"bce\"],[\"B\",\"ace\"],[\"C\",\"abc%B%\"]], text = \"%A%_%B%_%C%\"",
+      "salida": "\"bce_ace_abcace\"",
+      "explicacion": "The mapping associates \"A\" with \"bce\", \"B\" with \"ace\", and \"C\" with \"abc%B%\".\nReplace %A% with \"bce\" and %B% with \"ace\" in the text.\nThen, for %C%, substitute %B% in \"abc%B%\" with \"ace\" to obtain \"abcace\".\nThe final text becomes \"bce_ace_abcace\"."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3481: LC-3310 - Remove Methods From Project. Las sustituciones forman dependencias entre símbolos; el ejemplo resuelve un grafo de dependencias antes de propagar cambios.",
+      "entrada": "n = 1, k = 0, invocations = []",
+      "salida": "[]",
+      "explicacion": "Relación con LC-3481: Las sustituciones forman dependencias entre símbolos; el ejemplo resuelve un grafo de dependencias antes de propagar cambios.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def remainingMethods(\n      self,\n      n: int,\n      k: int,\n      invocations: list[list[int]]\n  ) -> list[int]:\n    ans = []\n    graph = [[] for _ in range(n)]\n\n    for u, v in invocations:\n      graph[u].append(v)\n\n    q = collections.deque([k])\n    seen = {k}\n\n    while q:\n      for _ in range(len(q)):\n        for v in graph[q.popleft()]:\n          if v not in seen:\n            q.append(v)\n            seen.add(v)\n\n    for u in range(n):\n      if u in seen:\n        continue\n      for v in graph[u]:\n        if v in seen:\n          return list(range(n))\n      ans.append(u)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().applySubstitutions([['W', 'wxy'], ['X', 'xyz'], ['Y', '%W%_%X%'], ['Z', 'uvw']], '%Y%_%Z%') == 'wxy_xyz_uvw'"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().applySubstitutions([['M', 'mno'], ['N', 'pqr'], ['O', 'stu'], ['P', '%M%%N%']], '%M%_%N%_%O%_%P%') == 'mno_pqr_stu_mnopqr'"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().applySubstitutions([['X', 'xyz'], ['Y', 'uvw'], ['Z', '%X%%Y%']], '%X%_%Y%_%Z%') == 'xyz_uvw_xyzuvw'"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().applySubstitutions([['M', 'mno'], ['N', 'pqr'], ['O', 'stu'], ['P', 'vwx']], '%M%_%N%_%O%_%P%') == 'mno_pqr_stu_vwx'"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().applySubstitutions([['A', 'abc'], ['B', 'def']], '%A%_%B%') == 'abc_def'"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().applySubstitutions([['Q', 'qwe'], ['R', 'rty'], ['S', '%Q%%R%'], ['T', '%R%%S%']], '%Q%_%R%_%S%_%T%') == 'qwe_rty_qwerty_rtyqwerty'"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().applySubstitutions([['X', 'xyz'], ['Y', 'uvw'], ['Z', '%X%_%Y%']], '%X%_%Y%_%Z%') == 'xyz_uvw_xyz_uvw'"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().applySubstitutions([['Q', 'qwe'], ['R', 'rty'], ['S', 'uiop'], ['T', 'asdf'], ['U', '%Q%%R%']], '%Q%_%R%_%S%_%T%_%U%') == 'qwe_rty_uiop_asdf_qwerty'"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().applySubstitutions([['A', 'bce'], ['B', 'ace'], ['C', 'abc%B%']], '%A%_%B%_%C%') == 'bce_ace_abcace'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().applySubstitutions([['X', 'mno'], ['Y', 'pqr'], ['Z', '%X%%Y%'], ['A', 'stu'], ['B', '%Z%%A%'], ['C', 'vwx%B%']], '%C%') == 'vwxmnopqrstu'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().applySubstitutions([['A', 'xy%B%zy'], ['B', 'wv%C%vu'], ['C', 'ut%D%tu'], ['D', 'sr%E%sr'], ['E', 'qp%F%pq'], ['F', 'on%G%no'], ['G', 'ml%H%ml'], ['H', 'lk%I%lk'], ['I', 'ji%J%ji'], ['J', 'hg']], '%A%_%B%_%C%_%D%_%E%_%F%_%G%_%H%_%I%_%J%') == 'xywvutsrqponmllkjihgjilkmlnopqsrtuvuzy_wvutsrqponmllkjihgjilkmlnopqsrtuvu_utsrqponmllkjihgjilkmlnopqsrtu_srqponmllkjihgjilkmlnopqsr_qponmllkjihgjilkmlnopq_onmllkjihgjilkmlno_mllkjihgjilkml_lkjihgjilk_jihgji_hg'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().applySubstitutions([['N', 'abc%O%'], ['O', 'def%P%'], ['P', 'ghi'], ['Q', 'jkl%O%'], ['R', 'mno%P%'], ['S', 'pqr%O%']], '%N%_%Q%_%R%_%S%') == 'abcdefghi_jkldefghi_mnoghi_pqrdefghi'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3481",
+    "seleccion-reciente-2026-11"
+  ]
+}

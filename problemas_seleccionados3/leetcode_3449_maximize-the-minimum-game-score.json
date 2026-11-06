@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3449",
+  "titulo": "Maximize the Minimum Game Score",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-the-minimum-game-score/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Greedy / Array / Binary Search",
+  "enunciado": "You are given an array points of size n and an integer m. There is another array gameScore of size n, where gameScore[i] represents the score achieved at the ith game. Initially, gameScore[i] == 0 for all i.\nYou start at index -1, which is outside the array (before the first position at index 0). You can make at most m moves. In each move, you can either:\n\nIncrease the index by 1 and add points[i] to gameScore[i].\nDecrease the index by 1 and add points[i] to gameScore[i].\n\nNote that the index must always remain within the bounds of the array after the first move.\nReturn the maximum possible minimum value in gameScore after at most m moves.\n \nExample 1:\n\nInput: points = [2,4], m = 3\nOutput: 4\nExplanation:\nInitially, index i = -1 and gameScore = [0, 0].\n\n\n\nMove\nIndex\ngameScore\n\n\n\n\nIncrease i\n0\n[2, 0]\n\n\nIncrease i\n1\n[2, 4]\n\n\nDecrease i\n0\n[4, 4]\n\n\n\nThe minimum value in gameScore is 4, and this is the maximum possible minimum among all configurations. Hence, 4 is the output.\n\nExample 2:\n\nInput: points = [1,2,3], m = 5\nOutput: 2\nExplanation:\nInitially, index i = -1 and gameScore = [0, 0, 0].\n\n\n\nMove\nIndex\ngameScore\n\n\n\n\nIncrease i\n0\n[1, 0, 0]\n\n\nIncrease i\n1\n[1, 2, 0]\n\n\nDecrease i\n0\n[2, 2, 0]\n\n\nIncrease i\n1\n[2, 4, 0]\n\n\nIncrease i\n2\n[2, 4, 3]\n\n\n\nThe minimum value in gameScore is 2, and this is the maximum possible minimum among all configurations. Hence, 2 is the output.\n\n \nConstraints:\n\n2 <= n == points.length <= 5 * 104\n1 <= points[i] <= 106\n1 <= m <= 109\n\n",
+  "especificacion_entrada": "points: list[int], m: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxScore(self, points: list[int], m: int) -> int:\n    def isPossible(minVal: int, m: int) -> bool:\n      \"\"\"\n      Returns True if it is possible to achieve the maximum minimum value `x`\n      with `m` number of moves.\n      \"\"\"\n      moves = 0\n      prevMoves = 0  # to track remaining moves from the previous point\n      for i, point in enumerate(points):\n        required = (minVal + point - 1) // point  # ceil(minVal / point)\n        required = max(0, required - prevMoves)\n        if required > 0:\n          moves += 2 * required - 1\n          prevMoves = required - 1\n        elif i + 1 < len(points):\n          moves += 1\n          prevMoves = 0\n        if moves > m:\n          return False\n      return True\n\n    l = 0\n    r = (m + 1) // 2 * points[0] + 1\n\n    while l < r:\n      mid = (l + r + 1) // 2\n      if isPossible(mid, m):\n        l = mid\n      else:\n        r = mid - 1\n\n    return l\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "points = [5,3,8,2,6], m = 10",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "points = [5, 9, 3, 7], m = 7",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "points = [1,1,1,1,1], m = 5",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3449: LC-3464 - Maximize the Distance Between Points on a Square. Ambos problemas comparten las técnicas de búsqueda binaria, estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "side = 4, points = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [2, 4], [3, 4], [4, 4], [4, 3], [4, 2], [4, 1], [4, 0], [3, 0], [2, 0], [1, 0]], k = 8",
+      "salida": "2",
+      "explicacion": "Relación con LC-3449: Ambos problemas comparten las técnicas de búsqueda binaria, estrategia voraz, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import collections\n\nfrom dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Sequence:\n  startX: int\n  startY: int\n  endX: int\n  endY: int\n  length: int\n\n  def __iter__(self):\n    yield self.startX\n    yield self.startY\n    yield self.endX\n    yield self.endY\n    yield self.length\n\n\nclass Solution:\n  def maxDistance(self, side: int, points: list[list[int]], k: int) -> int:\n    ordered = self._getOrderedPoints(side, points)\n\n    def isValidDistance(m: int) -> bool:\n      \"\"\"\n      Returns True if we can select `k` points such that the minimum Manhattan\n      distance between any two consecutive chosen points is at least `m`.\n      \"\"\"\n      dq = collections.deque([Sequence(*ordered[0], *ordered[0], 1)])\n      maxLength = 1\n\n      for i in range(1, len(ordered)):\n        x, y = ordered[i]\n        startX, startY = ordered[i]\n        length = 1\n        while dq and abs(x - dq[0].endX) + abs(y - dq[0].endY) >= m:\n          if (abs(x - dq[0].startX) + abs(y - dq[0].startY) >= m\n                  and dq[0].length + 1 >= length):\n            startX = dq[0].startX\n            startY = dq[0].startY\n            length = dq[0].length + 1\n            maxLength = max(maxLength, length)\n          dq.popleft()\n        dq.append(Sequence(startX, startY, x, y, length))\n\n      return maxLength >= k\n\n    l = 0\n    r = side\n\n    while l < r:\n      m = (l + r + 1) // 2\n      if isValidDistance(m):\n        l = m\n      else:\n        r = m - 1\n\n    return l\n\n  def _getOrderedPoints(self, side: int, points: list[list[int]]) -> list[list[int]]:\n    \"\"\"\n    Returns the ordered points on the perimeter of a square of side length\n    `side`, starting from left, top, right, and bottom boundaries.\n    \"\"\"\n    left = sorted([(x, y) for x, y in points if x == 0 and y > 0])\n    top = sorted([(x, y) for x, y in points if x > 0 and y == side])\n    right = sorted([(x, y) for x, y in points if x == side and y < side],\n                   reverse=True)\n    bottom = sorted([(x, y) for x, y in points if y == 0], reverse=True)\n    return left + top + right + bottom\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxScore([5, 3, 8, 2, 6], 10) == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxScore([5, 9, 3, 7], 7) == 6"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1, 1], 5) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 20) == 2"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxScore([2, 4], 3) == 4"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1, 1], 10) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxScore([100000, 100000, 100000, 100000, 100000], 1000000) == 16666600000"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxScore([5, 9, 3, 7], 6) == 5"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxScore([5, 9, 3, 7], 10) == 9"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore([10, 10, 10, 10, 10], 10) == 10"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore([1000000, 1000000, 1000000], 1000000) == 250000000000"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 10) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3449",
+    "fecha-estimada-2025-02-09",
+    "Greedy",
+    "Array",
+    "Binary Search"
+  ]
+}

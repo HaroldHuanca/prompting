@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3366",
+  "titulo": "Minimum Array Sum",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-array-sum/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "You are given an integer array nums and three integers k, op1, and op2.\nYou can perform the following operations on nums:\n\nOperation 1: Choose an index i and divide nums[i] by 2, rounding up to the nearest whole number. You can perform this operation at most op1 times, and not more than once per index.\nOperation 2: Choose an index i and subtract k from nums[i], but only if nums[i] is greater than or equal to k. You can perform this operation at most op2 times, and not more than once per index.\n\nNote: Both operations can be applied to the same index, but at most once each.\nReturn the minimum possible sum of all elements in nums after performing any number of operations.\n \nExample 1:\n\nInput: nums = [2,8,3,19,3], k = 3, op1 = 1, op2 = 1\nOutput: 23\nExplanation:\n\nApply Operation 2 to nums[1] = 8, making nums[1] = 5.\nApply Operation 1 to nums[3] = 19, making nums[3] = 10.\nThe resulting array becomes [2, 5, 3, 10, 3], which has the minimum possible sum of 23 after applying the operations.\n\n\nExample 2:\n\nInput: nums = [2,4,3], k = 3, op1 = 2, op2 = 1\nOutput: 3\nExplanation:\n\nApply Operation 1 to nums[0] = 2, making nums[0] = 1.\nApply Operation 1 to nums[1] = 4, making nums[1] = 2.\nApply Operation 2 to nums[2] = 3, making nums[2] = 0.\nThe resulting array becomes [1, 2, 0], which has the minimum possible sum of 3 after applying the operations.\n\n\n \nConstraints:\n\n1 <= nums.length <= 100\n0 <= nums[i] <= 105\n0 <= k <= 105\n0 <= op1, op2 <= nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], k: int, op1: int, op2: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minArraySum(self, nums: list[int], k: int, op1: int, op2: int) -> int:\n    @functools.lru_cache(None)\n    def dp(i: int, op1: int, op2: int) -> int:\n      \"\"\"\n      Returns the minimum sum of nums[i..n - 1] with `op1` operations of op1 and\n      `op2` operations of op2.\n      \"\"\"\n      if i == len(nums):\n        return 0\n      res = nums[i] + dp(i + 1, op1, op2)\n      if op1 > 0:\n        res = min(res, (nums[i] + 1) // 2 + dp(i + 1, op1 - 1, op2))\n      if op2 > 0 and nums[i] >= k:\n        res = min(res, nums[i] - k + dp(i + 1, op1, op2 - 1))\n      if op1 > 0 and op2 > 0:\n        if (nums[i] + 1) // 2 >= k:\n          res = min(res, (nums[i] + 1) // 2 - k + dp(i + 1, op1 - 1, op2 - 1))\n        if nums[i] >= k:\n          res = min(res, (nums[i] - k + 1) // 2 + dp(i + 1, op1 - 1, op2 - 1))\n      return res\n\n    return dp(0, op1, op2)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [0,0,0,0], k = 0, op1 = 4, op2 = 4",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30], k = 10, op1 = 3, op2 = 2",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [9,18,27,36], k = 9, op1 = 2, op2 = 2",
+      "salida": "41",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3366: LC-3466 - Maximum Coin Collection. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "lane1 = [-1, 1, -1, 1, -1], lane2 = [1, -1, 1, -1, 1]",
+      "salida": "3",
+      "explicacion": "Relación con LC-3366: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maxCoins(self, lane1: list[int], lane2: list[int]) -> int:\n    n = len(lane1)\n    # dp[i][k] := the maximum number of coins at i-th mile with k switches\n    dp = [[-math.inf] * 3 for _ in range(n)]\n    dp[0][0] = lane1[0]\n    dp[0][1] = lane2[0]\n\n    for i in range(1, n):\n      dp[i][0] = max(0, dp[i - 1][0]) + lane1[i]\n      dp[i][1] = max(0, dp[i - 1][0], dp[i - 1][1]) + lane2[i]\n      dp[i][2] = max(dp[i - 1][1], dp[i - 1][2]) + lane1[i]\n\n    return max(map(max, dp))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minArraySum([0, 0, 0, 0], 0, 4, 4) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minArraySum([10, 20, 30], 10, 3, 2) == 10"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minArraySum([9, 18, 27, 36], 9, 2, 2) == 41"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minArraySum([10, 20, 30], 5, 2, 2) == 25"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minArraySum([1, 2, 3, 4, 5], 1, 0, 0) == 15"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minArraySum([5, 5, 5, 5, 5], 2, 5, 5) == 5"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minArraySum([5, 10, 15, 20], 5, 2, 3) == 18"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minArraySum([7, 14, 21, 28], 7, 2, 2) == 32"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minArraySum([5, 5, 5, 5, 5], 5, 5, 5) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minArraySum([1, 2, 3, 4, 5], 1, 3, 3) == 7"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minArraySum([1, 2, 3, 4, 5], 1, 5, 0) == 9"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minArraySum([1, 1, 1, 1, 1, 1], 1, 6, 6) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3366",
+    "fecha-estimada-2024-11-24",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

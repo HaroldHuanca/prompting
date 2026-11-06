@@ -1,0 +1,101 @@
+{
+  "codigo": "LC-3348",
+  "titulo": "Smallest Divisible Digit Product II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/smallest-divisible-digit-product-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Greedy / Math / String / Backtracking / Number Theory",
+  "enunciado": "You are given a string num which represents a positive integer, and an integer t.\nA number is called zero-free if none of its digits are 0.\nReturn a string representing the smallest zero-free number greater than or equal to num such that the product of its digits is divisible by t. If no such number exists, return \"-1\".\n \nExample 1:\n\nInput: num = \"1234\", t = 256\nOutput: \"1488\"\nExplanation:\nThe smallest zero-free number that is greater than 1234 and has the product of its digits divisible by 256 is 1488, with the product of its digits equal to 256.\n\nExample 2:\n\nInput: num = \"12355\", t = 50\nOutput: \"12355\"\nExplanation:\n12355 is already zero-free and has the product of its digits divisible by 50, with the product of its digits equal to 150.\n\nExample 3:\n\nInput: num = \"11111\", t = 26\nOutput: \"-1\"\nExplanation:\nNo number greater than 11111 has the product of its digits divisible by 26.\n\n \nConstraints:\n\n2 <= num.length <= 2 * 105\nnum consists only of digits in the range ['0', '9'].\nnum does not contain leading zeros.\n1 <= t <= 1014\n\n",
+  "especificacion_entrada": "num: str, t: int",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "FACTOR_COUNTS = {\n    0: collections.Counter(),\n    1: collections.Counter(),\n    2: collections.Counter([2]),\n    3: collections.Counter([3]),\n    4: collections.Counter([2, 2]),\n    5: collections.Counter([5]),\n    6: collections.Counter([2, 3]),\n    7: collections.Counter([7]),\n    8: collections.Counter([2, 2, 2]),\n    9: collections.Counter([3, 3]),\n}\n\n\nclass Solution:\n  def smallestNumber(self, num: str, t: int) -> str:\n    primeCount, isDivisible = self._getPrimeCount(t)\n    if not isDivisible:\n      return '-1'\n\n    factorCount = self._getFactorCount(primeCount)\n    if sum(factorCount.values()) > len(num):\n      return ''.join(factor * freq for factor, freq in factorCount.items())\n\n    primeCountPrefix = sum((FACTOR_COUNTS[int(c)]\n                            for c in num), start=collections.Counter())\n    firstZeroIndex = next((i for i, d in enumerate(num) if d == '0'), len(num))\n    if firstZeroIndex == len(num) and primeCount <= primeCountPrefix:\n      return num\n\n    for i, c in reversed(list(enumerate(num))):\n      d = int(c)\n      # Remove the current digit's factors from primeCountPrefix.\n      primeCountPrefix -= FACTOR_COUNTS[d]\n      spaceAfterThisDigit = len(num) - 1 - i\n      if i <= firstZeroIndex:\n        for biggerDigit in range(d + 1, 10):\n          # Compute the required factors after replacing with a larger digit.\n          factorsAfterReplacement = self._getFactorCount(\n              primeCount - primeCountPrefix - FACTOR_COUNTS[biggerDigit]\n          )\n          # Check if the replacement is possible within the available space.\n          if sum(factorsAfterReplacement.values()) <= spaceAfterThisDigit:\n            # Fill extra space with '1', if any, and construct the result.\n            fillOnes = spaceAfterThisDigit - sum(\n                factorsAfterReplacement.values())\n            return (\n                num[:i]  # Keep the prefix unchanged.\n                + str(biggerDigit)  # Replace the current digit.\n                + '1' * fillOnes  # Fill remaining space with '1'.\n                + ''.join(factor * freq for factor,\n                          freq in factorsAfterReplacement.items())\n            )\n\n    # No solution of the same length exists, so we need to extend the number\n    # by prepending '1's and adding the required factors.\n    factorCount = self._getFactorCount(primeCount)\n    return (\n        '1' * (len(num) + 1 - sum(factorCount.values()))\n        + ''.join(factor * freq for factor, freq in factorCount.items())\n    )\n\n  def _getPrimeCount(self, t: int) -> tuple[dict[int, int], bool]:\n    \"\"\"\n    Returns the count of prime factors of t and if t is divisible by 2, 3, 5, 7.\n    \"\"\"\n    count = collections.Counter()\n    for prime in [2, 3, 5, 7]:\n      while t % prime == 0:\n        t //= prime\n        count[prime] += 1\n    return count, t == 1\n\n  def _getFactorCount(self, count: dict[int, int]) -> dict[str, int]:\n    \"\"\"Returns the required factors to form the smallest number.\"\"\"\n    count8, remaining2 = divmod(count[2], 3)  # 2^3 = 8\n    count9, count3 = divmod(count[3], 2)  # 3^2 = 9\n    count4, count2 = divmod(remaining2, 2)  # 2^2 = 4\n    # Combine 2 and 3 to 6 if both are present.\n    count2, count3, count6 = ((0, 0, 1) if count2 == 1 and count3 == 1\n                              else (count2, count3, 0))\n    # Combine 3 and 4 to 2 and 6 if both are present.\n    count2, count6, count3, count4 = ((1, 1, 0, 0)\n                                      if count3 == 1 and count4 == 1\n                                      else (count2, count6, count3, count4))\n    return {'2': count2, '3': count3, '4': count4, '5': count[5],\n            '6': count6, '7': count[7], '8': count8, '9': count9}\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "num = \"99999\", t = 987654",
+      "salida": "-1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "num = \"1000\", t = 10",
+      "salida": "1125",
+      "explicacion": ""
+    },
+    {
+      "entrada": "num = \"123456789\", t = 3628800",
+      "salida": "145578899",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3348: LC-3345 - Smallest Divisible Digit Product I. Ambos problemas comparten el tema de digit, divisible, product, aunque plantean una variante distinta.",
+      "entrada": "n = 30, t = 5",
+      "salida": "30",
+      "explicacion": "Relación con LC-3348: Ambos problemas comparten el tema de digit, divisible, product, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "class Solution:\n  def smallestNumber(self, n: int, t: int) -> int:\n    return next(num for num in range(n, n + 10)\n                if self._getDigitProd(num) % t == 0)\n\n  def _getDigitProd(self, num: int) -> int:\n    digitProd = 1\n    while num > 0:\n      digitProd *= num % 10\n      num //= 10\n    return digitProd\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().smallestNumber('99999', 987654) == -1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().smallestNumber('1000', 10) == 1125"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().smallestNumber('123456789', 3628800) == 145578899"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().smallestNumber('101010', 10) == 111125"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().smallestNumber('202020', 20) == 211125"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().smallestNumber('1999', 2000) == 25558"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().smallestNumber('2222222222', 1024) == 2222222222"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().smallestNumber('987654321', 362880) == 987654321"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().smallestNumber('1234', 256) == 1488"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().smallestNumber('112233445566778899', 897654321) == -1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().smallestNumber('1001', 10) == 1125"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().smallestNumber('999', 1000) == 5558"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3348",
+    "fecha-estimada-2024-11-03",
+    "Greedy",
+    "Math",
+    "String",
+    "Backtracking",
+    "Number Theory"
+  ]
+}

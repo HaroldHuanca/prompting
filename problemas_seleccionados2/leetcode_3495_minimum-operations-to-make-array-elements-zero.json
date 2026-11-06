@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3495",
+  "titulo": "Minimum Operations to Make Array Elements Zero",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-operations-to-make-array-elements-zero/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Matemáticas / Bit Manipulation / Sumas de Prefijos",
+  "enunciado": "You are given a 2D array queries, where queries[i] is of the form [l, r]. Each queries[i] defines an array of integers nums consisting of elements ranging from l to r, both inclusive.\nIn one operation, you can:\n\nSelect two integers a and b from the array.\nReplace them with floor(a / 4) and floor(b / 4).\n\nYour task is to determine the minimum number of operations required to reduce all elements of the array to zero for each query. Return the sum of the results for all queries.\n \nExample 1:\n\nInput: queries = [[1,2],[2,4]]\nOutput: 3\nExplanation:\nFor queries[0]:\n\nThe initial array is nums = [1, 2].\nIn the first operation, select nums[0] and nums[1]. The array becomes [0, 0].\nThe minimum number of operations required is 1.\n\nFor queries[1]:\n\nThe initial array is nums = [2, 3, 4].\nIn the first operation, select nums[0] and nums[2]. The array becomes [0, 3, 1].\nIn the second operation, select nums[1] and nums[2]. The array becomes [0, 0, 0].\nThe minimum number of operations required is 2.\n\nThe output is 1 + 2 = 3.\n\nExample 2:\n\nInput: queries = [[2,6]]\nOutput: 4\nExplanation:\nFor queries[0]:\n\nThe initial array is nums = [2, 3, 4, 5, 6].\nIn the first operation, select nums[0] and nums[3]. The array becomes [0, 3, 4, 1, 6].\nIn the second operation, select nums[2] and nums[4]. The array becomes [0, 3, 1, 1, 1].\nIn the third operation, select nums[1] and nums[2]. The array becomes [0, 0, 0, 1, 1].\nIn the fourth operation, select nums[3] and nums[4]. The array becomes [0, 0, 0, 0, 0].\nThe minimum number of operations required is 4.\n\nThe output is 4.\n\n \nConstraints:\n\n1 <= queries.length <= 105\nqueries[i].length == 2\nqueries[i] == [l, r]\n1 <= l < r <= 109\n\n",
+  "especificacion_entrada": "queries: integer[][]",
+  "especificacion_salida": "integer",
+  "restricciones": "1 <= queries.length <= 105\nqueries[i].length == 2\nqueries[i] == [l, r]\n1 <= l < r <= 109",
+  "solucion_referencia": "class Solution:\n  def minOperations(self, queries: list[list[int]]) -> int:\n    return sum((self._getOperations(r) - self._getOperations(l - 1) + 1) // 2\n               for l, r in queries)\n\n  def _getOperations(self, n: int) -> int:\n    \"\"\"Returns the number of operations required for [1, n].\"\"\"\n    res = 0\n    ops = 0\n    powerOfFour = 1\n    while powerOfFour <= n:\n      l = powerOfFour\n      r = min(n, powerOfFour * 4 - 1)\n      ops += 1\n      res += (r - l + 1) * ops\n      powerOfFour *= 4\n    return res",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "queries = [[1,2],[2,4]]",
+      "salida": "3",
+      "explicacion": "For queries[0]:\n\nThe initial array is nums = [1, 2].\nIn the first operation, select nums[0] and nums[1]. The array becomes [0, 0].\nThe minimum number of operations required is 1.\n\nFor queries[1]:\n\nThe initial array is nums = [2, 3, 4].\nIn the first operation, select nums[0] and nums[2]. The array becomes [0, 3, 1].\nIn the second operation, select nums[1] and nums[2]. The array becomes [0, 0, 0].\nThe minimum number of operations required is 2.\n\nThe output is 1 + 2 = 3."
+    },
+    {
+      "entrada": "queries = [[2,6]]",
+      "salida": "4",
+      "explicacion": "For queries[0]:\n\nThe initial array is nums = [2, 3, 4, 5, 6].\nIn the first operation, select nums[0] and nums[3]. The array becomes [0, 3, 4, 1, 6].\nIn the second operation, select nums[2] and nums[4]. The array becomes [0, 3, 1, 1, 1].\nIn the third operation, select nums[1] and nums[2]. The array becomes [0, 0, 0, 1, 1].\nIn the fourth operation, select nums[3] and nums[4]. The array becomes [0, 0, 0, 0, 0].\nThe minimum number of operations required is 4.\n\nThe output is 4."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3495: LC-3354 - Make Array Elements Equal to Zero. Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 2, 3, 4, 0]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3495: Ambos problemas comparten las técnicas de sumas de prefijos, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def countValidSelections(self, nums: list[int]) -> int:\n    ans = 0\n    prefix = list(itertools.accumulate(nums))\n    suffix = list(itertools.accumulate(nums[::-1]))[::-1]\n\n    for i, num in enumerate(nums):\n      if num > 0:\n        continue\n      if prefix[i] == suffix[i]:\n        ans += 2  # Go to either direction.\n      if abs(prefix[i] - suffix[i]) == 1:\n        ans += 1  # Go to the direction with the larger sum.\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().minOperations([[1, 2], [2, 4]]) == 3"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().minOperations([[10, 20], [20, 30], [30, 40]]) == 48"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().minOperations([[1, 1000000000], [500000000, 1000000000]]) == 11071043045"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().minOperations([[1, 100], [100, 1000], [1000, 10000]]) == 32279"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().minOperations([[1, 10], [10, 20]]) == 23"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().minOperations([[5, 5], [10, 10], [15, 15]]) == 3"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().minOperations([[1, 1000000000], [1, 1000000000]]) == 14642086074"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().minOperations([[2, 6]]) == 4"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().minOperations([[1, 1000000000], [2, 999999999]]) == 14642086066"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minOperations([[1, 3], [4, 6], [7, 9]]) == 8"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minOperations([[1, 1000000], [500000, 1000000]]) == 7325248"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minOperations([[5, 5], [10, 10]]) == 2"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3495",
+    "seleccion-reciente-2026-11"
+  ]
+}

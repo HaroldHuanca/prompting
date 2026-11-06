@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3274",
+  "titulo": "Check if Two Chessboard Squares Have the Same Color",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/check-if-two-chessboard-squares-have-the-same-color/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Math / String",
+  "enunciado": "You are given two strings, coordinate1 and coordinate2, representing the coordinates of a square on an 8 x 8 chessboard.\nBelow is the chessboard for reference.\n\nReturn true if these two squares have the same color and false otherwise.\nThe coordinate will always represent a valid chessboard square. The coordinate will always have the letter first (indicating its column), and the number second (indicating its row).\n \nExample 1:\n\nInput: coordinate1 = \"a1\", coordinate2 = \"c3\"\nOutput: true\nExplanation:\nBoth squares are black.\n\nExample 2:\n\nInput: coordinate1 = \"a1\", coordinate2 = \"h3\"\nOutput: false\nExplanation:\nSquare \"a1\" is black and \"h3\" is white.\n\n \nConstraints:\n\ncoordinate1.length == coordinate2.length == 2\n'a' <= coordinate1[0], coordinate2[0] <= 'h'\n'1' <= coordinate1[1], coordinate2[1] <= '8'\n\n",
+  "especificacion_entrada": "coordinate1: str, coordinate2: str",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def checkTwoChessboards(self, coordinate1: str, coordinate2: str) -> bool:\n    # Same as 1812. Determine Color of a Chessboard Square\n    def squareIsWhite(coordinate: str) -> bool:\n      letter, digit = coordinate\n      return ord(letter) % 2 != int(digit) % 2\n\n    return squareIsWhite(coordinate1) == squareIsWhite(coordinate2)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "coordinate1 = \"g7\", coordinate2 = \"f8\"",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coordinate1 = \"a1\", coordinate2 = \"c3\"",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "coordinate1 = \"e5\", coordinate2 = \"g7\"",
+      "salida": "True",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3274: LC-3280 - Convert Date to Binary. La solución de referencia aporta una demostración cercana de técnicas de Math / String, aplicables como patrón al problema objetivo.",
+      "entrada": "date = '1950-06-30'",
+      "salida": "11110011110-110-11110",
+      "explicacion": "Relación con LC-3274: La solución de referencia aporta una demostración cercana de técnicas de Math / String, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "class Solution:\n  def convertDateToBinary(self, date: str) -> str:\n    year, month, day = map(int, date.split('-'))\n\n    def toBinary(value: int) -> str:\n      \"\"\"Converts an integer to binary without leading zeros.\"\"\"\n      return bin(value)[2:]\n\n    return '-'.join([toBinary(year), toBinary(month), toBinary(day)])\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().checkTwoChessboards('g7', 'f8') == True"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().checkTwoChessboards('a1', 'c3') == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().checkTwoChessboards('e5', 'g7') == True"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().checkTwoChessboards('b2', 'd4') == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().checkTwoChessboards('b2', 'b2') == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().checkTwoChessboards('g7', 'h8') == True"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().checkTwoChessboards('e5', 'e5') == True"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().checkTwoChessboards('g2', 'h4') == False"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().checkTwoChessboards('a1', 'h3') == False"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().checkTwoChessboards('h8', 'f6') == True"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().checkTwoChessboards('c6', 'b5') == True"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().checkTwoChessboards('c5', 'e7') == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3274",
+    "fecha-estimada-2024-09-01",
+    "Math",
+    "String"
+  ]
+}

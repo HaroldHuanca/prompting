@@ -1,0 +1,96 @@
+{
+  "codigo": "LC-3494",
+  "titulo": "Find the Minimum Amount of Time to Brew Potions",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-minimum-amount-of-time-to-brew-potions/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Programación Dinámica / Pipeline Scheduling",
+  "enunciado": "You are given two integer arrays, skill and mana, of length n and m, respectively.\nIn a laboratory, n wizards must brew m potions in order. Each potion has a mana capacity mana[j] and must pass through all the wizards sequentially to be brewed properly. The time taken by the ith wizard on the jth potion is timeij = skill[i] * mana[j].\nSince the brewing process is delicate, a potion must be passed to the next wizard immediately after the current wizard completes their work. This means the timing must be synchronized so that each wizard begins working on a potion exactly when it arrives. ​\nReturn the minimum amount of time required for the potions to be brewed properly.\n \nExample 1:\n\nInput: skill = [1,5,2,4], mana = [5,1,4,2]\nOutput: 110\nExplanation:\n\n\n\nPotion Number\nStart time\nWizard 0 done by\nWizard 1 done by\nWizard 2 done by\nWizard 3 done by\n\n\n0\n0\n5\n30\n40\n60\n\n\n1\n52\n53\n58\n60\n64\n\n\n2\n54\n58\n78\n86\n102\n\n\n3\n86\n88\n98\n102\n110\n\n\n\nAs an example for why wizard 0 cannot start working on the 1st potion before time t = 52, consider the case where the wizards started preparing the 1st potion at time t = 50. At time t = 58, wizard 2 is done with the 1st potion, but wizard 3 will still be working on the 0th potion till time t = 60.\n\nExample 2:\n\nInput: skill = [1,1,1], mana = [1,1,1]\nOutput: 5\nExplanation:\n\nPreparation of the 0th potion begins at time t = 0, and is completed by time t = 3.\nPreparation of the 1st potion begins at time t = 1, and is completed by time t = 4.\nPreparation of the 2nd potion begins at time t = 2, and is completed by time t = 5.\n\n\nExample 3:\n\nInput: skill = [1,2,3,4], mana = [1,2]\nOutput: 21\n\n \nConstraints:\n\nn == skill.length\nm == mana.length\n1 <= n, m <= 5000\n1 <= mana[i], skill[i] <= 5000\n\n",
+  "especificacion_entrada": "skill: integer[], mana: integer[]",
+  "especificacion_salida": "integer",
+  "restricciones": "n == skill.length\nm == mana.length\n1 <= n, m <= 5000\n1 <= mana[i], skill[i] <= 5000",
+  "solucion_referencia": "class Solution:\n  def minTime(self, skill: list[int], mana: list[int]) -> int:\n    sumSkill = sum(skill)\n    prevWizardDone = sumSkill * mana[0]\n\n    for j in range(1, len(mana)):\n      prevPotionDone = prevWizardDone\n      for i in range(len(skill) - 2, -1, -1):\n        # start time for wizard i brewing potion j\n        # = max(end time for wizard i brewing potion j - 1,\n        #       the earliest start time for wizard i + 1 brewing potion j\n        #       (coming from previous iteration)\n        #       - time for wizard i brewing potion j)\n        prevPotionDone -= skill[i + 1] * mana[j - 1]\n        prevWizardDone = max(prevPotionDone,\n                             prevWizardDone - skill[i] * mana[j])\n      prevWizardDone += sumSkill * mana[j]\n\n    return prevWizardDone",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "skill = [1,5,2,4], mana = [5,1,4,2]",
+      "salida": "110",
+      "explicacion": "Potion Number\nStart time\nWizard 0 done by\nWizard 1 done by\nWizard 2 done by\nWizard 3 done by\n\n\n0\n0\n5\n30\n40\n60\n\n\n1\n52\n53\n58\n60\n64\n\n\n2\n54\n58\n78\n86\n102\n\n\n3\n86\n88\n98\n102\n110\n\n\n\nAs an example for why wizard 0 cannot start working on the 1st potion before time t = 52, consider the case where the wizards started preparing the 1st potion at time t = 50. At time t = 58, wizard 2 is done with the 1st potion, but wizard 3 will still be working on the 0th potion till time t = 60."
+    },
+    {
+      "entrada": "skill = [1,1,1], mana = [1,1,1]",
+      "salida": "5",
+      "explicacion": "Preparation of the 0th potion begins at time t = 0, and is completed by time t = 3.\nPreparation of the 1st potion begins at time t = 1, and is completed by time t = 4.\nPreparation of the 2nd potion begins at time t = 2, and is completed by time t = 5."
+    },
+    {
+      "entrada": "skill = [1,2,3,4], mana = [1,2]",
+      "salida": "21",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3494: LC-3296 - Minimum Number of Seconds to Make Mountain Height Zero. Ambos modelan trabajo que avanza con costos de tiempo y optimizan el tiempo mínimo requerido.",
+      "entrada": "mountainHeight = 15, workerTimes = [5, 5, 5]",
+      "salida": "75",
+      "explicacion": "Relación con LC-3494: Ambos modelan trabajo que avanza con costos de tiempo y optimizan el tiempo mínimo requerido.",
+      "codigo_ilustrativo": "import bisect\nimport math\n\nclass Solution:\n  def minNumberOfSeconds(\n      self,\n      mountainHeight: int,\n      workerTimes: list[int]\n  ) -> int:\n    def getReducedHeight(m: int) -> int:\n      \"\"\"Returns the total height reduced by all workers in `m` seconds.\"\"\"\n      # The height `x` that a worker with working time `w` reduces in `m`\n      # seconds.\n      # w * (1 + 2 + ... + x) <= m\n      #       (1 + x) * x / 2 <= m / w\n      #   x^2 + x - 2 * m / w <= 0\n      #                     x <= (-1 + sqrt(1 + 8 * m / w)) / 2\n      return sum((-1 + math.sqrt(1 + 8 * m // workerTime)) // 2\n                 for workerTime in workerTimes)\n\n    l = 1\n    r = min(workerTimes) * mountainHeight * (mountainHeight + 1) // 2\n    return bisect.bisect_left(range(l, r), mountainHeight,\n                              key=getReducedHeight) + l\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().minTime([10, 20, 30], [1, 2, 3, 4, 5]) == 490"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().minTime([3, 2, 1], [6, 5, 4]) == 57"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().minTime([1, 1, 1], [1, 1, 1]) == 5"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().minTime([1, 2, 3], [4, 5, 6, 7]) == 78"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().minTime([5000, 5000], [1, 5000]) == 50005000"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().minTime([1, 2, 3], [4, 5, 6, 7, 8]) == 102"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().minTime([1, 5, 2, 4], [5, 1, 4, 2]) == 110"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().minTime([10, 20, 30], [1, 2, 3, 4, 5]) == 490"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().minTime([1, 2, 3, 4], [1, 2]) == 21"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minTime([5000, 5000, 5000], [5000, 5000, 5000]) == 125000000"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minTime([3, 1, 4, 1, 5], [9, 2, 6, 5, 3, 5]) == 275"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minTime([2, 3, 4, 5], [1, 2, 3, 4, 5, 6, 7]) == 159"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3494",
+    "seleccion-reciente-2026-11"
+  ]
+}

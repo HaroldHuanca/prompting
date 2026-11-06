@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3393",
+  "titulo": "Count Paths With the Given XOR Value",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/count-paths-with-the-given-xor-value/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Bit Manipulation / Array / Dynamic Programming / Matrix",
+  "enunciado": "You are given a 2D integer array grid with size m x n. You are also given an integer k.\nYour task is to calculate the number of paths you can take from the top-left cell (0, 0) to the bottom-right cell (m - 1, n - 1) satisfying the following constraints:\n\nYou can either move to the right or down. Formally, from the cell (i, j) you may move to the cell (i, j + 1) or to the cell (i + 1, j) if the target cell exists.\nThe XOR of all the numbers on the path must be equal to k.\n\nReturn the total number of such paths.\nSince the answer can be very large, return the result modulo 109 + 7.\n \nExample 1:\n\nInput: grid = [[2, 1, 5], [7, 10, 0], [12, 6, 4]], k = 11\nOutput: 3\nExplanation: \nThe 3 paths are:\n\n(0, 0) → (1, 0) → (2, 0) → (2, 1) → (2, 2)\n(0, 0) → (1, 0) → (1, 1) → (1, 2) → (2, 2)\n(0, 0) → (0, 1) → (1, 1) → (2, 1) → (2, 2)\n\n\nExample 2:\n\nInput: grid = [[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], k = 2\nOutput: 5\nExplanation:\nThe 5 paths are:\n\n(0, 0) → (1, 0) → (2, 0) → (2, 1) → (2, 2) → (2, 3)\n(0, 0) → (1, 0) → (1, 1) → (2, 1) → (2, 2) → (2, 3)\n(0, 0) → (1, 0) → (1, 1) → (1, 2) → (1, 3) → (2, 3)\n(0, 0) → (0, 1) → (1, 1) → (1, 2) → (2, 2) → (2, 3)\n(0, 0) → (0, 1) → (0, 2) → (1, 2) → (2, 2) → (2, 3)\n\n\nExample 3:\n\nInput: grid = [[1, 1, 1, 2], [3, 0, 3, 2], [3, 0, 2, 2]], k = 10\nOutput: 0\n\n \nConstraints:\n\n1 <= m == grid.length <= 300\n1 <= n == grid[r].length <= 300\n0 <= grid[r][c] < 16\n0 <= k < 16\n\n",
+  "especificacion_entrada": "grid: list[list[int]], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def countPathsWithXorValue(self, grid: list[list[int]], k: int) -> int:\n    MOD = 1_000_000_007\n    m = len(grid)\n    n = len(grid[0])\n\n    @functools.lru_cache(None)\n    def count(i: int, j: int, xors: int) -> int:\n      \"\"\"\n      Return the number of paths from (i, j) to (m - 1, n - 1) with XOR value\n      `xors`.\n      \"\"\"\n      if i == m or j == n:\n        return 0\n      xors ^= grid[i][j]\n      if i == m - 1 and j == n - 1:\n        return int(xors == k)\n      right = count(i, j + 1, xors)\n      down = count(i + 1, j, xors)\n      return (right + down) % MOD\n\n    return count(0, 0, 0)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "grid = [[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], k = 2",
+      "salida": "5",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[15, 15], [15, 15]], k = 14",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "grid = [[1], [1], [1]], k = 1",
+      "salida": "1",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3393: LC-3287 - Find the Maximum Sequence Value of Array. Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 3, 5, 7, 9, 11], k = 3",
+      "salida": "8",
+      "explicacion": "Relación con LC-3393: Ambos problemas comparten las técnicas de manipulación de bits, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def maxValue(self, nums: list[int], k: int) -> int:\n    left = self._getPossibleORs(nums, k)\n    right = self._getPossibleORs(nums[::-1], k)[::-1]\n    return max(a ^ b\n               for i in range(k - 1, len(nums) - k)\n               for a in range(128 + 1)\n               for b in range(128 + 1)\n               if left[i][k][a] and right[i + 1][k][b])\n\n  def _getPossibleORs(self, nums: list[int], k: int) -> list[list[list[bool]]]:\n    dp = [[[False] * (128 + 1)\n          for _ in range(k + 1)]\n          for _ in range(len(nums))]\n\n    dp[0][1][nums[0]] = True\n\n    for i in range(len(nums)):\n      dp[i][0][0] = True\n\n    for i in range(1, len(nums)):\n      for j in range(1, k + 1):\n        for x in range(128 + 1):\n          if dp[i - 1][j][x]:\n            dp[i][j][x] = True\n          if dp[i - 1][j - 1][x]:\n            dp[i][j][nums[i] | x] = True\n\n    return dp\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], 2) == 5"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().countPathsWithXorValue([[15, 15], [15, 15]], 14) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().countPathsWithXorValue([[1], [1], [1]], 1) == 1"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().countPathsWithXorValue([[1]], 1) == 1"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().countPathsWithXorValue([[0]], 0) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 15) == 2"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().countPathsWithXorValue([[0, 0, 0], [0, 0, 0], [0, 0, 0]], 0) == 6"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 2], [3, 4]], 7) == 1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 1, 1], [1, 1, 1], [1, 1, 1]], 3) == 0"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 1, 1, 2], [3, 0, 3, 2], [3, 0, 2, 2]], 10) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().countPathsWithXorValue([[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], 0) == 20"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().countPathsWithXorValue([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 7) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3393",
+    "fecha-estimada-2024-12-15",
+    "Bit Manipulation",
+    "Array",
+    "Dynamic Programming",
+    "Matrix"
+  ]
+}

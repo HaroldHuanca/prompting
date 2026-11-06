@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3271",
+  "titulo": "Hash Divided String",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/hash-divided-string/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "String / Simulation",
+  "enunciado": "You are given a string s of length n and an integer k, where n is a multiple of k. Your task is to hash the string s into a new string called result, which has a length of n / k.\nFirst, divide s into n / k substrings, each with a length of k. Then, initialize result as an empty string.\nFor each substring in order from the beginning:\n\nThe hash value of a character is the index of that character in the English alphabet (e.g., 'a' → 0, 'b' → 1, ..., 'z' → 25).\nCalculate the sum of all the hash values of the characters in the substring.\nFind the remainder of this sum when divided by 26, which is called hashedChar.\nIdentify the character in the English lowercase alphabet that corresponds to hashedChar.\nAppend that character to the end of result.\n\nReturn result.\n \nExample 1:\n\nInput: s = \"abcd\", k = 2\nOutput: \"bf\"\nExplanation:\nFirst substring: \"ab\", 0 + 1 = 1, 1 % 26 = 1, result[0] = 'b'.\nSecond substring: \"cd\", 2 + 3 = 5, 5 % 26 = 5, result[1] = 'f'.\n\nExample 2:\n\nInput: s = \"mxz\", k = 3\nOutput: \"i\"\nExplanation:\nThe only substring: \"mxz\", 12 + 23 + 25 = 60, 60 % 26 = 8, result[0] = 'i'.\n\n \nConstraints:\n\n1 <= k <= 100\nk <= s.length <= 1000\ns.length is divisible by k.\ns consists only of lowercase English letters.\n\n",
+  "especificacion_entrada": "s: str, k: int",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def stringHash(self, s: str, k: int) -> str:\n    ans = []\n\n    for i in range(0, len(s), k):\n      sumHash = sum(string.ascii_lowercase.index(s[j])\n                    for j in range(i, i + k))\n      ans.append(string.ascii_lowercase[sumHash % 26])\n\n    return ''.join(ans)\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "s = \"aaaa\", k = 2",
+      "salida": "aa",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"mnopqr\", k = 3",
+      "salida": "nw",
+      "explicacion": ""
+    },
+    {
+      "entrada": "s = \"hellohellohellohello\", k = 5",
+      "salida": "vvvv",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3271: LC-3324 - Find the Sequence of Strings Appeared on the Screen. Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "target = 'abcdefg'",
+      "salida": "['a', 'aa', 'ab', 'aba', 'abb', 'abc', 'abca', 'abcb', 'abcc', 'abcd', 'abcda', 'abcdb', 'abcdc', 'abcdd', 'abcde', 'abcdea', 'abcdeb', 'abcdec', 'abcded', 'abcdee', 'abcdef', 'abcdefa', 'abcdefb', 'abcdefc', 'abcdefd', 'abcdefe', 'abcdeff', 'abcdefg']",
+      "explicacion": "Relación con LC-3271: Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def stringSequence(self, target: str) -> list[str]:\n    ans = []\n    s = []\n\n    for targetChar in target:\n      s.append('a')\n      ans.append(''.join(s))\n      for offset in range(ord('b'), ord(targetChar) + 1):\n        s[-1] = chr(offset)\n        ans.append(''.join(s))\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().stringHash('aaaa', 2) == 'aa'"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().stringHash('mnopqr', 3) == 'nw'"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().stringHash('hellohellohellohello', 5) == 'vvvv'"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().stringHash('ababababab', 2) == 'bbbbb'"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().stringHash('zzzz', 4) == 'w'"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().stringHash('abcd', 2) == 'bf'"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().stringHash('mxz', 3) == 'i'"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().stringHash('zzzz', 2) == 'yy'"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().stringHash('aaaabbbbcccc', 4) == 'aei'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().stringHash('abcdefghijklmnopqrstuvwxyz', 26) == 'n'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().stringHash('abcdefghijklmnopqrstuvwxyza', 1) == 'abcdefghijklmnopqrstuvwxyza'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().stringHash('abcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabcabc', 3) == 'dddddddddddddddddd'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3271",
+    "fecha-estimada-2024-08-25",
+    "String",
+    "Simulation"
+  ]
+}

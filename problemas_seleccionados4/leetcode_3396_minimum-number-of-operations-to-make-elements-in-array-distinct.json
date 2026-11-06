@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3396",
+  "titulo": "Minimum Number of Operations to Make Elements in Array Distinct",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/minimum-number-of-operations-to-make-elements-in-array-distinct/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Hash Table",
+  "enunciado": "You are given an integer array nums. You need to ensure that the elements in the array are distinct. To achieve this, you can perform the following operation any number of times:\n\nRemove 3 elements from the beginning of the array. If the array has fewer than 3 elements, remove all remaining elements.\n\nNote that an empty array is considered to have distinct elements. Return the minimum number of operations needed to make the elements in the array distinct.\n \nExample 1:\n\nInput: nums = [1,2,3,4,2,3,3,5,7]\nOutput: 2\nExplanation:\n\nIn the first operation, the first 3 elements are removed, resulting in the array [4, 2, 3, 3, 5, 7].\nIn the second operation, the next 3 elements are removed, resulting in the array [3, 5, 7], which has distinct elements.\n\nTherefore, the answer is 2.\n\nExample 2:\n\nInput: nums = [4,5,6,4,4]\nOutput: 2\nExplanation:\n\nIn the first operation, the first 3 elements are removed, resulting in the array [4, 4].\nIn the second operation, all remaining elements are removed, resulting in an empty array.\n\nTherefore, the answer is 2.\n\nExample 3:\n\nInput: nums = [6,7,8,9]\nOutput: 0\nExplanation:\nThe array already contains distinct elements. Therefore, the answer is 0.\n\n \nConstraints:\n\n1 <= nums.length <= 100\n1 <= nums[i] <= 100\n\n",
+  "especificacion_entrada": "nums: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def minimumOperations(self, nums: list[int]) -> int:\n    seen = set()\n    for i, num in reversed(list(enumerate(nums))):\n      if num in seen:\n        return (i + 1 + 2) // 3  # ceil((i + 1) / 3)\n      seen.add(num)\n    return 0\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [4,5,6,4,4]",
+      "salida": "2",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,1,1,1,1,1,1,1,1]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,20,30,10,20,30,10,20,30]",
+      "salida": "2",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3396: LC-3375 - Minimum Operations to Make Array Values Equal to K. Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [5, 5, 5, 5, 5], k = 5",
+      "salida": "0",
+      "explicacion": "Relación con LC-3396: Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minOperations(self, nums: list[int], k: int) -> int:\n    numsSet = set(nums)\n    mn = min(nums)\n    if mn < k:\n      return -1\n    if mn > k:\n      return len(numsSet)\n    return len(numsSet) - 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().minimumOperations([4, 5, 6, 4, 4]) == 2"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().minimumOperations([1, 1, 1, 1, 1, 1, 1, 1, 1]) == 3"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().minimumOperations([10, 20, 30, 10, 20, 30, 10, 20, 30]) == 2"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().minimumOperations([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 0"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().minimumOperations([1]) == 0"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().minimumOperations([6, 7, 8, 9]) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().minimumOperations([1, 1, 2, 2, 3, 3, 4, 4, 5, 5]) == 3"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().minimumOperations([10, 20, 30, 40, 50]) == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().minimumOperations([5, 5, 5, 5, 5]) == 2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().minimumOperations([1, 2, 2, 3, 3, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().minimumOperations([1, 2, 3, 1, 2, 3, 1, 2, 3]) == 2"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().minimumOperations([1, 1, 2]) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3396",
+    "fecha-estimada-2024-12-22",
+    "Array",
+    "Hash Table"
+  ]
+}

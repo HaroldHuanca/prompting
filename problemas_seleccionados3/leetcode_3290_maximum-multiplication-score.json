@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3290",
+  "titulo": "Maximum Multiplication Score",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-multiplication-score/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming",
+  "enunciado": "You are given an integer array a of size 4 and another integer array b of size at least 4.\nYou need to choose 4 indices i0, i1, i2, and i3 from the array b such that i0 < i1 < i2 < i3. Your score will be equal to the value a[0] * b[i0] + a[1] * b[i1] + a[2] * b[i2] + a[3] * b[i3].\nReturn the maximum score you can achieve.\n \nExample 1:\n\nInput: a = [3,2,5,6], b = [2,-6,4,-5,-3,2,-7]\nOutput: 26\nExplanation:\nWe can choose the indices 0, 1, 2, and 5. The score will be 3 * 2 + 2 * (-6) + 5 * 4 + 6 * 2 = 26.\n\nExample 2:\n\nInput: a = [-1,4,5,-2], b = [-5,-1,-3,-2,-4]\nOutput: -1\nExplanation:\nWe can choose the indices 0, 1, 3, and 4. The score will be (-1) * (-5) + 4 * (-1) + 5 * (-2) + (-2) * (-4) = -1.\n\n \nConstraints:\n\na.length == 4\n4 <= b.length <= 105\n-105 <= a[i], b[i] <= 105\n\n",
+  "especificacion_entrada": "a: list[int], b: list[int]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxScore(self, a: list[int], b: list[int]) -> int:\n    n = len(b)\n    # dp[i][j] := the maximum score by selecting 4 - i numbers from b[j..n - 1]\n    # using the corresponding numbers from a[i..3]\n    dp = [[0] * (n + 1) for _ in range(5)]\n\n    # Run out of numbers in b but still need to select numbers from a.\n    for i in range(4):\n      dp[i][n] = -math.inf\n\n    for i in reversed(range(4)):\n      for j in reversed(range(n)):\n        # Skip b[j] or pair a[i] with b[j].\n        dp[i][j] = max(dp[i][j + 1], a[i] * b[j] + dp[i + 1][j + 1])\n\n    return -1 if dp[0][0] == -math.inf else dp[0][0]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "a = [0,0,0,0], b = [1,2,3,4,5,6,7,8,9,10]",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "a = [1,2,3,4], b = [10,20,30,40,50,60,70,80]",
+      "salida": "700",
+      "explicacion": ""
+    },
+    {
+      "entrada": "a = [10,20,30,40], b = [1,2,3,4]",
+      "salida": "300",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3290: LC-3388 - Count Beautiful Splits in an Array. Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, 2, 3, 1, 2, 3]",
+      "salida": "0",
+      "explicacion": "Relación con LC-3290: Ambos problemas comparten las técnicas de programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def beautifulSplits(self, nums: list[int]) -> int:\n    n = len(nums)\n    # z[start][i] := the z array of nums[i..n) with respect to nums[start..n)\n    z = [self._zFunction(nums, start)\n         for start in range(n)]\n    # nums1 | nums2 | nums3 = nums[0..i] | nums[i + 1..j] | nums[j + 1..n - 1]\n    return sum((j - i >= i + 1 and z[0][i + 1] >= i + 1)  # nums1 is a prefix of nums2\n               or z[i + 1][j + 1] >= j - i  # nums2 is a suffix of nums3.\n               for i in range(n - 2)\n               for j in range(i + 1, n - 1))\n\n  def _zFunction(self, nums: list[int], start: int) -> list[int]:\n    \"\"\"\n    Returns the z array, where z[i] is the length of the longest prefix of\n    nums[i..n) which is also a prefix of nums[start..n).\n    \"\"\"\n    n = len(nums)\n    z = [0] * n\n    l = start\n    r = start\n    for i in range(1 + start, n):\n      if i < r:\n        z[i] = min(r - i, z[i - l + start])\n      while i + z[i] < n and nums[z[i] + start] == nums[i + z[i]]:\n        z[i] += 1\n      if i + z[i] > r:\n        l = i\n        r = i + z[i]\n    return z\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxScore([0, 0, 0, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 0"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxScore([1, 2, 3, 4], [10, 20, 30, 40, 50, 60, 70, 80]) == 700"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxScore([10, 20, 30, 40], [1, 2, 3, 4]) == 300"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxScore([-1, -2, -3, -4], [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1]) == 80"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxScore([100000, -100000, 100000, -100000], [100000, -100000, 100000, -100000, 100000, -100000, 100000, -100000]) == 40000000000"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxScore([-1, -2, -3, -4], [-10, -20, -30, -40, -50, -60, -70, -80]) == 700"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxScore([10, -10, 10, -10], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == -20"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxScore([-1, 4, 5, -2], [-5, -1, -3, -2, -4]) == -1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxScore([1, 1, 1, 1], [1, 2, 3, 4, 5, 6, 7, 8]) == 26"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore([1, 2, 3, 4], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 90"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore([-10, -20, -30, -40], [-1, -2, -3, -4, -5, -6, -7, -8]) == 700"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore([0, 0, 0, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) == 0"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3290",
+    "fecha-estimada-2024-09-15",
+    "Array",
+    "Dynamic Programming"
+  ]
+}

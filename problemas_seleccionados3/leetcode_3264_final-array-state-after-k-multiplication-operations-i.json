@@ -1,0 +1,100 @@
+{
+  "codigo": "LC-3264",
+  "titulo": "Final Array State After K Multiplication Operations I",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/final-array-state-after-k-multiplication-operations-i/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Math / Simulation / Heap (Priority Queue)",
+  "enunciado": "You are given an integer array nums, an integer k, and an integer multiplier.\nYou need to perform k operations on nums. In each operation:\n\nFind the minimum value x in nums. If there are multiple occurrences of the minimum value, select the one that appears first.\nReplace the selected minimum value x with x * multiplier.\n\nReturn an integer array denoting the final state of nums after performing all k operations.\n \nExample 1:\n\nInput: nums = [2,1,3,5,6], k = 5, multiplier = 2\nOutput: [8,4,6,5,6]\nExplanation:\n\n\n\nOperation\nResult\n\n\nAfter operation 1\n[2, 2, 3, 5, 6]\n\n\nAfter operation 2\n[4, 2, 3, 5, 6]\n\n\nAfter operation 3\n[4, 4, 3, 5, 6]\n\n\nAfter operation 4\n[4, 4, 6, 5, 6]\n\n\nAfter operation 5\n[8, 4, 6, 5, 6]\n\n\n\n\nExample 2:\n\nInput: nums = [1,2], k = 3, multiplier = 4\nOutput: [16,8]\nExplanation:\n\n\n\nOperation\nResult\n\n\nAfter operation 1\n[4, 2]\n\n\nAfter operation 2\n[4, 8]\n\n\nAfter operation 3\n[16, 8]\n\n\n\n\n \nConstraints:\n\n1 <= nums.length <= 100\n1 <= nums[i] <= 100\n1 <= k <= 10\n1 <= multiplier <= 5\n\n",
+  "especificacion_entrada": "nums: list[int], k: int, multiplier: int",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def getFinalState(\n      self,\n      nums: list[int],\n      k: int,\n      multiplier: int\n  ) -> list[int]:\n    ans = [0] * len(nums)\n    minHeap = [(num, i) for i, num in enumerate(nums)]\n    heapq.heapify(minHeap)\n\n    for _ in range(k):\n      num, i = heapq.heappop(minHeap)\n      heapq.heappush(minHeap, (num * multiplier, i))\n\n    for num, i in minHeap:\n      ans[i] = num\n\n    return ans\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [3], k = 1, multiplier = 5",
+      "salida": "[15]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [5, 5, 5, 5], k = 4, multiplier = 2",
+      "salida": "[10, 10, 10, 10]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [10,9,8,7], k = 4, multiplier = 1",
+      "salida": "[10, 9, 8, 7]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3264: LC-3275 - K-th Nearest Obstacle Queries. Ambos problemas comparten las técnicas de heap, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "queries = [[5, 5], [4, 4], [3, 3]], k = 1",
+      "salida": "[10, 8, 6]",
+      "explicacion": "Relación con LC-3264: Ambos problemas comparten las técnicas de heap, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import heapq\n\nclass Solution:\n  def resultsArray(self, queries: list[list[int]], k: int) -> list[int]:\n    ans = []\n    maxHeap = []\n\n    for x, y in queries:\n      heapq.heappush(maxHeap, -(abs(x) + abs(y)))\n      if len(maxHeap) > k:\n        heapq.heappop(maxHeap)\n      ans.append(-maxHeap[0] if len(maxHeap) == k else -1)\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().getFinalState([3], 1, 5) == [15]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().getFinalState([5, 5, 5, 5], 4, 2) == [10, 10, 10, 10]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().getFinalState([10, 9, 8, 7], 4, 1) == [10, 9, 8, 7]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().getFinalState([3, 7, 1, 4], 1, 5) == [3, 7, 5, 4]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().getFinalState([10, 9, 8, 7, 6], 4, 2) == [10, 18, 16, 14, 12]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().getFinalState([1, 1, 1, 1, 1], 10, 2) == [4, 4, 4, 4, 4]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().getFinalState([5, 3, 9, 1, 4], 2, 3) == [5, 9, 9, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().getFinalState([1, 1, 1, 1], 10, 2) == [8, 8, 4, 4]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().getFinalState([1], 1, 5) == [5]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().getFinalState([2, 1, 3, 5, 6], 5, 2) == [8, 4, 6, 5, 6]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().getFinalState([100, 100, 100], 1, 5) == [500, 100, 100]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().getFinalState([10, 9, 8, 7, 6], 2, 3) == [10, 9, 8, 21, 18]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3264",
+    "fecha-estimada-2024-08-25",
+    "Array",
+    "Math",
+    "Simulation",
+    "Heap (Priority Queue)"
+  ]
+}

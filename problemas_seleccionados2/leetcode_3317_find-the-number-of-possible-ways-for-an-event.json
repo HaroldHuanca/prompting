@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3317",
+  "titulo": "Find the Number of Possible Ways for an Event",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-number-of-possible-ways-for-an-event/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Math / Dynamic Programming / Combinatorics",
+  "enunciado": "You are given three integers n, x, and y.\nAn event is being held for n performers. When a performer arrives, they are assigned to one of the x stages. All performers assigned to the same stage will perform together as a band, though some stages might remain empty.\nAfter all performances are completed, the jury will award each band a score in the range [1, y].\nReturn the total number of possible ways the event can take place.\nSince the answer may be very large, return it modulo 109 + 7.\nNote that two events are considered to have been held differently if either of the following conditions is satisfied:\n\nAny performer is assigned a different stage.\nAny band is awarded a different score.\n\n \nExample 1:\n\nInput: n = 1, x = 2, y = 3\nOutput: 6\nExplanation:\n\nThere are 2 ways to assign a stage to the performer.\nThe jury can award a score of either 1, 2, or 3 to the only band.\n\n\nExample 2:\n\nInput: n = 5, x = 2, y = 1\nOutput: 32\nExplanation:\n\nEach performer will be assigned either stage 1 or stage 2.\nAll bands will be awarded a score of 1.\n\n\nExample 3:\n\nInput: n = 3, x = 3, y = 4\nOutput: 684\n\n \nConstraints:\n\n1 <= n, x, y <= 1000\n\n",
+  "especificacion_entrada": "n: int, x: int, y: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def numberOfWays(self, n: int, x: int, y: int) -> int:\n    MOD = 1_000_000_007\n\n    @functools.lru_cache(None)\n    def fact(i: int) -> int:\n      return 1 if i <= 1 else i * fact(i - 1) % MOD\n\n    @functools.lru_cache(None)\n    def inv(i: int) -> int:\n      return pow(i, MOD - 2, MOD)\n\n    @functools.lru_cache(None)\n    def nCk(n: int, k: int) -> int:\n      return fact(n) * inv(fact(k)) * inv(fact(n - k)) % MOD\n\n    @functools.lru_cache(None)\n    def stirling(n: int, k: int) -> int:\n      \"\"\"\n      Returns the number of ways to partition a set of n objects into k\n      non-empty subsets.\n\n      https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind\n      \"\"\"\n      if k == 0 or n < k:\n        return 0\n      if k == 1 or n == k:\n        return 1\n      return (k * stirling(n - 1, k) + stirling(n - 1, k - 1)) % MOD\n\n    # 1. Choose `k` stages from `x` stages.\n    # 2. Partition `n` performers into `k` stages.\n    # 3. Permute `k` stages.\n    # 4. Score `k` stages with score in the range [1, y], so y^k ways.\n    return sum(nCk(x, k) * stirling(n, k) * fact(k) * pow(y, k, MOD) % MOD\n               for k in range(1, min(n, x) + 1)) % MOD\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 500, x = 250, y = 250",
+      "salida": "604049962",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 6, x = 6, y = 6",
+      "salida": "150265836",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 4, x = 2, y = 4",
+      "salida": "232",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3317: LC-3352 - Count K-Reducible Numbers Less Than N. Ambos problemas comparten las técnicas de combinatoria, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "s = '1101101', k = 4",
+      "salida": "108",
+      "explicacion": "Relación con LC-3317: Ambos problemas comparten las técnicas de combinatoria, programación dinámica, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import functools\n\nclass Solution:\n  def countKReducibleNumbers(self, s: str, k: int) -> int:\n    MOD = 1_000_000_007\n    ops = self._getOps(s)\n\n    @functools.lru_cache(None)\n    def dp(i: int, setBits: int, tight: bool) -> int:\n      \"\"\"\n      Returns the number of positive integers less than n that are k-reducible,\n      considering the i-th digit, where `setBits` is the number of set bits in\n      the current number, and `tight` indicates if the current digit is\n      tightly bound.\n      \"\"\"\n      if i == len(s):\n        return int(ops[setBits] < k and not tight)\n\n      res = 0\n      maxDigit = int(s[i]) if tight else 1\n\n      for d in range(maxDigit + 1):\n        nextTight = tight and (d == maxDigit)\n        res += dp(i + 1, setBits + d, nextTight)\n        res %= MOD\n      return res\n\n    return dp(0, 0, True) - 1  # - 0\n\n  def _getOps(self, s: str) -> int:\n    \"\"\"Returns the number of operations to reduce a number to 0.\"\"\"\n    ops = [0] * (len(s) + 1)\n    for num in range(2, len(s) + 1):\n      ops[num] = 1 + ops[num.bit_count()]\n    return ops\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().numberOfWays(500, 250, 250) == 604049962"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().numberOfWays(6, 6, 6) == 150265836"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().numberOfWays(4, 2, 4) == 232"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().numberOfWays(500, 5, 20) == 955685646"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().numberOfWays(100, 10, 10) == 757713628"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().numberOfWays(1, 2, 3) == 6"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().numberOfWays(1000, 1000, 1000) == 295964505"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().numberOfWays(5, 2, 1) == 32"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().numberOfWays(1, 1, 1) == 1"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().numberOfWays(7, 4, 3) == 882264"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().numberOfWays(10, 10, 1) == 999999937"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().numberOfWays(7, 1, 10) == 10"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3317",
+    "fecha-estimada-2024-10-06",
+    "Math",
+    "Dynamic Programming",
+    "Combinatorics"
+  ]
+}

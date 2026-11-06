@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3248",
+  "titulo": "Snake in Matrix",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/snake-in-matrix/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / String / Simulation",
+  "enunciado": "There is a snake in an n x n matrix grid and can move in four possible directions. Each cell in the grid is identified by the position: grid[i][j] = (i * n) + j.\nThe snake starts at cell 0 and follows a sequence of commands.\nYou are given an integer n representing the size of the grid and an array of strings commands where each command[i] is either \"UP\", \"RIGHT\", \"DOWN\", and \"LEFT\". It's guaranteed that the snake will remain within the grid boundaries throughout its movement.\nReturn the position of the final cell where the snake ends up after executing commands.\n \nExample 1:\n\nInput: n = 2, commands = [\"RIGHT\",\"DOWN\"]\nOutput: 3\nExplanation:\n\n\n\n\n0\n1\n\n\n2\n3\n\n\n\n\n\n\n0\n1\n\n\n2\n3\n\n\n\n\n\n\n0\n1\n\n\n2\n3\n\n\n\n\n\nExample 2:\n\nInput: n = 3, commands = [\"DOWN\",\"RIGHT\",\"UP\"]\nOutput: 1\nExplanation:\n\n\n\n\n0\n1\n2\n\n\n3\n4\n5\n\n\n6\n7\n8\n\n\n\n\n\n\n0\n1\n2\n\n\n3\n4\n5\n\n\n6\n7\n8\n\n\n\n\n\n\n0\n1\n2\n\n\n3\n4\n5\n\n\n6\n7\n8\n\n\n\n\n\n\n0\n1\n2\n\n\n3\n4\n5\n\n\n6\n7\n8\n\n\n\n\n\n \nConstraints:\n\n2 <= n <= 10\n1 <= commands.length <= 100\ncommands consists only of \"UP\", \"RIGHT\", \"DOWN\", and \"LEFT\".\nThe input is generated such the snake will not move outside of the boundaries.\n\n",
+  "especificacion_entrada": "n: int, commands: list[str]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def finalPositionOfSnake(self, n: int, commands: list[str]) -> int:\n    directions = {\n        \"UP\": (-1, 0),\n        \"RIGHT\": (0, 1),\n        \"DOWN\": (1, 0),\n        \"LEFT\": (0, -1),\n    }\n    i = 0\n    j = 0\n\n    for command in commands:\n      dx, dy = directions[command]\n      i += dx\n      j += dy\n\n    return i * n + j\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 2, commands = [\"RIGHT\",\"DOWN\"]",
+      "salida": "3",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 5, commands = [\"RIGHT\", \"DOWN\", \"RIGHT\", \"DOWN\", \"RIGHT\", \"DOWN\"]",
+      "salida": "18",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 10, commands = [\"UP\", \"LEFT\", \"DOWN\", \"RIGHT\", \"UP\", \"LEFT\", \"DOWN\", \"RIGHT\"]",
+      "salida": "0",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3248: LC-3379 - Transformed Array. Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [1, -1, 2, -2, 3, -3]",
+      "salida": "[-1, 1, 3, -1, -1, 2]",
+      "explicacion": "Relación con LC-3248: Ambos problemas comparten las técnicas de simulación, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def constructTransformedArray(self, nums: list[int]) -> list[int]:\n    n = len(nums)\n    return [nums[(i + num % n + n) % n]\n            for i, num in enumerate(nums)]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().finalPositionOfSnake(2, ['RIGHT', 'DOWN']) == 3"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().finalPositionOfSnake(5, ['RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN']) == 18"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().finalPositionOfSnake(10, ['UP', 'LEFT', 'DOWN', 'RIGHT', 'UP', 'LEFT', 'DOWN', 'RIGHT']) == 0"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().finalPositionOfSnake(4, ['RIGHT', 'RIGHT', 'DOWN', 'DOWN', 'LEFT', 'UP']) == 5"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().finalPositionOfSnake(3, ['DOWN', 'RIGHT', 'UP']) == 1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().finalPositionOfSnake(6, ['DOWN', 'DOWN', 'RIGHT', 'RIGHT', 'UP', 'UP', 'LEFT', 'LEFT']) == 0"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().finalPositionOfSnake(10, ['RIGHT', 'DOWN', 'LEFT', 'UP', 'RIGHT', 'DOWN', 'LEFT', 'UP']) == 0"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().finalPositionOfSnake(5, ['UP', 'LEFT', 'DOWN', 'RIGHT']) == 0"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().finalPositionOfSnake(4, ['LEFT', 'DOWN', 'LEFT', 'UP']) == -2"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().finalPositionOfSnake(5, ['DOWN', 'DOWN', 'RIGHT', 'RIGHT', 'UP', 'UP', 'LEFT', 'LEFT']) == 0"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().finalPositionOfSnake(4, ['RIGHT', 'DOWN', 'LEFT', 'UP']) == 0"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().finalPositionOfSnake(10, ['DOWN', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'RIGHT', 'DOWN', 'RIGHT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT', 'UP', 'LEFT']) == -33"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3248",
+    "fecha-estimada-2024-08-11",
+    "Array",
+    "String",
+    "Simulation"
+  ]
+}

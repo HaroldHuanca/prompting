@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3360",
+  "titulo": "Stone Removal Game",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/stone-removal-game/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Math / Simulation",
+  "enunciado": "Alice and Bob are playing a game where they take turns removing stones from a pile, with Alice going first.\n\nAlice starts by removing exactly 10 stones on her first turn.\nFor each subsequent turn, each player removes exactly 1 fewer stone than the previous opponent.\n\nThe player who cannot make a move loses the game.\nGiven a positive integer n, return true if Alice wins the game and false otherwise.\n \nExample 1:\n\nInput: n = 12\nOutput: true\nExplanation:\n\nAlice removes 10 stones on her first turn, leaving 2 stones for Bob.\nBob cannot remove 9 stones, so Alice wins.\n\n\nExample 2:\n\nInput: n = 1\nOutput: false\nExplanation:\n\nAlice cannot remove 10 stones, so Alice loses.\n\n\n \nConstraints:\n\n1 <= n <= 50\n\n",
+  "especificacion_entrada": "n: int",
+  "especificacion_salida": "bool",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def canAliceWin(self, n: int) -> bool:\n    for stones in range(10, -1, -1):\n      if stones > n:\n        return stones % 2 == 1\n      n -= stones\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 8",
+      "salida": "False",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 30",
+      "salida": "True",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 15",
+      "salida": "True",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3360: LC-3283 - Maximum Number of Moves to Kill All Pawns. Ambos son juegos de turnos en los que las decisiones disponibles y el estado restante determinan una estrategia ganadora.",
+      "entrada": "kx = 49, ky = 49, positions = [[48, 47], [47, 45]]",
+      "salida": "3",
+      "explicacion": "Relación con LC-3360: Ambos son juegos de turnos en los que las decisiones disponibles y el estado restante determinan una estrategia ganadora.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def __init__(self):\n    self.SIZE = 50\n    self.MAX = 1_000_000\n    self.DIRS = ((1, 2), (2, 1), (2, -1), (1, -2),\n                 (-1, -2), (-2, -1), (-2, 1), (-1, 2))\n\n  def maxMoves(self, kx: int, ky: int, positions: list[list[int]]) -> int:\n    n = len(positions)\n    positions.append([kx, ky])\n    hashedPositionToIndex = {}\n    # dist[i][j] := the minimum distance from positions[i] to positions[j]\n    dist = [[0] * (n + 1) for _ in range(n + 1)]\n\n    for i, (x, y) in enumerate(positions):\n      hashedPositionToIndex[self._hash(x, y)] = i\n\n    for sourceIndex in range(n + 1):\n      self._bfs(positions, sourceIndex, hashedPositionToIndex, dist)\n\n    MAX_MASK = 1 << (n + 1)\n    # dp[i][mask][turn] := the maximum (Alice) or the minimum (Bob) cost to\n    # kill all pawns, where i is the current pawn, mask is the set of pawns\n    # that have been killed, and turn is the current player's turn (0 for Alice\n    # and 1 for Bob)\n    dp = [[[0, 0]\n          for _ in range(1 << (n + 1))]\n          for _ in range(n + 1)]\n\n    for i in range(n + 1):\n      for mask in range(MAX_MASK - 1):\n        dp[i][mask] = [-self.MAX, self.MAX]\n\n    for mask in range(MAX_MASK - 2, -1, -1):\n      for i in range(n + 1):\n        for turn in range(2):\n          for j in range(n):\n            if mask >> j & 1:\n              continue\n            moves = dist[i][j] + dp[j][mask | 1 << j][1 - turn]\n            dp[i][mask][turn] = (max(dp[i][mask][turn], moves) if turn == 0 else\n                                 min(dp[i][mask][turn], moves))\n\n    # Returns the maximum cost to kill all pawns, i.e., the original positions\n    # array without the knight (kx, ky).\n    return dp[n][1 << n][0]\n\n  def _hash(self, x: int, y: int) -> int:\n    return x * self.SIZE + y\n\n  def _bfs(\n      self,\n      positions: list[list[int]],\n      sourceIndex: int,\n      hashedPositionToIndex: dict[int, int],\n      dist: list[list[int]]\n  ) -> None:\n    \"\"\"\n    Computes the distance between positions[sourceIndex] and other positions.\n    \"\"\"\n    sx, sy = positions[sourceIndex]\n    q = collections.deque([(sx, sy)])\n    seen = {(sx, sy)}\n    seenPositions = 0\n\n    step = 0\n    while q and seenPositions < len(positions):\n      for _ in range(len(q)):\n        i, j = q.popleft()\n        hashedPosition = self._hash(i, j)\n        if hashedPosition in hashedPositionToIndex:\n          dist[sourceIndex][hashedPositionToIndex[hashedPosition]] = step\n          seenPositions += 1\n        for dx, dy in self.DIRS:\n          x = i + dx\n          y = j + dy\n          if x < 0 or x >= self.SIZE or y < 0 or y >= self.SIZE:\n            continue\n          if (x, y) in seen:\n            continue\n          q.append((x, y))\n          seen.add((x, y))\n      step += 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().canAliceWin(8) == False"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().canAliceWin(30) == True"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().canAliceWin(15) == True"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().canAliceWin(40) == True"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().canAliceWin(12) == True"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().canAliceWin(35) == False"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().canAliceWin(20) == False"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().canAliceWin(1) == False"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().canAliceWin(50) == True"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().canAliceWin(10) == True"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().canAliceWin(25) == False"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().canAliceWin(29) == True"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3360",
+    "fecha-estimada-2024-11-17",
+    "Math",
+    "Simulation"
+  ]
+}

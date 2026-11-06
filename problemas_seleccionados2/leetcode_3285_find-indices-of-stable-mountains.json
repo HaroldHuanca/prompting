@@ -1,0 +1,97 @@
+{
+  "codigo": "LC-3285",
+  "titulo": "Find Indices of Stable Mountains",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-indices-of-stable-mountains/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array",
+  "enunciado": "There are n mountains in a row, and each mountain has a height. You are given an integer array height where height[i] represents the height of mountain i, and an integer threshold.\nA mountain is called stable if the mountain just before it (if it exists) has a height strictly greater than threshold. Note that mountain 0 is not stable.\nReturn an array containing the indices of all stable mountains in any order.\n \nExample 1:\n\nInput: height = [1,2,3,4,5], threshold = 2\nOutput: [3,4]\nExplanation:\n\nMountain 3 is stable because height[2] == 3 is greater than threshold == 2.\nMountain 4 is stable because height[3] == 4 is greater than threshold == 2.\n\n\nExample 2:\n\nInput: height = [10,1,10,1,10], threshold = 3\nOutput: [1,3]\n\nExample 3:\n\nInput: height = [10,1,10,1,10], threshold = 10\nOutput: []\n\n \nConstraints:\n\n2 <= n == height.length <= 100\n1 <= height[i] <= 100\n1 <= threshold <= 100\n\n",
+  "especificacion_entrada": "height: list[int], threshold: int",
+  "especificacion_salida": "list[int]",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def stableMountains(self, height: list[int], threshold: int) -> list[int]:\n    return [i for i in range(1, len(height))\n            if height[i - 1] > threshold]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "height = [50,50,50,50,50], threshold = 49",
+      "salida": "[1, 2, 3, 4]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "height = [2,3,2,3,2], threshold = 2",
+      "salida": "[2, 4]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "height = [5,4,3,2,1], threshold = 3",
+      "salida": "[1, 2]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3285: LC-3452 - Sum of Good Numbers. La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "entrada": "nums = [2, 1], k = 1",
+      "salida": "2",
+      "explicacion": "Relación con LC-3285: La solución de referencia aporta una demostración cercana de técnicas de Array, aplicables como patrón al problema objetivo.",
+      "codigo_ilustrativo": "class Solution:\n  def sumOfGoodNumbers(self, nums: list[int], k: int) -> int:\n    return sum(num for i, num in enumerate(nums)\n               if (i - k < 0 or num > nums[i - k])\n               and (i + k >= len(nums) or num > nums[i + k]))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().stableMountains([50, 50, 50, 50, 50], 49) == [1, 2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().stableMountains([2, 3, 2, 3, 2], 2) == [2, 4]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().stableMountains([5, 4, 3, 2, 1], 3) == [1, 2]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().stableMountains([10, 1, 10, 1, 10], 3) == [1, 3]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().stableMountains([1, 3, 5, 7, 9], 0) == [1, 2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().stableMountains([9, 8, 7, 6, 5], 5) == [1, 2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().stableMountains([5, 4, 3, 2, 1], 1) == [1, 2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().stableMountains([1, 2, 3, 4, 5], 2) == [3, 4]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().stableMountains([5, 6, 7, 8, 9], 5) == [2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().stableMountains([1, 2, 3, 2, 1], 1) == [2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().stableMountains([2, 3, 4, 5, 6], 1) == [1, 2, 3, 4]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().stableMountains([10, 1, 10, 1, 10], 10) == []"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3285",
+    "fecha-estimada-2024-09-08",
+    "Array"
+  ]
+}

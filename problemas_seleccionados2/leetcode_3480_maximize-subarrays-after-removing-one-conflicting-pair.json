@@ -1,0 +1,91 @@
+{
+  "codigo": "LC-3480",
+  "titulo": "Maximize Subarrays After Removing One Conflicting Pair",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximize-subarrays-after-removing-one-conflicting-pair/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Arreglos / Two Pointers / Conteo de Subarreglos",
+  "enunciado": "You are given an integer n which represents an array nums containing the numbers from 1 to n in order. Additionally, you are given a 2D array conflictingPairs, where conflictingPairs[i] = [a, b] indicates that a and b form a conflicting pair.\nRemove exactly one element from conflictingPairs. Afterward, count the number of non-empty subarrays of nums which do not contain both a and b for any remaining conflicting pair [a, b].\nReturn the maximum number of subarrays possible after removing exactly one conflicting pair.\n \nExample 1:\n\nInput: n = 4, conflictingPairs = [[2,3],[1,4]]\nOutput: 9\nExplanation:\n\nRemove [2, 3] from conflictingPairs. Now, conflictingPairs = [[1, 4]].\nThere are 9 subarrays in nums where [1, 4] do not appear together. They are [1], [2], [3], [4], [1, 2], [2, 3], [3, 4], [1, 2, 3] and [2, 3, 4].\nThe maximum number of subarrays we can achieve after removing one element from conflictingPairs is 9.\n\n\nExample 2:\n\nInput: n = 5, conflictingPairs = [[1,2],[2,5],[3,5]]\nOutput: 12\nExplanation:\n\nRemove [1, 2] from conflictingPairs. Now, conflictingPairs = [[2, 5], [3, 5]].\nThere are 12 subarrays in nums where [2, 5] and [3, 5] do not appear together.\nThe maximum number of subarrays we can achieve after removing one element from conflictingPairs is 12.\n\n\n \nConstraints:\n\n2 <= n <= 105\n1 <= conflictingPairs.length <= 2 * n\nconflictingPairs[i].length == 2\n1 <= conflictingPairs[i][j] <= n\nconflictingPairs[i][0] != conflictingPairs[i][1]\n\n",
+  "especificacion_entrada": "n: integer, conflictingPairs: integer[][]",
+  "especificacion_salida": "integer",
+  "restricciones": "2 <= n <= 105\n1 <= conflictingPairs.length <= 2 * n\nconflictingPairs[i].length == 2\n1 <= conflictingPairs[i][j] <= n\nconflictingPairs[i][0] != conflictingPairs[i][1]",
+  "solucion_referencia": "class Solution:\n  def maxSubarrays(self, n: int, conflictingPairs: list[list[int]]) -> int:\n    validSubarrays = 0\n    maxLeft = 0\n    secondMaxLeft = 0\n    # gains[i] := the number of additional valid subarrays we can gain if the\n    # restriction at index `i` is removed\n    gains = [0] * (n + 1)\n    # conflicts[r] := left endpoints that conflict with subarrays ending in r\n    conflicts = [[] for _ in range(n + 1)]\n\n    for a, b in conflictingPairs:\n      conflicts[max(a, b)].append(min(a, b))\n\n    for right in range(1, n + 1):\n      for left in conflicts[right]:\n        if left > maxLeft:\n          secondMaxLeft = maxLeft\n          maxLeft = left\n        elif left > secondMaxLeft:\n          secondMaxLeft = left\n      # Subarrays [maxLeft + 1..right],\n      #           [maxLeft + 2..right],\n      #           ...\n      #           [right..right] are valid.\n      validSubarrays += right - maxLeft\n      # If we remove `maxLeft` (the most restrictive conflict), we gain\n      # `maxLeft - secondMaxLeft` new subarrays:\n      # [secondMaxLeft + 1..right],\n      # [secondMaxLeft + 2..right],\n      # ...\n      # [maxLeft..right].\n      gains[maxLeft] += maxLeft - secondMaxLeft\n\n    return validSubarrays + max(gains)",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 4, conflictingPairs = [[2,3],[1,4]]",
+      "salida": "9",
+      "explicacion": "Remove [2, 3] from conflictingPairs. Now, conflictingPairs = [[1, 4]].\nThere are 9 subarrays in nums where [1, 4] do not appear together. They are [1], [2], [3], [4], [1, 2], [2, 3], [3, 4], [1, 2, 3] and [2, 3, 4].\nThe maximum number of subarrays we can achieve after removing one element from conflictingPairs is 9."
+    },
+    {
+      "entrada": "n = 5, conflictingPairs = [[1,2],[2,5],[3,5]]",
+      "salida": "12",
+      "explicacion": "Remove [1, 2] from conflictingPairs. Now, conflictingPairs = [[2, 5], [3, 5]].\nThere are 12 subarrays in nums where [2, 5] and [3, 5] do not appear together.\nThe maximum number of subarrays we can achieve after removing one element from conflictingPairs is 12."
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3480: LC-3420 - Count Non-Decreasing Subarrays After K Operations. Ambos cuentan subarreglos que cumplen restricciones y aprovechan ventanas o límites de validez.",
+      "entrada": "nums = [5, 4, 3, 2, 1], k = 10",
+      "salida": "15",
+      "explicacion": "Relación con LC-3480: Ambos cuentan subarreglos que cumplen restricciones y aprovechan ventanas o límites de validez.",
+      "codigo_ilustrativo": "import collections\n\nclass Solution:\n  def countNonDecreasingSubarrays(self, nums: list[int], k: int) -> int:\n    ans = 0\n    cost = 0\n    # Store (number, count) pairs in non-increasing order. The numbers in the\n    # queue represent what nums[i..j] look like after adjustments.\n    dq = collections.deque()\n\n    j = len(nums) - 1\n    for i, num in reversed(list(enumerate(nums))):\n      count = 1\n      while dq and dq[-1][0] < num:\n        nextNum, nextCount = dq.pop()\n        count += nextCount\n        cost += (num - nextNum) * nextCount  # Adjust `nextNum`s to `num`.\n      dq.append((num, count))\n      while cost > k:  # Remove the rightmost number.\n        rightmostNum, rightmostCount = dq.popleft()\n        cost -= (rightmostNum - nums[j])\n        j -= 1\n        if rightmostCount > 1:\n          dq.appendleft((rightmostNum, rightmostCount - 1))\n      ans += j - i + 1\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_1",
+      "codigo": "assert Solution().maxSubarrays(7, [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]) == 8"
+    },
+    {
+      "nombre": "test_caso_2",
+      "codigo": "assert Solution().maxSubarrays(6, [[1, 3], [2, 4], [3, 5], [4, 6]]) == 12"
+    },
+    {
+      "nombre": "test_caso_3",
+      "codigo": "assert Solution().maxSubarrays(6, [[1, 3], [3, 5], [2, 4], [4, 6]]) == 12"
+    },
+    {
+      "nombre": "test_caso_4",
+      "codigo": "assert Solution().maxSubarrays(10, [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9], [9, 10]]) == 11"
+    },
+    {
+      "nombre": "test_caso_5",
+      "codigo": "assert Solution().maxSubarrays(10, [[1, 10], [2, 9], [3, 8], [4, 7], [5, 6]]) == 39"
+    },
+    {
+      "nombre": "test_caso_6",
+      "codigo": "assert Solution().maxSubarrays(10, [[1, 5], [2, 6], [3, 7], [4, 8], [5, 9], [6, 10]]) == 35"
+    },
+    {
+      "nombre": "test_caso_7",
+      "codigo": "assert Solution().maxSubarrays(6, [[1, 2], [3, 4], [5, 6]]) == 12"
+    },
+    {
+      "nombre": "test_caso_8",
+      "codigo": "assert Solution().maxSubarrays(5, [[1, 2], [2, 5], [3, 5]]) == 12"
+    },
+    {
+      "nombre": "test_caso_9",
+      "codigo": "assert Solution().maxSubarrays(4, [[2, 3], [1, 4]]) == 9"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxSubarrays(6, [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]) == 7"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxSubarrays(3, [[1, 2], [1, 3], [2, 3]]) == 4"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxSubarrays(3, [[1, 2], [2, 3]]) == 4"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3480",
+    "seleccion-reciente-2026-11"
+  ]
+}

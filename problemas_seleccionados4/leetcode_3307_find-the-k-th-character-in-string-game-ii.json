@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3307",
+  "titulo": "Find the K-th Character in String Game II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Bit Manipulation / Recursion / Math",
+  "enunciado": "Alice and Bob are playing a game. Initially, Alice has a string word = \"a\".\nYou are given a positive integer k. You are also given an integer array operations, where operations[i] represents the type of the ith operation.\nNow Bob will ask Alice to perform all operations in sequence:\n\nIf operations[i] == 0, append a copy of word to itself.\nIf operations[i] == 1, generate a new string by changing each character in word to its next character in the English alphabet, and append it to the original word. For example, performing the operation on \"c\" generates \"cd\" and performing the operation on \"zb\" generates \"zbac\".\n\nReturn the value of the kth character in word after performing all the operations.\nNote that the character 'z' can be changed to 'a' in the second type of operation.\n \nExample 1:\n\nInput: k = 5, operations = [0,0,0]\nOutput: \"a\"\nExplanation:\nInitially, word == \"a\". Alice performs the three operations as follows:\n\nAppends \"a\" to \"a\", word becomes \"aa\".\nAppends \"aa\" to \"aa\", word becomes \"aaaa\".\nAppends \"aaaa\" to \"aaaa\", word becomes \"aaaaaaaa\".\n\n\nExample 2:\n\nInput: k = 10, operations = [0,1,0,1]\nOutput: \"b\"\nExplanation:\nInitially, word == \"a\". Alice performs the four operations as follows:\n\nAppends \"a\" to \"a\", word becomes \"aa\".\nAppends \"bb\" to \"aa\", word becomes \"aabb\".\nAppends \"aabb\" to \"aabb\", word becomes \"aabbaabb\".\nAppends \"bbccbbcc\" to \"aabbaabb\", word becomes \"aabbaabbbbccbbcc\".\n\n\n \nConstraints:\n\n1 <= k <= 1014\n1 <= operations.length <= 100\noperations[i] is either 0 or 1.\nThe input is generated such that word has at least k characters after all operations.\n\n",
+  "especificacion_entrada": "k: int, operations: list[int]",
+  "especificacion_salida": "str",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def kthCharacter(self, k: int, operations: list[int]) -> str:\n    operationsCount = math.ceil(math.log2(k))\n    increases = 0\n\n    for i in range(operationsCount - 1, -1, -1):\n      halfSize = 2**i\n      if k > halfSize:\n        k -= halfSize  # Move k from the right half to the left half.\n        increases += operations[i]\n\n    return string.ascii_lowercase[increases % 26]\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "k = 20, operations = [1,0,1,0,1]",
+      "salida": "c",
+      "explicacion": ""
+    },
+    {
+      "entrada": "k = 15, operations = [1,0,1,0]",
+      "salida": "b",
+      "explicacion": ""
+    },
+    {
+      "entrada": "k = 10, operations = [0,1,0,1]",
+      "salida": "b",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3307: LC-3304 - Find the K-th Character in String Game I. Ambos problemas comparten las técnicas de manipulación de bits, recursion, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "k = 27",
+      "salida": "d",
+      "explicacion": "Relación con LC-3307: Ambos problemas comparten las técnicas de manipulación de bits, recursion, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import string\n\nclass Solution:\n  def kthCharacter(self, k: int) -> str:\n    return string.ascii_lowercase[(k - 1).bit_count()]\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().kthCharacter(20, [1, 0, 1, 0, 1]) == 'c'"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().kthCharacter(15, [1, 0, 1, 0]) == 'b'"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().kthCharacter(10, [0, 1, 0, 1]) == 'b'"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().kthCharacter(3, [0, 1]) == 'b'"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().kthCharacter(3, [1, 0]) == 'a'"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().kthCharacter(5, [0, 0, 0]) == 'a'"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().kthCharacter(2, [0, 1]) == 'a'"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().kthCharacter(2, [1, 1]) == 'b'"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().kthCharacter(1, []) == 'a'"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().kthCharacter(15, [0, 1, 1, 0]) == 'c'"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().kthCharacter(100, [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]) == 'c'"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().kthCharacter(2, [0]) == 'a'"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3307",
+    "fecha-estimada-2024-09-29",
+    "Bit Manipulation",
+    "Recursion",
+    "Math"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3332",
+  "titulo": "Maximum Points Tourist Can Earn",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/maximum-points-tourist-can-earn/",
+  "dificultad": "Media",
+  "categoria_algoritmica": "Array / Dynamic Programming / Matrix",
+  "enunciado": "You are given two integers, n and k, along with two 2D integer arrays, stayScore and travelScore.\nA tourist is visiting a country with n cities, where each city is directly connected to every other city. The tourist's journey consists of exactly k 0-indexed days, and they can choose any city as their starting point.\nEach day, the tourist has two choices:\n\nStay in the current city: If the tourist stays in their current city curr during day i, they will earn stayScore[i][curr] points.\nMove to another city: If the tourist moves from their current city curr to city dest, they will earn travelScore[curr][dest] points.\n\nReturn the maximum possible points the tourist can earn.\n \nExample 1:\n\nInput: n = 2, k = 1, stayScore = [[2,3]], travelScore = [[0,2],[1,0]]\nOutput: 3\nExplanation:\nThe tourist earns the maximum number of points by starting in city 1 and staying in that city.\n\nExample 2:\n\nInput: n = 3, k = 2, stayScore = [[3,4,2],[2,1,2]], travelScore = [[0,2,1],[2,0,4],[3,2,0]]\nOutput: 8\nExplanation:\nThe tourist earns the maximum number of points by starting in city 1, staying in that city on day 0, and traveling to city 2 on day 1.\n\n \nConstraints:\n\n1 <= n <= 200\n1 <= k <= 200\nn == travelScore.length == travelScore[i].length == stayScore[i].length\nk == stayScore.length\n1 <= stayScore[i][j] <= 100\n0 <= travelScore[i][j] <= 100\ntravelScore[i][i] == 0\n\n",
+  "especificacion_entrada": "n: int, k: int, stayScore: list[list[int]], travelScore: list[list[int]]",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def maxScore(\n      self,\n      n: int,\n      k: int,\n      stayScore: list[list[int]],\n      travelScore: list[list[int]]\n  ) -> int:\n    # dp[i][j] := the maximum score after i days being at city j\n    dp = [[0] * n for _ in range(k + 1)]\n\n    for i in range(1, k + 1):\n      for dest in range(n):\n        # 1. Stay at the current city.\n        dp[i][dest] = dp[i - 1][dest] + stayScore[i - 1][dest]\n        # 2. Travel from any other city.\n        for curr in range(n):\n          if curr != dest:\n            dp[i][dest] = max(dp[i][dest],\n                              dp[i - 1][curr] + travelScore[curr][dest])\n\n    return max(dp[k])\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "n = 5, k = 5, stayScore = [[1,2,3,4,5],[2,3,4,5,6],[3,4,5,6,7],[4,5,6,7,8],[5,6,7,8,9]], travelScore = [[0,1,2,3,4],[1,0,1,2,3],[2,1,0,1,2],[3,2,1,0,1],[4,3,2,1,0]]",
+      "salida": "35",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 4, k = 3, stayScore = [[5,10,15,20],[25,30,35,40],[45,50,55,60],[65,70,75,80]], travelScore = [[0,1,2,3],[1,0,1,2],[2,1,0,1],[3,2,1,0]]",
+      "salida": "120",
+      "explicacion": ""
+    },
+    {
+      "entrada": "n = 3, k = 2, stayScore = [[3,4,2],[2,1,2]], travelScore = [[0,2,1],[2,0,4],[3,2,0]]",
+      "salida": "8",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3332: LC-3418 - Maximum Amount of Money Robot Can Earn. Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "coins = [[0, 1, -1], [1, -2, 3], [2, -3, 4]]",
+      "salida": "8",
+      "explicacion": "Relación con LC-3332: Ambos problemas comparten las técnicas de programación dinámica, matrices, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "import math\n\nclass Solution:\n  def maximumAmount(self, coins: list[list[int]]) -> int:\n    m = len(coins)\n    n = len(coins[0])\n    # dp[i][j][k] := the maximum profit at position (i, j) with k remaining\n    # neutralizations\n    dp = [[[-math.inf] * 4 for _ in range(n)] for _ in range(m)]\n\n    # Base case: the robot starts at the top-left corner.\n    dp[0][0][2] = coins[0][0]\n    if coins[0][0] < 0:\n      dp[0][0][1] = 0  # Neutralize the robber.\n\n    for i in range(m):\n      for j in range(n):\n        for k in range(3):  # for each number of remaining neutralizations\n          if i > 0:\n            dp[i][j][k] = max(dp[i][j][k],\n                              dp[i - 1][j][k] + coins[i][j],\n                              dp[i - 1][j][k + 1])\n          if j > 0:\n            dp[i][j][k] = max(dp[i][j][k],\n                              dp[i][j - 1][k] + coins[i][j],\n                              dp[i][j - 1][k + 1])\n\n    return max(dp[-1][-1])\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().maxScore(5, 5, [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 4, 5, 6, 7], [4, 5, 6, 7, 8], [5, 6, 7, 8, 9]], [[0, 1, 2, 3, 4], [1, 0, 1, 2, 3], [2, 1, 0, 1, 2], [3, 2, 1, 0, 1], [4, 3, 2, 1, 0]]) == 35"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().maxScore(4, 3, [[5, 10, 15, 20], [25, 30, 35, 40], [45, 50, 55, 60], [65, 70, 75, 80]], [[0, 1, 2, 3], [1, 0, 1, 2], [2, 1, 0, 1], [3, 2, 1, 0]]) == 120"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().maxScore(3, 2, [[3, 4, 2], [2, 1, 2]], [[0, 2, 1], [2, 0, 4], [3, 2, 0]]) == 8"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().maxScore(4, 3, [[5, 10, 15, 20], [1, 2, 3, 4], [10, 9, 8, 7], [20, 19, 18, 17]], [[0, 5, 10, 15], [5, 0, 5, 10], [10, 5, 0, 5], [15, 10, 5, 0]]) == 50"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().maxScore(2, 1, [[2, 3]], [[0, 2], [1, 0]]) == 3"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().maxScore(5, 1, [[10, 20, 30, 40, 50]], [[0, 1, 2, 3, 4], [1, 0, 1, 2, 3], [2, 1, 0, 1, 2], [3, 2, 1, 0, 1], [4, 3, 2, 1, 0]]) == 50"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().maxScore(5, 4, [[10, 20, 30, 40, 50], [5, 15, 25, 35, 45], [1, 2, 3, 4, 5], [100, 200, 300, 400, 500], [5, 5, 5, 5, 5]], [[0, 1, 2, 3, 4], [1, 0, 1, 2, 3], [2, 1, 0, 1, 2], [3, 2, 1, 0, 1], [4, 3, 2, 1, 0]]) == 600"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().maxScore(4, 3, [[10, 20, 30, 40], [5, 15, 25, 35], [1, 2, 3, 4], [100, 200, 300, 400]], [[0, 1, 2, 3], [4, 0, 5, 6], [7, 8, 0, 9], [10, 11, 12, 0]]) == 87"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().maxScore(4, 3, [[5, 7, 8, 6], [6, 5, 4, 5], [7, 8, 9, 6], [5, 6, 7, 8]], [[0, 3, 4, 5], [3, 0, 1, 2], [4, 1, 0, 3], [5, 2, 3, 0]]) == 21"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().maxScore(2, 3, [[1, 2], [2, 3], [3, 4]], [[0, 1], [1, 0]]) == 9"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().maxScore(5, 4, [[10, 20, 30, 40, 50], [9, 18, 27, 36, 45], [8, 16, 24, 32, 40], [7, 14, 21, 28, 35], [6, 12, 18, 24, 30]], [[0, 1, 2, 3, 4], [1, 0, 1, 2, 3], [2, 1, 0, 1, 2], [3, 2, 1, 0, 1], [4, 3, 2, 1, 0]]) == 170"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().maxScore(2, 3, [[1, 2], [2, 1], [3, 4]], [[0, 1], [1, 0]]) == 7"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "media",
+    "leetcode-id-3332",
+    "fecha-estimada-2024-10-20",
+    "Array",
+    "Dynamic Programming",
+    "Matrix"
+  ]
+}

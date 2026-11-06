@@ -1,0 +1,102 @@
+{
+  "codigo": "LC-3435",
+  "titulo": "Frequencies of Shortest Supersequences",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/frequencies-of-shortest-supersequences/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "Bit Manipulation / Graph / Topological Sort / Array / String / Enumeration",
+  "enunciado": "You are given an array of strings words. Find all shortest common supersequences (SCS) of words that are not permutations of each other.\nA shortest common supersequence is a string of minimum length that contains each string in words as a subsequence.\nReturn a 2D array of integers freqs that represent all the SCSs. Each freqs[i] is an array of size 26, representing the frequency of each letter in the lowercase English alphabet for a single SCS. You may return the frequency arrays in any order.\n \nExample 1:\n\nInput: words = [\"ab\",\"ba\"]\nOutput: [[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]\nExplanation:\nThe two SCSs are \"aba\" and \"bab\". The output is the letter frequencies for each one.\n\nExample 2:\n\nInput: words = [\"aa\",\"ac\"]\nOutput: [[2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]\nExplanation:\nThe two SCSs are \"aac\" and \"aca\". Since they are permutations of each other, keep only \"aac\".\n\nExample 3:\n\nInput: words = [\"aa\",\"bb\",\"cc\"]\nOutput: [[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]\nExplanation:\n\"aabbcc\" and all its permutations are SCSs.\n\n \nConstraints:\n\n1 <= words.length <= 256\nwords[i].length == 2\nAll strings in words will altogether be composed of no more than 16 unique lowercase letters.\nAll strings in words are unique.\n\n",
+  "especificacion_entrada": "words: list[str]",
+  "especificacion_salida": "list[list[int]]",
+  "restricciones": "",
+  "solucion_referencia": "from enum import Enum\n\n\nclass State(Enum):\n  INIT = 0\n  VISITING = 1\n  VISITED = 2\n\n\nclass Solution:\n  def supersequences(self, words: list[str]) -> list[list[int]]:\n    ans = []\n    edges = [(string.ascii_lowercase.index(words[0]),\n              string.ascii_lowercase.index(words[1]))\n             for words in words]\n    nodes = sorted({u for u, _ in edges} | {v for _, v in edges})\n    letterToIndex = {letter: i for i, letter in enumerate(nodes)}\n    graph = [[] for _ in range(len(nodes))]\n\n    for u, v in edges:\n      graph[letterToIndex[u]].append(letterToIndex[v])\n\n    for doubledSubset in self._getMinimumSubsets(graph):\n      freq = [0] * 26\n      for letter in nodes:\n        freq[letter] = 1\n      for index in doubledSubset:\n        freq[nodes[index]] = 2\n      ans.append(freq)\n\n    return ans\n\n  def _getMinimumSubsets(self, graph: list[list[int]]) -> list[tuple[int]]:\n    \"\"\"\n    Returns a list of the minimum subsets of nodes that do not create a cycle\n    when skipped.\n    \"\"\"\n    n = len(graph)\n    for subsetSize in range(n + 1):\n      doubleSubsets = []\n      for doubledSubset in itertools.combinations(range(n), subsetSize):\n        if not self._hasCycleSkipping(graph, set(doubledSubset)):\n          doubleSubsets.append(doubledSubset)\n      if doubleSubsets:\n        return doubleSubsets\n    return []\n\n  def _hasCycleSkipping(\n      self,\n      graph: list[list[int]],\n      doubledSubset: set[int]\n  ) -> bool:\n    \"\"\"\n    Returns True if there is a cycle in the `graph` when skipping any edges\n    whose both endpoints are in `doubledSubset`.\n    \"\"\"\n    states = [State.INIT] * len(graph)\n\n    def hasCycle(u: int) -> bool:\n      if states[u] == State.VISITING:\n        return True\n      if states[u] == State.VISITED:\n        return False\n      states[u] = State.VISITING\n      if u not in doubledSubset:\n        for v in graph[u]:\n          if v in doubledSubset:\n            continue\n          if hasCycle(v):\n            return True\n      states[u] = State.VISITED\n      return False\n\n    return any(hasCycle(i) for i in range(len(graph)))\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "words = [\"ab\",\"bc\",\"ca\"]",
+      "salida": "[[2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "words = [\"aa\",\"bb\",\"cc\",\"dd\"]",
+      "salida": "[[2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]",
+      "explicacion": ""
+    },
+    {
+      "entrada": "words = [\"xy\",\"xz\",\"yz\",\"yx\",\"zx\",\"zy\"]",
+      "salida": "[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2]]",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3435: LC-3272 - Find the Count of Good Integers. Ambos cuentan configuraciones de cadenas o números a partir de frecuencias de dígitos y combinatoria.",
+      "entrada": "n = 6, k = 8",
+      "salida": "5221",
+      "explicacion": "Relación con LC-3435: Ambos cuentan configuraciones de cadenas o números a partir de frecuencias de dígitos y combinatoria.",
+      "codigo_ilustrativo": "import collections\nimport math\n\nclass Solution:\n  def countGoodIntegers(self, n: int, k: int) -> int:\n    halfLength = (n + 1) // 2\n    minHalf = 10**(halfLength - 1)\n    maxHalf = 10**halfLength\n    ans = 0\n    seen = set()\n\n    for num in range(minHalf, maxHalf):\n      palindrome = str(num) + str(num)[::-1][n % 2:]\n      sortedDigits = ''.join(sorted(palindrome))\n      if int(palindrome) % k != 0 or sortedDigits in seen:\n        continue\n      seen.add(sortedDigits)\n      digitCount = collections.Counter(palindrome)\n      # Leading zeros are not allowed, so the first digit is special.\n      firstDigitChoices = n - digitCount['0']\n      permutations = firstDigitChoices * math.factorial(n - 1)\n      # For each repeated digit, divide by the factorial of the frequency since\n      # permutations that swap identical digits don't create a new number.\n      for freq in digitCount.values():\n        permutations //= math.factorial(freq)\n      ans += permutations\n\n    return ans\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().supersequences(['ab', 'bc', 'ca']) == [[2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().supersequences(['aa', 'bb', 'cc', 'dd']) == [[2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().supersequences(['xy', 'xz', 'yz', 'yx', 'zx', 'zy']) == [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2]]"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().supersequences(['pq', 'qp', 'rs', 'sr']) == [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().supersequences(['ac', 'bc', 'ad', 'bd', 'cd']) == [[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().supersequences(['xy', 'yx', 'zz']) == [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2]]"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().supersequences(['xy', 'xz', 'yz']) == [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]]"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().supersequences(['xy', 'yx', 'xz', 'zx', 'yz', 'zy']) == [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2]]"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().supersequences(['aa', 'ac']) == [[2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().supersequences(['ab', 'ba']) == [[2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().supersequences(['ab', 'cd', 'ef', 'gh']) == [[1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().supersequences(['ab', 'bc', 'cd']) == [[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3435",
+    "fecha-estimada-2025-01-26",
+    "Bit Manipulation",
+    "Graph",
+    "Topological Sort",
+    "Array",
+    "String",
+    "Enumeration"
+  ]
+}

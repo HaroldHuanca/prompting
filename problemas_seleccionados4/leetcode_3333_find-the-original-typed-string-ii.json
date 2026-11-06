@@ -1,0 +1,99 @@
+{
+  "codigo": "LC-3333",
+  "titulo": "Find the Original Typed String II",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-original-typed-string-ii/",
+  "dificultad": "Difícil",
+  "categoria_algoritmica": "String / Dynamic Programming / Prefix Sum",
+  "enunciado": "Alice is attempting to type a specific string on her computer. However, she tends to be clumsy and may press a key for too long, resulting in a character being typed multiple times.\nYou are given a string word, which represents the final output displayed on Alice's screen. You are also given a positive integer k.\nReturn the total number of possible original strings that Alice might have intended to type, if she was trying to type a string of size at least k.\nSince the answer may be very large, return it modulo 109 + 7.\n \nExample 1:\n\nInput: word = \"aabbccdd\", k = 7\nOutput: 5\nExplanation:\nThe possible strings are: \"aabbccdd\", \"aabbccd\", \"aabbcdd\", \"aabccdd\", and \"abbccdd\".\n\nExample 2:\n\nInput: word = \"aabbccdd\", k = 8\nOutput: 1\nExplanation:\nThe only possible string is \"aabbccdd\".\n\nExample 3:\n\nInput: word = \"aaabbb\", k = 3\nOutput: 8\n\n \nConstraints:\n\n1 <= word.length <= 5 * 105\nword consists only of lowercase English letters.\n1 <= k <= 2000\n\n",
+  "especificacion_entrada": "word: str, k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def possibleStringCount(self, word: str, k: int) -> int:\n    MOD = 1_000_000_007\n    groups = self._getConsecutiveLetters(word)\n    totalCombinations = functools.reduce(lambda subtotal, group:\n                                         subtotal * group % MOD, groups)\n    if k <= len(groups):\n      return totalCombinations\n\n    # dp[j] := the number of ways to form strings of length j using groups[0..i]\n    dp = [0] * k\n    dp[0] = 1  # Base case: empty string\n\n    for i, group in enumerate(groups):\n      newDp = [0] * k\n      windowSum = 0\n      for j in range(i, k):\n        newDp[j] = (newDp[j] + windowSum) % MOD\n        windowSum = (windowSum + dp[j]) % MOD\n        if j >= group:\n          windowSum = (windowSum - dp[j - group] + MOD) % MOD\n      dp = newDp\n\n    return (totalCombinations - sum(dp)) % MOD\n\n  def _getConsecutiveLetters(self, word: str) -> list[int]:\n    \"\"\"\n    Returns consecutive identical letters in the input string.\n    e.g. \"aabbbc\" -> [2, 3, 1].\n    \"\"\"\n    groups = []\n    group = 1\n    for i in range(1, len(word)):\n      if word[i] == word[i - 1]:\n        group += 1\n      else:\n        groups.append(group)\n        group = 1\n    groups.append(group)\n    return groups\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "word = \"aaaaaa\", k = 1",
+      "salida": "6",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"aaabbcccddddeeeeeffffffggggghhhhhhiiiiijjjjjkkkkklllllmmmmmnnnnnooooo\", k = 100",
+      "salida": "0",
+      "explicacion": ""
+    },
+    {
+      "entrada": "word = \"aabbccc\", k = 5",
+      "salida": "8",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3333: LC-3330 - Find the Original Typed String I. Ambos problemas comparten el tema de original, typed, aunque plantean una variante distinta.",
+      "entrada": "word = 'aaabbbccc'",
+      "salida": "7",
+      "explicacion": "Relación con LC-3333: Ambos problemas comparten el tema de original, typed, aunque plantean una variante distinta.",
+      "codigo_ilustrativo": "import itertools\n\nclass Solution:\n  def possibleStringCount(self, word: str) -> int:\n    return 1 + sum(a == b\n                   for a, b in itertools.pairwise(word))\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().possibleStringCount('aaaaaa', 1) == 6"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().possibleStringCount('aaabbcccddddeeeeeffffffggggghhhhhhiiiiijjjjjkkkkklllllmmmmmnnnnnooooo', 100) == 0"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().possibleStringCount('aabbccc', 5) == 8"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().possibleStringCount('aaaabbbbcccc', 10) == 10"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().possibleStringCount('aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz', 10) == 67108864"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().possibleStringCount('aaabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz', 20) == 100663296"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().possibleStringCount('mississippi', 7) == 8"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().possibleStringCount('aabbbccccc', 5) == 26"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().possibleStringCount('zzzz', 2) == 3"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().possibleStringCount('ababababab', 5) == 1"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().possibleStringCount('abcabcabc', 6) == 1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().possibleStringCount('ababab', 2) == 1"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "difícil",
+    "leetcode-id-3333",
+    "fecha-estimada-2024-10-20",
+    "String",
+    "Dynamic Programming",
+    "Prefix Sum"
+  ]
+}

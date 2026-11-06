@@ -1,0 +1,98 @@
+{
+  "codigo": "LC-3471",
+  "titulo": "Find the Largest Almost Missing Integer",
+  "plataforma_origen": "LeetCode",
+  "url_referencia": "https://leetcode.com/problems/find-the-largest-almost-missing-integer/",
+  "dificultad": "Fácil",
+  "categoria_algoritmica": "Array / Hash Table",
+  "enunciado": "You are given an integer array nums and an integer k.\nAn integer x is almost missing from nums if x appears in exactly one subarray of size k within nums.\nReturn the largest almost missing integer from nums. If no such integer exists, return -1.\nA subarray is a contiguous sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [3,9,2,1,7], k = 3\nOutput: 7\nExplanation:\n\n1 appears in 2 subarrays of size 3: [9, 2, 1] and [2, 1, 7].\n2 appears in 3 subarrays of size 3: [3, 9, 2], [9, 2, 1], [2, 1, 7].\n3 appears in 1 subarray of size 3: [3, 9, 2].\n7 appears in 1 subarray of size 3: [2, 1, 7].\n9 appears in 2 subarrays of size 3: [3, 9, 2], and [9, 2, 1].\n\nWe return 7 since it is the largest integer that appears in exactly one subarray of size k.\n\nExample 2:\n\nInput: nums = [3,9,7,2,1,7], k = 4\nOutput: 3\nExplanation:\n\n1 appears in 2 subarrays of size 4: [9, 7, 2, 1], [7, 2, 1, 7].\n2 appears in 3 subarrays of size 4: [3, 9, 7, 2], [9, 7, 2, 1], [7, 2, 1, 7].\n3 appears in 1 subarray of size 4: [3, 9, 7, 2].\n7 appears in 3 subarrays of size 4: [3, 9, 7, 2], [9, 7, 2, 1], [7, 2, 1, 7].\n9 appears in 2 subarrays of size 4: [3, 9, 7, 2], [9, 7, 2, 1].\n\nWe return 3 since it is the largest and only integer that appears in exactly one subarray of size k.\n\nExample 3:\n\nInput: nums = [0,0], k = 1\nOutput: -1\nExplanation:\nThere is no integer that appears in only one subarray of size 1.\n\n \nConstraints:\n\n1 <= nums.length <= 50\n0 <= nums[i] <= 50\n1 <= k <= nums.length\n\n",
+  "especificacion_entrada": "nums: list[int], k: int",
+  "especificacion_salida": "int",
+  "restricciones": "",
+  "solucion_referencia": "class Solution:\n  def largestInteger(self, nums: list[int], k: int) -> int:\n    if k == len(nums):\n      return max(nums)\n    count = collections.Counter(nums)\n    if k == 1:\n      return max([num for num in nums if count[num] == 1], default=-1)\n    return max(\n        nums[0] if count[nums[0]] == 1 else -1,\n        nums[-1] if count[nums[-1]] == 1 else -1\n    )\n",
+  "ejemplos_enunciado": [
+    {
+      "entrada": "nums = [2,2,3,3,4,4,5,5], k = 2",
+      "salida": "-1",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 10",
+      "salida": "10",
+      "explicacion": ""
+    },
+    {
+      "entrada": "nums = [1,2,3,4,5,6,7,8,9,10], k = 5",
+      "salida": "10",
+      "explicacion": ""
+    }
+  ],
+  "ejemplos_few_shot": [
+    {
+      "id": 1,
+      "descripcion": "Problema relacionado para LC-3471: LC-3375 - Minimum Operations to Make Array Values Equal to K. Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "entrada": "nums = [5, 5, 5, 5, 5], k = 5",
+      "salida": "0",
+      "explicacion": "Relación con LC-3471: Ambos problemas comparten las técnicas de tabla hash, aplicadas a estructuras y restricciones relacionadas.",
+      "codigo_ilustrativo": "class Solution:\n  def minOperations(self, nums: list[int], k: int) -> int:\n    numsSet = set(nums)\n    mn = min(nums)\n    if mn < k:\n      return -1\n    if mn > k:\n      return len(numsSet)\n    return len(numsSet) - 1\n"
+    }
+  ],
+  "pruebas_funcionales": [
+    {
+      "nombre": "test_caso_01",
+      "codigo": "assert Solution().largestInteger([2, 2, 3, 3, 4, 4, 5, 5], 2) == -1"
+    },
+    {
+      "nombre": "test_caso_02",
+      "codigo": "assert Solution().largestInteger([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10) == 10"
+    },
+    {
+      "nombre": "test_caso_03",
+      "codigo": "assert Solution().largestInteger([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5) == 10"
+    },
+    {
+      "nombre": "test_caso_04",
+      "codigo": "assert Solution().largestInteger([1, 2, 3, 4, 5], 2) == 5"
+    },
+    {
+      "nombre": "test_caso_05",
+      "codigo": "assert Solution().largestInteger([5, 5, 5, 5, 5, 5, 5, 5, 5, 5], 3) == -1"
+    },
+    {
+      "nombre": "test_caso_06",
+      "codigo": "assert Solution().largestInteger([1, 2, 2, 3, 3, 3, 4, 4, 4, 4], 4) == 1"
+    },
+    {
+      "nombre": "test_caso_07",
+      "codigo": "assert Solution().largestInteger([10, 20, 30, 40, 50], 5) == 50"
+    },
+    {
+      "nombre": "test_caso_08",
+      "codigo": "assert Solution().largestInteger([5, 5, 5, 5, 5], 3) == -1"
+    },
+    {
+      "nombre": "test_caso_09",
+      "codigo": "assert Solution().largestInteger([10, 20, 30, 40, 50], 2) == 50"
+    },
+    {
+      "nombre": "test_caso_10",
+      "codigo": "assert Solution().largestInteger([1, 3, 5, 7, 9, 11, 13, 15, 17, 19], 4) == 19"
+    },
+    {
+      "nombre": "test_caso_11",
+      "codigo": "assert Solution().largestInteger([1, 3, 1, 3, 1, 3], 3) == -1"
+    },
+    {
+      "nombre": "test_caso_12",
+      "codigo": "assert Solution().largestInteger([42, 42, 42, 42, 42, 42, 42], 7) == 42"
+    }
+  ],
+  "etiquetas": [
+    "leetcode",
+    "fácil",
+    "leetcode-id-3471",
+    "fecha-estimada-2025-03-02",
+    "Array",
+    "Hash Table"
+  ]
+}

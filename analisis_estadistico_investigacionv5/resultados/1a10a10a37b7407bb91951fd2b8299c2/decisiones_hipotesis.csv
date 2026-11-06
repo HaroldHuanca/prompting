@@ -1,0 +1,5 @@
+﻿hypothesis_code,decision,supporting_metrics,rationale
+HE1,sin respaldo estadístico,[],No se detectó diferencia global de exactitud funcional tras corrección Holm.
+HE2,respaldo estadístico,['maintainability_index'],Al menos un indicador de mantenibilidad muestra una diferencia global tras Holm.
+HE3,sin respaldo estadístico,[],No se detectó diferencia global de eficiencia tras Holm; el análisis usa solo ejecuciones con benchmark válido.
+HG,respaldo estadístico parcial,['maintainability_index'],Existe diferencia global en al menos un indicador tras Holm; esto no implica superioridad general ni un índice compuesto.
